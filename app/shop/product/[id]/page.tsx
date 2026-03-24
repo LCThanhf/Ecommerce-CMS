@@ -23,7 +23,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         Back to Shop
       </Link>
 
-      <section className="mt-6 grid gap-8 rounded-lg border border-neutral-200 p-6 md:grid-cols-[220px_1fr] md:items-start">
+      <section className="mt-6 grid gap-8 rounded-lg border border-neutral-200 p-6 md:grid-cols-[220px_1fr] md:items-start md:gap-4">
         <div className="relative h-72 w-full max-w-55">
           <Image src={galaxyA31} alt={product.name} fill sizes="220px" className="object-contain" />
         </div>

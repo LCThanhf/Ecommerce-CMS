@@ -22,12 +22,12 @@ const products: Product[] = [
 
 function PhoneThumbnail() {
   return (
-    <div className="relative h-28 w-20 md:h-36 md:w-24">
+    <div className="relative h-36 w-28 md:h-44 md:w-32">
       <Image
         src={galaxyA31}
         alt="Samsung Galaxy A31"
         fill
-        sizes="(max-width: 768px) 80px, 96px"
+        sizes="(max-width: 768px) 112px, 128px"
         className="rounded-sm object-contain"
       />
     </div>
@@ -39,7 +39,7 @@ function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetail
     <button
       type="button"
       onClick={() => onOpenDetails(product.id)}
-      className="flex w-full gap-3 rounded-md px-1 py-2 text-left transition hover:bg-white/40 md:gap-4"
+      className="flex w-fit gap-3 rounded-md px-1 py-2 text-left transition hover:bg-white/40 md:gap-4"
     >
       <PhoneThumbnail />
 
@@ -48,7 +48,7 @@ function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetail
         <p className="mt-2 text-2xl leading-none font-extrabold text-neutral-900 md:mt-4 md:text-4xl">{product.price}</p>
         <div className="mt-2 flex items-center gap-1 text-amber-400">
           {Array.from({ length: 5 }).map((_, index) => (
-            <Star key={index} className="h-6 w-6 fill-current md:h-8 md:w-8" />
+            <Star key={index} className="h-8 w-8 fill-current md:h-10 md:w-10" />
           ))}
         </div>
       </div>
@@ -73,7 +73,7 @@ export default function ShopSection({ searchQuery = '' }: { searchQuery?: string
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 pb-6 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-y-4 pb-6 xl:grid-cols-[max-content_max-content] xl:justify-start xl:gap-x-50">
         {visibleProducts.map((product) => (
           <ProductRow key={product.id} product={product} onOpenDetails={openDetails} />
         ))}
