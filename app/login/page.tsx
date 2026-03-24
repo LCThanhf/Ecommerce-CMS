@@ -1,14 +1,9 @@
 'use client'
 
 import { Eye, EyeOff, Lock, User } from 'lucide-react'
-import { Nunito_Sans } from 'next/font/google'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-
-const nunito = Nunito_Sans({
-  subsets: ['latin', 'vietnamese'],
-  weight: ['400', '500', '600', '700'],
-})
 
 function NetworkDecoration() {
   return (
@@ -85,11 +80,15 @@ function FieldRow({
   type,
   placeholder,
   leftIcon,
+  value,
+  onChange,
   rightIcon,
 }: {
   type: string
   placeholder: string
   leftIcon: ReactNode
+  value: string
+  onChange: (value: string) => void
   rightIcon?: ReactNode
 }) {
   return (
@@ -98,9 +97,12 @@ function FieldRow({
         {leftIcon}
       </span>
       <input
+        autoComplete="username"
         type={type}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="h-13 w-full rounded-[4px] border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-10 text-[17px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
+        className="h-13 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-10 text-[17px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
       />
       {rightIcon ? (
         <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#677784]">{rightIcon}</span>
@@ -110,28 +112,54 @@ function FieldRow({
 }
 
 export default function LoginPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!username.trim() || !password.trim()) {
+      setErrorMessage('Vui lòng nhập tên đăng nhập và mật khẩu.')
+      return
+    }
+
+    setErrorMessage('')
+    router.push('/shop')
+  }
 
   return (
     <main
-      className={`${nunito.className} relative isolate flex min-h-screen items-start justify-center overflow-hidden bg-linear-to-b from-[#14a4dd] via-[#0fa1dd] to-[#1498d5] px-4 pb-10 pt-16 text-white sm:items-center sm:pt-10`}
+      className="relative isolate flex min-h-screen items-start justify-center overflow-hidden bg-linear-to-b from-[#14a4dd] via-[#0fa1dd] to-[#1498d5] px-4 pb-10 pt-16 text-white sm:items-center sm:pt-10"
     >
       <NetworkDecoration />
 
       <section className="relative z-10 w-full max-w-150 text-center animate-in fade-in zoom-in-95 duration-500">
         <TopCircle />
 
-        <form className="mx-auto mt-8 w-full max-w-125 space-y-5">
-          <FieldRow type="text" placeholder="Tên đăng nhập" leftIcon={<User className="block h-3 w-3" strokeWidth={2.25} />} />
+        <form onSubmit={handleSignIn} className="mx-auto mt-8 w-full max-w-125 space-y-5">
+          <FieldRow
+            type="text"
+            value={username}
+            onChange={setUsername}
+            placeholder="Tên đăng nhập"
+            leftIcon={<User className="block h-3 w-3" strokeWidth={2.25} />}
+          />
 
           <label className="relative block">
             <span className="pointer-events-none absolute left-4 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-[#1598d6] leading-none text-white">
               <Lock className="block h-3 w-3" strokeWidth={2.25} />
             </span>
             <input
+              name="password"
+              autoComplete="current-password"
               type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
               placeholder="Mật khẩu"
-              className="h-13 w-full rounded-[4px] border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-12 text-[17px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
+              className="h-13 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-12 text-[17px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
             />
             <button
               type="button"
@@ -158,10 +186,12 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="mt-1 h-11.5 w-full rounded-[4px] border border-cyan-100/90 text-[18px] font-medium text-cyan-50 transition duration-150 hover:bg-white/10 active:translate-y-px"
+            className="mt-1 h-11.5 w-full rounded-sm border border-cyan-100/90 text-[18px] font-medium text-cyan-50 transition duration-150 hover:bg-white/10 active:translate-y-px"
           >
             Đăng nhập
           </button>
+
+          {errorMessage ? <p className="text-sm text-red-100">{errorMessage}</p> : null}
         </form>
 
         <div className="mt-16 space-y-1 text-[13px] text-cyan-50/85">
