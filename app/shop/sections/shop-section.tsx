@@ -56,20 +56,34 @@ function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetail
   )
 }
 
-export default function ShopSection() {
+export default function ShopSection({ searchQuery = '' }: { searchQuery?: string }) {
   const router = useRouter()
 
   const openDetails = (id: number) => {
     router.push(`/shop/product/${id}`)
   }
 
+  const normalizedQuery = searchQuery.trim().toLowerCase()
+  const visibleProducts = normalizedQuery
+    ? products.filter((product) => {
+        const searchableText = `${product.name} ${product.price}`.toLowerCase()
+        return searchableText.includes(normalizedQuery)
+      })
+    : products
+
   return (
     <div>
       <div className="grid grid-cols-1 gap-4 pb-6 xl:grid-cols-2">
-        {products.map((product) => (
+        {visibleProducts.map((product) => (
           <ProductRow key={product.id} product={product} onOpenDetails={openDetails} />
         ))}
       </div>
+
+      {visibleProducts.length === 0 ? (
+        <div className="rounded-md border border-dashed border-neutral-300 bg-white/70 p-6 text-center text-lg text-neutral-600">
+          No products found.
+        </div>
+      ) : null}
     </div>
   )
 }

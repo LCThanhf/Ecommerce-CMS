@@ -31,7 +31,7 @@ const navItems: NavItem[] = [
   { key: 'profile', label: 'My Profile', icon: profileIcon },
 ]
 
-function MainContent({ view }: { view: ViewKey }) {
+function MainContent({ view, searchQuery }: { view: ViewKey; searchQuery: string }) {
   if (view === 'cart') {
     return (
       <Suspense
@@ -68,7 +68,7 @@ function MainContent({ view }: { view: ViewKey }) {
         </div>
       }
     >
-      <ShopSection />
+      <ShopSection searchQuery={searchQuery} />
     </Suspense>
   )
 }
@@ -76,6 +76,7 @@ function MainContent({ view }: { view: ViewKey }) {
 export default function ShopPage() {
   const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const currentViewLabel = navItems.find((item) => item.key === activeView)?.label ?? 'Shop'
   const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel
@@ -167,6 +168,8 @@ export default function ShopPage() {
               <div className="flex w-full max-w-120 items-stretch justify-end gap-2">
                 <div className="flex min-w-0 flex-1 items-stretch overflow-hidden border border-neutral-500 bg-white">
                   <input
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
                     className="h-10 w-full px-3 text-base text-neutral-800 outline-none md:h-11 md:text-lg"
                     placeholder="Search..."
                     aria-label="Search products"
@@ -192,7 +195,7 @@ export default function ShopPage() {
           </div>
 
           <div className="px-4 md:px-5">
-            <MainContent view={activeView} />
+            <MainContent view={activeView} searchQuery={searchQuery} />
           </div>
         </section>
       </div>
