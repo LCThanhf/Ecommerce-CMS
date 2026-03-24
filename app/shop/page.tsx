@@ -1,9 +1,17 @@
 'use client'
 
 import Link from 'next/link'
+import Image, { type StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
-import { Filter, Menu, Search, ShoppingBasket, ShoppingCart, UserRound } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { Suspense, useState } from 'react'
+import logoIcon from '../assets/logo.png.png'
+import avatarIcon from '../assets/avatar.png.png'
+import shopIcon from '../assets/shop.png.png'
+import cartIcon from '../assets/cart.png.png'
+import profileIcon from '../assets/profile.png.png'
+import searchIcon from '../assets/search.png.png'
+import filterIcon from '../assets/filter.png.png'
 
 const ShopSection = dynamic(() => import('./sections/shop-section'))
 const CartSection = dynamic(() => import('./sections/cart-section'))
@@ -14,13 +22,13 @@ type ViewKey = 'shop' | 'cart' | 'profile'
 type NavItem = {
   key: ViewKey
   label: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: StaticImageData
 }
 
 const navItems: NavItem[] = [
-  { key: 'shop', label: 'Shop', icon: ShoppingBasket },
-  { key: 'cart', label: 'Cart', icon: ShoppingCart },
-  { key: 'profile', label: 'My Profile', icon: UserRound },
+  { key: 'shop', label: 'Shop', icon: shopIcon },
+  { key: 'cart', label: 'Cart', icon: cartIcon },
+  { key: 'profile', label: 'My Profile', icon: profileIcon },
 ]
 
 function MainContent({ view }: { view: ViewKey }) {
@@ -75,27 +83,29 @@ export default function ShopPage() {
   return (
     <main className="min-h-screen bg-[#ffffff] text-neutral-900">
       <header className="sticky top-0 z-30 border-b border-sky-300/60 bg-[#C6E5F4]">
-        <div className="flex h-16 items-center justify-between px-4 md:h-18 md:px-5">
+        <div className="flex h-18 items-center justify-between px-4 md:h-20 md:px-5">
           <div className="flex items-center gap-3">
             <Link
               href="/shop"
               aria-label="Go to shop main page"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-[0_8px_18px_rgba(0,0,0,0.16)] md:h-11 md:w-11"
-            />
-            <h1 className="text-2xl leading-none font-medium md:text-4xl">Mobile Shopping</h1>
+              className="inline-flex h-14 w-14 items-center justify-center md:h-16 md:w-16"
+            >
+              <Image src={logoIcon} alt="Shop logo" className="h-14 w-14 object-contain md:h-15 md:w-15" />
+            </Link>
+            <h1 className="text-2xl leading-none font-normal md:text-4xl">Mobile Shopping</h1>
           </div>
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-sky-200 bg-white/80 text-slate-600 md:h-11 md:w-11"
+            className="inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-sky-200 bg-white text-slate-600 md:h-14 md:w-14"
             aria-label="Profile"
           >
-            <UserRound className="h-5 w-5 md:h-6 md:w-6" />
+            <Image src={avatarIcon} alt="Profile" className="h-full w-full rounded-full object-cover" />
           </button>
         </div>
       </header>
 
-      <div className="flex min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-4.5rem)]">
+      <div className="flex min-h-[calc(100vh-4.5rem)] md:min-h-[calc(100vh-5rem)]">
         <aside
           className={`min-h-full border-r border-neutral-300 bg-[#ffffff] transition-all duration-200 ${
             isCollapsed ? 'w-14 md:w-16' : 'w-52 md:w-60'
@@ -115,7 +125,6 @@ export default function ShopPage() {
 
           <nav>
             {navItems.map((item) => {
-              const Icon = item.icon
               const isActive = activeView === item.key
 
               return (
@@ -131,7 +140,15 @@ export default function ShopPage() {
                       : 'text-neutral-900 hover:bg-neutral-200/70'
                   } ${isCollapsed ? 'justify-center px-0' : ''}`}
                 >
-                  <Icon className="h-5 w-5 shrink-0 md:h-6 md:w-6" />
+                  <Image
+                    src={item.icon}
+                    alt={item.label}
+                    className={`h-5 w-5 shrink-0 object-contain md:h-6 md:w-6 ${
+                      isActive
+                        ? 'filter-[invert(52%)_sepia(93%)_saturate(1695%)_hue-rotate(159deg)_brightness(95%)_contrast(98%)]'
+                        : ''
+                    }`}
+                  />
                   {!isCollapsed ? <span>{item.label}</span> : null}
                 </button>
               )
@@ -159,7 +176,7 @@ export default function ShopPage() {
                     className="inline-flex h-10 w-10 items-center justify-center text-neutral-800 md:h-11 md:w-11"
                     aria-label="Search"
                   >
-                    <Search className="h-6 w-6 md:h-7 md:w-7" />
+                    <Image src={searchIcon} alt="Search" className="h-6 w-6 object-contain md:h-7 md:w-7" />
                   </button>
                 </div>
 
@@ -168,7 +185,7 @@ export default function ShopPage() {
                   className="inline-flex h-10 w-10 shrink-0 items-center justify-center bg-white text-neutral-800 md:h-11 md:w-11"
                   aria-label="Filter"
                 >
-                  <Filter className="h-6 w-6 md:h-7 md:w-7" />
+                  <Image src={filterIcon} alt="Filter" className="h-6 w-6 object-contain md:h-7 md:w-7" />
                 </button>
               </div>
             </div>

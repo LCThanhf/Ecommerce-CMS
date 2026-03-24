@@ -1,9 +1,11 @@
 'use client'
 
+import Image from 'next/image'
 import { Eye, EyeOff, Lock, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import logoIcon from '../assets/logo.png.png'
 
 function NetworkDecoration() {
   return (
@@ -70,9 +72,11 @@ function NetworkDecoration() {
 function TopCircle() {
   return (
     <div
-      className="mx-auto h-20 w-20 rounded-full bg-white/90 shadow-[0_10px_20px_rgba(0,0,0,0.2)]"
+      className="mx-auto inline-flex h-24 w-24 items-center justify-center rounded-full bg-white/90 shadow-[0_10px_20px_rgba(0,0,0,0.2)]"
       aria-hidden="true"
-    />
+    >
+      <Image src={logoIcon} alt="Website logo" className="h-18 w-18 object-contain" />
+    </div>
   )
 }
 
@@ -102,7 +106,7 @@ function FieldRow({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="h-13 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-10 text-[17px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
+        className="h-16 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-10 text-[17px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
       />
       {rightIcon ? (
         <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#677784]">{rightIcon}</span>
@@ -139,7 +143,7 @@ export default function LoginPage() {
       <section className="relative z-10 w-full max-w-150 text-center animate-in fade-in zoom-in-95 duration-500">
         <TopCircle />
 
-        <form onSubmit={handleSignIn} className="mx-auto mt-8 w-full max-w-125 space-y-5">
+        <form onSubmit={handleSignIn} className="mx-auto mt-8 w-full max-w-125 space-y-11">
           <FieldRow
             type="text"
             value={username}
@@ -159,7 +163,7 @@ export default function LoginPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Mật khẩu"
-              className="h-13 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-12 text-[17px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
+              className="h-16 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-12 text-[17px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
             />
             <button
               type="button"
@@ -171,7 +175,7 @@ export default function LoginPage() {
             </button>
           </label>
 
-          <div className="mt-2 flex items-center justify-between px-2 text-[14px] text-cyan-50/95">
+          <div className="mt-4 flex items-center justify-between px-2 text-[14px] text-cyan-50/95">
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
@@ -186,7 +190,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="mt-1 h-11.5 w-full rounded-sm border border-cyan-100/90 text-[18px] font-medium text-cyan-50 transition duration-150 hover:bg-white/10 active:translate-y-px"
+            className="mt-3 mx-auto block h-11.5 w-4/5 rounded-sm border border-cyan-100/90 text-[18px] font-medium text-cyan-50 transition duration-150 hover:bg-white/10 active:translate-y-px"
           >
             Đăng nhập
           </button>
