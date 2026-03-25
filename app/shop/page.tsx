@@ -118,21 +118,22 @@ export default function ShopPage() {
   return (
     <main className="h-screen overflow-hidden bg-[#ffffff] text-neutral-900">
       <header className="sticky top-0 z-30 border-b border-sky-300/60 bg-[#C6E5F4]">
-        <div className="flex h-18 items-center justify-between px-4 md:h-20 md:px-5">
+        <div className="flex h-22 items-center justify-between px-4 md:h-26 md:px-5">
           <div className="flex items-center gap-3">
             <Link
               href="/shop"
               aria-label="Go to shop main page"
-              className="inline-flex h-14 w-14 items-center justify-center md:h-16 md:w-16"
+              onClick={() => setActiveView('shop')}
+              className="inline-flex h-18 w-18 items-center justify-center md:h-20 md:w-20"
             >
-              <Image src={logoIcon} alt="Shop logo" className="h-14 w-14 object-contain md:h-15 md:w-15" />
+              <Image src={logoIcon} alt="Shop logo" className="h-18 w-18 object-contain md:h-20 md:w-20" />
             </Link>
-            <h1 className="text-2xl leading-none font-normal md:text-4xl">Mobile Shopping</h1>
+            <h1 className="text-3xl leading-none font-normal md:text-[2.5rem]">Mobile Shopping</h1>
           </div>
 
           <button
             type="button"
-            className="inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-sky-200 bg-white text-slate-600 md:h-14 md:w-14"
+            className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-200 bg-white text-slate-600 md:h-15 md:w-15"
             aria-label="Profile"
           >
             <Image src={avatarIcon} alt="Profile" className="h-full w-full rounded-full object-cover" />
@@ -140,7 +141,7 @@ export default function ShopPage() {
         </div>
       </header>
 
-      <div className="flex h-[calc(100vh-4.5rem)] overflow-hidden md:h-[calc(100vh-5rem)]">
+      <div className="flex h-[calc(100vh-5.5rem)] overflow-hidden md:h-[calc(100vh-6.5rem)]">
         <aside
           className={`h-full overflow-hidden border-r border-neutral-300 bg-[#ffffff] transition-all duration-200 ${
             isCollapsed ? 'w-14 md:w-16' : 'w-52 md:w-60'
