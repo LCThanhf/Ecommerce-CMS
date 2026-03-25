@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image, { type StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
-import { Menu } from 'lucide-react'
+import { Menu, ChevronDown } from 'lucide-react'
 import { Suspense, useState } from 'react'
 import logoIcon from '../assets/logo.png'
 import avatarIcon from '../assets/avatar.png'
@@ -16,6 +16,21 @@ import filterIcon from '../assets/filter.png'
 const ShopSection = dynamic(() => import('./sections/shop-section'))
 const CartSection = dynamic(() => import('./sections/cart-section'))
 const ProfileSection = dynamic(() => import('./sections/profile-section'))
+
+const PRICE_OPTIONS = Array.from({ length: 11 }, (_, i) => i * 1_000_000)
+const RATING_OPTIONS = [0, 1, 2, 3, 4, 5]
+
+function formatVND(value: number): string {
+  if (value === 0) return '0 VN\u0110'
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VN\u0110'
+}
+
+type FilterState = {
+  priceFrom: number
+  priceTo: number
+  ratingFrom: number
+  ratingTo: number
+}
 
 type ViewKey = 'shop' | 'cart' | 'profile'
 
@@ -31,7 +46,15 @@ const navItems: NavItem[] = [
   { key: 'profile', label: 'My Profile', icon: profileIcon },
 ]
 
-function MainContent({ view, searchQuery }: { view: ViewKey; searchQuery: string }) {
+function MainContent({
+  view,
+  searchQuery,
+  filterState,
+}: {
+  view: ViewKey
+  searchQuery: string
+  filterState: FilterState
+}) {
   if (view === 'cart') {
     return (
       <Suspense
@@ -68,7 +91,13 @@ function MainContent({ view, searchQuery }: { view: ViewKey; searchQuery: string
         </div>
       }
     >
-      <ShopSection searchQuery={searchQuery} />
+      <ShopSection
+        searchQuery={searchQuery}
+        priceFrom={filterState.priceFrom}
+        priceTo={filterState.priceTo}
+        ratingFrom={filterState.ratingFrom}
+        ratingTo={filterState.ratingTo}
+      />
     </Suspense>
   )
 }
@@ -77,6 +106,11 @@ export default function ShopPage() {
   const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [priceFrom, setPriceFrom] = useState(0)
+  const [priceTo, setPriceTo] = useState(10_000_000)
+  const [ratingFrom, setRatingFrom] = useState(0)
+  const [ratingTo, setRatingTo] = useState(5)
 
   const currentViewLabel = navItems.find((item) => item.key === activeView)?.label ?? 'Shop'
   const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel
@@ -165,7 +199,7 @@ export default function ShopPage() {
 
             <div className="flex h-12 items-center justify-between">
               <p className="text-lg leading-none font-normal text-neutral-900 md:text-xl">{stripSubtitle}</p>
-              <div className="flex w-full max-w-120 items-stretch justify-end gap-2">
+                <div className="relative flex items-stretch gap-2 w-full max-w-120 justify-end">
                 <div className="flex min-w-0 flex-1 items-stretch overflow-hidden border border-neutral-500 bg-white">
                   <input
                     value={searchQuery}
@@ -185,17 +219,102 @@ export default function ShopPage() {
 
                 <button
                   type="button"
-                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-neutral-800 md:h-12 md:w-12"
+                  onClick={() => setIsFilterOpen((prev) => !prev)}
+                  className={`inline-flex h-11 w-11 shrink-0 items-center justify-center text-neutral-800 md:h-12 md:w-12 ${
+                    isFilterOpen ? 'rounded-sm bg-sky-100 ring-1 ring-sky-300' : ''
+                  }`}
                   aria-label="Filter"
                 >
                   <Image src={filterIcon} alt="Filter" className="h-8 w-8 object-contain md:h-10 md:w-10" />
                 </button>
-              </div>
+
+                {isFilterOpen ? (
+                  <div className="absolute right-0 top-full z-50 mt-1 w-64 border border-neutral-200 bg-white px-5 py-4 shadow-lg">
+                    {/* Price Filter */}
+                    <div className="mb-4">
+                      <p className="mb-2 text-center text-sm font-normal text-neutral-500">Giá</p>
+                      <div className="mb-2 flex items-center gap-3">
+                        <span className="w-9 shrink-0 text-sm text-neutral-500">Từ:</span>
+                        <div className="relative flex-1">
+                          <select
+                            value={priceFrom}
+                            onChange={(e) => setPriceFrom(Number(e.target.value))}
+                            aria-label="Giá từ"
+                            className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
+                          >
+                            {PRICE_OPTIONS.map((opt) => (
+                              <option key={opt} value={opt}>{formatVND(opt)}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="w-9 shrink-0 text-sm text-neutral-500">Đến:</span>
+                        <div className="relative flex-1">
+                          <select
+                            value={priceTo}
+                            onChange={(e) => setPriceTo(Number(e.target.value))}
+                            aria-label="Giá đến"
+                            className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
+                          >
+                            {PRICE_OPTIONS.map((opt) => (
+                              <option key={opt} value={opt}>{formatVND(opt)}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rating Filter */}
+                    <div>
+                      <p className="mb-2 text-center text-sm font-normal text-neutral-500">Đánh giá</p>
+                      <div className="mb-2 flex items-center gap-3">
+                        <span className="w-9 shrink-0 text-sm text-neutral-500">Từ:</span>
+                        <div className="relative flex-1">
+                          <select
+                            value={ratingFrom}
+                            onChange={(e) => setRatingFrom(Number(e.target.value))}
+                            aria-label="Đánh giá từ"
+                            className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
+                          >
+                            {RATING_OPTIONS.map((opt) => (
+                              <option key={opt} value={opt}>{opt} Sao</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="w-9 shrink-0 text-sm text-neutral-500">Đến:</span>
+                        <div className="relative flex-1">
+                          <select
+                            value={ratingTo}
+                            onChange={(e) => setRatingTo(Number(e.target.value))}
+                            aria-label="Đánh giá đến"
+                            className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
+                          >
+                            {RATING_OPTIONS.map((opt) => (
+                              <option key={opt} value={opt}>{opt} Sao</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+                </div>
             </div>
           </div>
 
           <div id="shop-scroll-container" className="h-[calc(100%-6.5rem)] overflow-y-auto px-4 pb-4 md:h-[calc(100%-6.5rem)] md:px-5">
-            <MainContent view={activeView} searchQuery={searchQuery} />
+            <MainContent
+              view={activeView}
+              searchQuery={searchQuery}
+              filterState={{ priceFrom, priceTo, ratingFrom, ratingTo }}
+            />
           </div>
         </section>
       </div>

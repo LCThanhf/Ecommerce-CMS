@@ -9,13 +9,33 @@ type Product = {
   id: number
   name: string
   price: string
+  priceValue: number
+  rating: number
 }
 
-const products: Product[] = Array.from({ length: 40 }, (_, index) => ({
-  id: index + 1,
-  name: 'Samsung Galaxy A31',
-  price: '6 940 000 VND'
-}))
+const PRODUCT_NAMES = [
+  'Samsung Galaxy A31',
+  'Samsung Galaxy A52',
+  'Samsung Galaxy M32',
+  'Samsung Galaxy S21 FE',
+  'Samsung Galaxy A22',
+  'Samsung Galaxy M52',
+  'Samsung Galaxy A72',
+  'Samsung Galaxy F62',
+]
+
+const products: Product[] = Array.from({ length: 40 }, (_, index) => {
+  const id = index + 1
+  const priceValue = ((id % 10) + 1) * 1_000_000
+  const rating = (id % 5) + 1
+  return {
+    id,
+    name: PRODUCT_NAMES[index % PRODUCT_NAMES.length],
+    price: priceValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VN\u0110',
+    priceValue,
+    rating,
+  }
+})
 
 const INITIAL_VISIBLE_COUNT = 16
 const LOAD_MORE_COUNT = 4
@@ -75,7 +95,7 @@ function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetail
         <h3 className="text-lg leading-none font-semibold text-neutral-900 md:text-2xl">{product.name}</h3>
         <p className="mt-2 text-2xl leading-none font-extrabold text-neutral-900 md:mt-4 md:text-4xl">{product.price}</p>
         <div className="mt-2 flex items-center gap-1 text-amber-400">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: product.rating }).map((_, index) => (
             <RatingStar key={index} className="h-10 w-10 shrink-0 md:h-14 md:w-14" />
           ))}
         </div>
@@ -84,7 +104,19 @@ function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetail
   )
 }
 
-export default function ShopSection({ searchQuery = '' }: { searchQuery?: string }) {
+export default function ShopSection({
+  searchQuery = '',
+  priceFrom = 0,
+  priceTo = 10_000_000,
+  ratingFrom = 0,
+  ratingTo = 5,
+}: {
+  searchQuery?: string
+  priceFrom?: number
+  priceTo?: number
+  ratingFrom?: number
+  ratingTo?: number
+}) {
   const router = useRouter()
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const loadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -96,12 +128,17 @@ export default function ShopSection({ searchQuery = '' }: { searchQuery?: string
   }
 
   const normalizedQuery = searchQuery.trim().toLowerCase()
-  const filteredProducts = normalizedQuery
-    ? products.filter((product) => {
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      if (normalizedQuery) {
         const searchableText = `${product.name} ${product.price}`.toLowerCase()
-        return searchableText.includes(normalizedQuery)
-      })
-    : products
+        if (!searchableText.includes(normalizedQuery)) return false
+      }
+      if (product.priceValue < priceFrom || product.priceValue > priceTo) return false
+      if (product.rating < ratingFrom || product.rating > ratingTo) return false
+      return true
+    })
+  }, [normalizedQuery, priceFrom, priceTo, ratingFrom, ratingTo])
 
   useEffect(() => {
     setVisibleCount(INITIAL_VISIBLE_COUNT)
@@ -110,7 +147,7 @@ export default function ShopSection({ searchQuery = '' }: { searchQuery?: string
       clearTimeout(loadTimerRef.current)
       loadTimerRef.current = null
     }
-  }, [normalizedQuery])
+  }, [normalizedQuery, priceFrom, priceTo, ratingFrom, ratingTo])
 
   const productsToRender = useMemo(
     () => filteredProducts.slice(0, visibleCount),
