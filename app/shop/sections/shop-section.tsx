@@ -1,9 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { Star } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import galaxyA31 from '../../assets/galaxy A31.png'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import galaxyA31 from '../../assets/samsung-galaxy-a31.png'
 
 type Product = {
   id: number
@@ -11,14 +11,41 @@ type Product = {
   price: string
 }
 
-const products: Product[] = [
-  { id: 1, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 2, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 3, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 4, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 5, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 6, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-]
+const products: Product[] = Array.from({ length: 40 }, (_, index) => ({
+  id: index + 1,
+  name: 'Samsung Galaxy A31',
+  price: '6 940 000 VND'
+}))
+
+const INITIAL_VISIBLE_COUNT = 16
+const LOAD_MORE_COUNT = 4
+const LOAD_DELAY_MS = 700
+
+function RatingStar({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 59 60"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M47.7227 59.9961L29.4928 49.7439L11.2586 59.9886L14.7446 38.2831L-0.00270414 22.9072L20.3817 19.7446L29.5016 -0.00265632L38.6141 19.7488L58.9973 22.92L44.2447 38.2892L47.7227 59.9961Z"
+        fill="#FFCC00"
+      />
+      <path
+        d="M38.6758 19.623C29.444 33.0596 29.3438 33.2058 29.3438 33.2058L58.9352 22.845L38.6758 19.623Z"
+        fill="#FFE680"
+      />
+      <path d="M29.4955 32.917V49.7877L11.0774 59.8945L29.4955 32.917Z" fill="#FFDD55" />
+      <path d="M29.4955 32.917L47.6047 59.3803L44.2057 37.9488L29.4955 32.917Z" fill="#FFDD55" />
+      <path d="M0.117065 22.8678L29.4971 32.9177L20.4195 19.6523L0.117065 22.8678Z" fill="#FFE680" />
+      <path d="M29.4955 32.917V0.0409241L38.5572 19.6448L29.4955 32.917Z" fill="#FFDD55" />
+      <path d="M11.2657 59.622L14.6866 38.0095L29.498 32.917L11.2657 59.622Z" fill="#FFD42A" />
+    </svg>
+  )
+}
 
 function PhoneThumbnail() {
   return (
@@ -27,6 +54,7 @@ function PhoneThumbnail() {
         src={galaxyA31}
         alt="Samsung Galaxy A31"
         fill
+        loading="lazy"
         sizes="(max-width: 768px) 112px, 128px"
         className="rounded-sm object-contain"
       />
@@ -48,7 +76,7 @@ function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetail
         <p className="mt-2 text-2xl leading-none font-extrabold text-neutral-900 md:mt-4 md:text-4xl">{product.price}</p>
         <div className="mt-2 flex items-center gap-1 text-amber-400">
           {Array.from({ length: 5 }).map((_, index) => (
-            <Star key={index} className="h-8 w-8 fill-current md:h-10 md:w-10" />
+            <RatingStar key={index} className="h-10 w-10 shrink-0 md:h-14 md:w-14" />
           ))}
         </div>
       </div>
@@ -58,28 +86,88 @@ function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetail
 
 export default function ShopSection({ searchQuery = '' }: { searchQuery?: string }) {
   const router = useRouter()
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const loadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isLoadingMoreRef = useRef(false)
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT)
 
   const openDetails = (id: number) => {
     router.push(`/shop/product/${id}`)
   }
 
   const normalizedQuery = searchQuery.trim().toLowerCase()
-  const visibleProducts = normalizedQuery
+  const filteredProducts = normalizedQuery
     ? products.filter((product) => {
         const searchableText = `${product.name} ${product.price}`.toLowerCase()
         return searchableText.includes(normalizedQuery)
       })
     : products
 
+  useEffect(() => {
+    setVisibleCount(INITIAL_VISIBLE_COUNT)
+    isLoadingMoreRef.current = false
+    if (loadTimerRef.current) {
+      clearTimeout(loadTimerRef.current)
+      loadTimerRef.current = null
+    }
+  }, [normalizedQuery])
+
+  const productsToRender = useMemo(
+    () => filteredProducts.slice(0, visibleCount),
+    [filteredProducts, visibleCount]
+  )
+  const hasMore = visibleCount < filteredProducts.length
+
+  useEffect(() => {
+    if (!hasMore || !sentinelRef.current) {
+      return
+    }
+
+    const scrollRoot = document.getElementById('shop-scroll-container')
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting || isLoadingMoreRef.current) {
+          return
+        }
+
+        isLoadingMoreRef.current = true
+        loadTimerRef.current = setTimeout(() => {
+          setVisibleCount((previousCount) =>
+            Math.min(previousCount + LOAD_MORE_COUNT, filteredProducts.length)
+          )
+          isLoadingMoreRef.current = false
+        }, LOAD_DELAY_MS)
+      },
+      {
+        root: scrollRoot,
+        rootMargin: '160px 0px'
+      }
+    )
+
+    observer.observe(sentinelRef.current)
+
+    return () => {
+      if (loadTimerRef.current) {
+        clearTimeout(loadTimerRef.current)
+        loadTimerRef.current = null
+      }
+      isLoadingMoreRef.current = false
+      observer.disconnect()
+    }
+  }, [filteredProducts.length, hasMore])
+
   return (
     <div>
-      <div className="grid grid-cols-1 gap-y-4 pb-6 xl:grid-cols-[max-content_max-content] xl:justify-start xl:gap-x-50">
-        {visibleProducts.map((product) => (
+      <div className="grid grid-cols-1 gap-y-4 pb-6 xl:grid-cols-[max-content_max-content] xl:justify-start xl:gap-x-30">
+        {productsToRender.map((product) => (
           <ProductRow key={product.id} product={product} onOpenDetails={openDetails} />
         ))}
       </div>
 
-      {visibleProducts.length === 0 ? (
+      {hasMore ? <div ref={sentinelRef} className="h-10 w-full" aria-hidden="true" /> : null}
+
+      {filteredProducts.length === 0 ? (
         <div className="rounded-md border border-dashed border-neutral-300 bg-white/70 p-6 text-center text-lg text-neutral-600">
           No products found.
         </div>

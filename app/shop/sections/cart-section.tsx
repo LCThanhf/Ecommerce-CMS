@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import cartIcon from '../../assets/cart.png.png'
+import cartIcon from '../../assets/cart.png'
 
 export default function CartSection() {
   return (

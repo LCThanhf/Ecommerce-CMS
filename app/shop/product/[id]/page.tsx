@@ -1,16 +1,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Star } from 'lucide-react'
-import galaxyA31 from '../../../assets/galaxy A31.png'
+import galaxyA31 from '../../../assets/samsung-galaxy-a31.png'
 
-const products = [
-  { id: 1, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 2, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 3, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 4, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 5, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-  { id: 6, name: 'Samsung Galaxy A31', price: '6 940 000 VND' },
-]
+const products = Array.from({ length: 40 }, (_, index) => ({
+  id: index + 1,
+  name: 'Samsung Galaxy A31',
+  price: '6 940 000 VND'
+}))
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

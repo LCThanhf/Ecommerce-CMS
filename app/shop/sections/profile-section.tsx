@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import profileIcon from '../../assets/profile.png.png'
+import profileIcon from '../../assets/profile.png'
 
 export default function ProfileSection() {
   return (

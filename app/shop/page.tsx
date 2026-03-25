@@ -5,13 +5,13 @@ import Image, { type StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
 import { Menu } from 'lucide-react'
 import { Suspense, useState } from 'react'
-import logoIcon from '../assets/logo.png.png'
-import avatarIcon from '../assets/avatar.png.png'
-import shopIcon from '../assets/shop.png.png'
-import cartIcon from '../assets/cart.png.png'
-import profileIcon from '../assets/profile.png.png'
-import searchIcon from '../assets/search.png.png'
-import filterIcon from '../assets/filter.png.png'
+import logoIcon from '../assets/logo.png'
+import avatarIcon from '../assets/avatar.png'
+import shopIcon from '../assets/shop.png'
+import cartIcon from '../assets/cart.png'
+import profileIcon from '../assets/profile.png'
+import searchIcon from '../assets/search.png'
+import filterIcon from '../assets/filter.png'
 
 const ShopSection = dynamic(() => import('./sections/shop-section'))
 const CartSection = dynamic(() => import('./sections/cart-section'))
@@ -82,7 +82,7 @@ export default function ShopPage() {
   const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel
 
   return (
-    <main className="min-h-screen bg-[#ffffff] text-neutral-900">
+    <main className="h-screen overflow-hidden bg-[#ffffff] text-neutral-900">
       <header className="sticky top-0 z-30 border-b border-sky-300/60 bg-[#C6E5F4]">
         <div className="flex h-18 items-center justify-between px-4 md:h-20 md:px-5">
           <div className="flex items-center gap-3">
@@ -106,9 +106,9 @@ export default function ShopPage() {
         </div>
       </header>
 
-      <div className="flex min-h-[calc(100vh-4.5rem)] md:min-h-[calc(100vh-5rem)]">
+      <div className="flex h-[calc(100vh-4.5rem)] overflow-hidden md:h-[calc(100vh-5rem)]">
         <aside
-          className={`min-h-full border-r border-neutral-300 bg-[#ffffff] transition-all duration-200 ${
+          className={`h-full overflow-hidden border-r border-neutral-300 bg-[#ffffff] transition-all duration-200 ${
             isCollapsed ? 'w-14 md:w-16' : 'w-52 md:w-60'
           }`}
         >
@@ -157,7 +157,7 @@ export default function ShopPage() {
           </nav>
         </aside>
 
-        <section className="min-w-0 flex-1 pb-4">
+        <section className="min-w-0 flex-1 overflow-hidden">
           <div className="mb-4 border-b border-neutral-300 px-4 md:px-5">
             <div className="flex h-14 items-center justify-between gap-3">
               <h2 className="text-2xl leading-none font-bold md:text-3xl">{currentViewLabel}</h2>
@@ -179,22 +179,22 @@ export default function ShopPage() {
                     className="inline-flex h-10 w-10 items-center justify-center text-neutral-800 md:h-11 md:w-11"
                     aria-label="Search"
                   >
-                    <Image src={searchIcon} alt="Search" className="h-6 w-6 object-contain md:h-7 md:w-7" />
+                    <Image src={searchIcon} alt="Search" className="h-7 w-7 object-contain md:h-9 md:w-9" />
                   </button>
                 </div>
 
                 <button
                   type="button"
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center bg-white text-neutral-800 md:h-11 md:w-11"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-neutral-800 md:h-12 md:w-12"
                   aria-label="Filter"
                 >
-                  <Image src={filterIcon} alt="Filter" className="h-6 w-6 object-contain md:h-7 md:w-7" />
+                  <Image src={filterIcon} alt="Filter" className="h-8 w-8 object-contain md:h-10 md:w-10" />
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="px-4 md:px-5">
+          <div id="shop-scroll-container" className="h-[calc(100%-6.5rem)] overflow-y-auto px-4 pb-4 md:h-[calc(100%-6.5rem)] md:px-5">
             <MainContent view={activeView} searchQuery={searchQuery} />
           </div>
         </section>

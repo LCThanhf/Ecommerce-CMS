@@ -5,7 +5,7 @@ import { Eye, EyeOff, Lock, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import logoIcon from '../assets/logo.png.png'
+import logoIcon from '../assets/logo.png'
 
 function NetworkDecoration() {
   return (
