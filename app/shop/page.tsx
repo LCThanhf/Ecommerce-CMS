@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image, { type StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
 import { Menu, ChevronDown } from 'lucide-react'
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import logoIcon from '../assets/logo.png'
 import avatarIcon from '../assets/avatar.png'
 import shopIcon from '../assets/shop.png'
@@ -111,6 +111,12 @@ export default function ShopPage() {
   const [priceTo, setPriceTo] = useState(10_000_000)
   const [ratingFrom, setRatingFrom] = useState(0)
   const [ratingTo, setRatingTo] = useState(5)
+  const [cartCount, setCartCount] = useState(0)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('ms-cart-count')
+    if (stored) setCartCount(Number(stored))
+  }, [])
 
   const currentViewLabel = navItems.find((item) => item.key === activeView)?.label ?? 'Shop'
   const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel
@@ -179,7 +185,7 @@ export default function ShopPage() {
                   <Image
                     src={item.icon}
                     alt={item.label}
-                    className={`h-5 w-5 shrink-0 object-contain md:h-6 md:w-6 ${
+                    className={`h-8 w-8 shrink-0 object-contain md:h-9 md:w-9 ${
                       isActive
                         ? 'filter-[invert(52%)_sepia(93%)_saturate(1695%)_hue-rotate(159deg)_brightness(95%)_contrast(98%)]'
                         : ''
