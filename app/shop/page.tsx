@@ -116,9 +116,9 @@ export default function ShopPage() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (searchParams.get('view') === 'profile') {
-      setActiveView('profile')
-    }
+    const view = searchParams.get('view')
+    if (view === 'profile') setActiveView('profile')
+    if (view === 'cart') setActiveView('cart')
   }, [searchParams])
 
   useEffect(() => {
@@ -208,12 +208,12 @@ export default function ShopPage() {
         </aside>
 
         <section className="min-w-0 flex-1 overflow-hidden">
-          <div className={`px-4 md:px-5 ${activeView !== 'profile' ? 'mb-4 border-b border-neutral-300' : ''}`}>
+          <div className={`px-4 md:px-5 ${activeView === 'shop' ? 'mb-4 border-b border-neutral-300' : ''}`}>
             <div className="flex h-14 items-center justify-between gap-3">
               <h2 className="text-2xl leading-none font-bold md:text-3xl">{currentViewLabel}</h2>
             </div>
 
-            {activeView !== 'profile' && <div className="flex h-12 items-center justify-between">
+            {activeView === 'shop' && <div className="flex h-12 items-center justify-between">
               <p className="text-lg leading-none font-normal text-neutral-900 md:text-xl">{stripSubtitle}</p>
                 <div className="relative flex items-stretch gap-2 w-full max-w-120 justify-end">
                 <div className="flex min-w-0 flex-1 items-stretch overflow-hidden border border-neutral-500 bg-white">
@@ -325,7 +325,7 @@ export default function ShopPage() {
             </div>}
           </div>
 
-          <div id="shop-scroll-container" className={`overflow-y-auto px-4 pb-4 md:px-5 ${activeView === 'profile' ? 'h-[calc(100%-3.5rem)]' : 'h-[calc(100%-6.5rem)]'}`}>
+          <div id="shop-scroll-container" className={`overflow-y-auto px-4 pb-4 md:px-5 ${activeView === 'shop' ? 'h-[calc(100%-6.5rem)]' : 'h-[calc(100%-3.5rem)]'}`}>
             <MainContent
               view={activeView}
               searchQuery={searchQuery}

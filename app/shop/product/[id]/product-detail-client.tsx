@@ -60,6 +60,16 @@ const navItems: { key: NavKey; label: string; icon: StaticImageData }[] = [
 ]
 
 const CART_STORAGE_KEY = 'ms-cart-count'
+const CART_DATA_KEY = 'ms-cart'
+
+type CartItem = {
+  id: number
+  name: string
+  description: string
+  priceValue: number
+  priceFormatted: string
+  qty: number
+}
 
 function RatingStar({ className = '' }: { className?: string }) {
   return (
@@ -110,9 +120,26 @@ export default function ProductDetailClient({ id }: { id: string }) {
   }, [])
 
   const addToCart = () => {
-    const newCount = cartCount + 1
-    setCartCount(newCount)
-    localStorage.setItem(CART_STORAGE_KEY, String(newCount))
+    const stored = localStorage.getItem(CART_DATA_KEY)
+    const existing: CartItem[] = stored ? JSON.parse(stored) : []
+    const found = existing.find((i) => i.id === productId)
+    const updated: CartItem[] = found
+      ? existing.map((i) => (i.id === productId ? { ...i, qty: i.qty + 1 } : i))
+      : [
+          ...existing,
+          {
+            id: productId,
+            name: `Điện thoại ${productName}`,
+            description,
+            priceValue,
+            priceFormatted,
+            qty: 1,
+          },
+        ]
+    localStorage.setItem(CART_DATA_KEY, JSON.stringify(updated))
+    const totalQty = updated.reduce((sum, i) => sum + i.qty, 0)
+    setCartCount(totalQty)
+    localStorage.setItem(CART_STORAGE_KEY, String(totalQty))
   }
 
   return (
@@ -206,7 +233,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
                 <span>Product</span>
               </nav>
               <Link
-                href="/shop"
+                href="/shop?view=cart"
                 aria-label={`Giỏ hàng — ${cartCount} sản phẩm`}
                 className="relative inline-flex h-10 w-10 items-center justify-center"
               >
