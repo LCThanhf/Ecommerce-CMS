@@ -132,6 +132,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
           </div>
           <button
             type="button"
+            onClick={() => router.push('/shop?view=profile')}
             className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-200 bg-white text-slate-600 md:h-15 md:w-15"
             aria-label="Profile"
           >

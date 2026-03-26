@@ -5,6 +5,7 @@ import Image, { type StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
 import { Menu, ChevronDown } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import logoIcon from '../assets/logo.png'
 import avatarIcon from '../assets/avatar.png'
 import shopIcon from '../assets/shop.png'
@@ -112,6 +113,13 @@ export default function ShopPage() {
   const [ratingFrom, setRatingFrom] = useState(0)
   const [ratingTo, setRatingTo] = useState(5)
   const [cartCount, setCartCount] = useState(0)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('view') === 'profile') {
+      setActiveView('profile')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const stored = localStorage.getItem('ms-cart-count')
@@ -139,6 +147,7 @@ export default function ShopPage() {
 
           <button
             type="button"
+            onClick={() => setActiveView('profile')}
             className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-200 bg-white text-slate-600 md:h-15 md:w-15"
             aria-label="Profile"
           >
@@ -199,12 +208,12 @@ export default function ShopPage() {
         </aside>
 
         <section className="min-w-0 flex-1 overflow-hidden">
-          <div className="mb-4 border-b border-neutral-300 px-4 md:px-5">
+          <div className={`px-4 md:px-5 ${activeView !== 'profile' ? 'mb-4 border-b border-neutral-300' : ''}`}>
             <div className="flex h-14 items-center justify-between gap-3">
               <h2 className="text-2xl leading-none font-bold md:text-3xl">{currentViewLabel}</h2>
             </div>
 
-            <div className="flex h-12 items-center justify-between">
+            {activeView !== 'profile' && <div className="flex h-12 items-center justify-between">
               <p className="text-lg leading-none font-normal text-neutral-900 md:text-xl">{stripSubtitle}</p>
                 <div className="relative flex items-stretch gap-2 w-full max-w-120 justify-end">
                 <div className="flex min-w-0 flex-1 items-stretch overflow-hidden border border-neutral-500 bg-white">
@@ -313,10 +322,10 @@ export default function ShopPage() {
                   </div>
                 ) : null}
                 </div>
-            </div>
+            </div>}
           </div>
 
-          <div id="shop-scroll-container" className="h-[calc(100%-6.5rem)] overflow-y-auto px-4 pb-4 md:h-[calc(100%-6.5rem)] md:px-5">
+          <div id="shop-scroll-container" className={`overflow-y-auto px-4 pb-4 md:px-5 ${activeView === 'profile' ? 'h-[calc(100%-3.5rem)]' : 'h-[calc(100%-6.5rem)]'}`}>
             <MainContent
               view={activeView}
               searchQuery={searchQuery}
