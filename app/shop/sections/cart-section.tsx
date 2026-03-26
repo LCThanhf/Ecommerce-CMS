@@ -1,0 +1,155 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import galaxyA31 from '../../assets/samsung-galaxy-a31.png'
+
+type CartItem = {
+  id: number
+  name: string
+  description: string
+  priceValue: number
+  priceFormatted: string
+  qty: number
+}
+
+const CART_KEY = 'ms-cart'
+const CART_COUNT_KEY = 'ms-cart-count'
+
+function formatVND(value: number): string {
+  if (value === 0) return '0\u00a0VN\u0110'
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VN\u0110'
+}
+
+function saveCart(items: CartItem[]) {
+  localStorage.setItem(CART_KEY, JSON.stringify(items))
+  const totalQty = items.reduce((sum, i) => sum + i.qty, 0)
+  localStorage.setItem(CART_COUNT_KEY, String(totalQty))
+}
+
+export default function CartSection() {
+  const [items, setItems] = useState<CartItem[]>([])
+
+  useEffect(() => {
+    const stored = localStorage.getItem(CART_KEY)
+    if (stored) setItems(JSON.parse(stored))
+  }, [])
+
+  const updateQty = (id: number, delta: number) => {
+    setItems((prev) => {
+      const updated = prev
+        .map((item) => (item.id === id ? { ...item, qty: item.qty + delta } : item))
+        .filter((item) => item.qty > 0)
+      saveCart(updated)
+      return updated
+    })
+  }
+
+  const removeItem = (id: number) => {
+    setItems((prev) => {
+      const updated = prev.filter((item) => item.id !== id)
+      saveCart(updated)
+      return updated
+    })
+  }
+
+  const totalItems = items.reduce((sum, i) => sum + i.qty, 0)
+  const subTotal = items.reduce((sum, i) => sum + i.priceValue * i.qty, 0)
+  const tax = Math.round(subTotal * 0.1)
+  const total = subTotal + tax
+
+  if (items.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-xl text-neutral-500">No items in cart yet.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="pb-10">
+      {/* Items count */}
+      <div className="flex justify-end px-6 py-3">
+        <span className="text-lg text-neutral-700">{totalItems} Items in bag</span>
+      </div>
+
+      {/* Item list */}
+      {items.map((item) => (
+        <div key={item.id}>
+          {/* Separator with X button centered on it */}
+          <div className="relative border-t border-black">
+            <button
+              type="button"
+              onClick={() => removeItem(item.id)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-neutral-300 text-lg font-bold leading-none text-neutral-700 hover:bg-neutral-400"
+              aria-label="Remove item"
+            >
+              x
+            </button>
+          </div>
+          <div className="flex gap-6 px-6 py-6 pr-14">
+            {/* Product image */}
+            <div className="h-64 w-56 shrink-0">
+              <Image
+                src={galaxyA31}
+                alt={item.name}
+                className="h-full w-full object-contain"
+              />
+            </div>
+
+            {/* Details */}
+            <div className="flex flex-1 items-center gap-8">
+              <div className="flex-1">
+                <p className="relative -top-2 text-lg font-bold text-neutral-900 md:text-xl">{item.name}</p>
+                <p className="mt-5 max-w-lg text-pretty text-lg leading-7 text-neutral-600 md:text-xl">
+                  {item.description}
+                </p>
+                <p className="mt-6 text-2xl font-bold text-neutral-900 md:text-3xl">
+                  {item.priceFormatted}
+                </p>
+              </div>
+
+              {/* Qty control */}
+              <div className="flex shrink-0 items-center gap-6">
+                <button
+                  type="button"
+                  onClick={() => updateQty(item.id, 1)}
+                  className="flex h-7 w-7 items-center justify-center text-xl font-thin text-neutral-900 hover:text-neutral-600"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+                <span className="w-6 text-center text-xl text-neutral-900">{item.qty}</span>
+                <button
+                  type="button"
+                  onClick={() => updateQty(item.id, -1)}
+                  className="flex h-7 w-7 items-center justify-center text-xl font-thin text-neutral-900 hover:text-neutral-600"
+                  aria-label="Decrease quantity"
+                >
+                  -
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+      <div className="border-t border-black" />
+
+      {/* Summary */}
+      <div className="mt-6 flex flex-col items-end gap-4 px-6 text-lg md:text-xl">
+        <div className="flex items-baseline justify-end gap-1">
+          <span className="w-28 text-right font-bold text-neutral-900">SubTotal</span>
+          <span className="w-52 text-right text-neutral-900">{formatVND(subTotal)}</span>
+        </div>
+        <div className="flex items-baseline justify-end gap-1">
+          <span className="w-28 text-right font-bold text-neutral-900">Tax</span>
+          <span className="w-52 text-right text-neutral-900">{formatVND(tax)}</span>
+        </div>
+        <div className="flex items-baseline justify-end gap-1">
+          <span className="w-28 text-right font-bold text-neutral-900">Total</span>
+          <span className="w-52 text-right text-neutral-900">{formatVND(total)}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
