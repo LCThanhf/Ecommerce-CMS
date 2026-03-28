@@ -107,6 +107,7 @@ export default function ShopPage() {
   const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [priceFrom, setPriceFrom] = useState(0)
   const [priceTo, setPriceTo] = useState(10_000_000)
@@ -114,6 +115,11 @@ export default function ShopPage() {
   const [ratingTo, setRatingTo] = useState(5)
   const [cartCount, setCartCount] = useState(0)
   const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
 
   useEffect(() => {
     const view = searchParams.get('view')
@@ -328,7 +334,7 @@ export default function ShopPage() {
           <div id="shop-scroll-container" className={`overflow-y-auto px-4 pb-4 md:px-5 ${activeView === 'shop' ? 'h-[calc(100%-6.5rem)]' : 'h-[calc(100%-3.5rem)]'}`}>
             <MainContent
               view={activeView}
-              searchQuery={searchQuery}
+              searchQuery={debouncedQuery}
               filterState={{ priceFrom, priceTo, ratingFrom, ratingTo }}
             />
           </div>
