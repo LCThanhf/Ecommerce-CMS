@@ -6,6 +6,9 @@ import dynamic from 'next/dynamic'
 import { Menu, ChevronDown } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useDispatch, useSelector } from 'react-redux'
+import { setSearchQuery } from '@/store/searchSlice'
+import type { RootState, AppDispatch } from '@/store/store'
 import logoIcon from '../assets/logo.png'
 import avatarIcon from '../assets/avatar.png'
 import shopIcon from '../assets/shop.png'
@@ -106,8 +109,6 @@ function MainContent({
 export default function ShopPage() {
   const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [priceFrom, setPriceFrom] = useState(0)
   const [priceTo, setPriceTo] = useState(10_000_000)
@@ -116,10 +117,9 @@ export default function ShopPage() {
   const [cartCount, setCartCount] = useState(0)
   const searchParams = useSearchParams()
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300)
-    return () => clearTimeout(timer)
-  }, [searchQuery])
+  const dispatch = useDispatch<AppDispatch>()
+  const searchQuery = useSelector((state: RootState) => state.search.searchQuery)
+  const debouncedQuery = useSelector((state: RootState) => state.search.debouncedQuery)
 
   useEffect(() => {
     const view = searchParams.get('view')
@@ -225,7 +225,7 @@ export default function ShopPage() {
                 <div className="flex min-w-0 flex-1 items-stretch overflow-hidden border border-neutral-500 bg-white">
                   <input
                     value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
+                    onChange={(event) => dispatch(setSearchQuery(event.target.value))}
                     className="h-10 w-full px-3 text-base text-neutral-800 outline-none md:h-11 md:text-lg"
                     placeholder="Search..."
                     aria-label="Search products"
