@@ -8,6 +8,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSearchQuery } from '@/store/searchSlice'
+import { setFilter } from '@/store/filterSlice'
 import type { RootState, AppDispatch } from '@/store/store'
 import logoIcon from '../assets/logo.png'
 import avatarIcon from '../assets/avatar.png'
@@ -110,16 +111,14 @@ export default function ShopPage() {
   const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [priceFrom, setPriceFrom] = useState(0)
-  const [priceTo, setPriceTo] = useState(10_000_000)
-  const [ratingFrom, setRatingFrom] = useState(0)
-  const [ratingTo, setRatingTo] = useState(5)
   const [cartCount, setCartCount] = useState(0)
   const searchParams = useSearchParams()
 
   const dispatch = useDispatch<AppDispatch>()
   const searchQuery = useSelector((state: RootState) => state.search.searchQuery)
   const debouncedQuery = useSelector((state: RootState) => state.search.debouncedQuery)
+  const filter = useSelector((state: RootState) => state.filter.filter)
+  const debouncedFilter = useSelector((state: RootState) => state.filter.debouncedFilter)
 
   useEffect(() => {
     const view = searchParams.get('view')
@@ -259,8 +258,8 @@ export default function ShopPage() {
                         <span className="w-9 shrink-0 text-sm text-neutral-500">Từ:</span>
                         <div className="relative flex-1">
                           <select
-                            value={priceFrom}
-                            onChange={(e) => setPriceFrom(Number(e.target.value))}
+                            value={filter.priceFrom}
+                            onChange={(e) => dispatch(setFilter({ ...filter, priceFrom: Number(e.target.value) }))}
                             aria-label="Giá từ"
                             className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
                           >
@@ -275,8 +274,8 @@ export default function ShopPage() {
                         <span className="w-9 shrink-0 text-sm text-neutral-500">Đến:</span>
                         <div className="relative flex-1">
                           <select
-                            value={priceTo}
-                            onChange={(e) => setPriceTo(Number(e.target.value))}
+                            value={filter.priceTo}
+                            onChange={(e) => dispatch(setFilter({ ...filter, priceTo: Number(e.target.value) }))}
                             aria-label="Giá đến"
                             className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
                           >
@@ -296,8 +295,8 @@ export default function ShopPage() {
                         <span className="w-9 shrink-0 text-sm text-neutral-500">Từ:</span>
                         <div className="relative flex-1">
                           <select
-                            value={ratingFrom}
-                            onChange={(e) => setRatingFrom(Number(e.target.value))}
+                            value={filter.ratingFrom}
+                            onChange={(e) => dispatch(setFilter({ ...filter, ratingFrom: Number(e.target.value) }))}
                             aria-label="Đánh giá từ"
                             className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
                           >
@@ -312,8 +311,8 @@ export default function ShopPage() {
                         <span className="w-9 shrink-0 text-sm text-neutral-500">Đến:</span>
                         <div className="relative flex-1">
                           <select
-                            value={ratingTo}
-                            onChange={(e) => setRatingTo(Number(e.target.value))}
+                            value={filter.ratingTo}
+                            onChange={(e) => dispatch(setFilter({ ...filter, ratingTo: Number(e.target.value) }))}
                             aria-label="Đánh giá đến"
                             className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
                           >
@@ -335,7 +334,7 @@ export default function ShopPage() {
             <MainContent
               view={activeView}
               searchQuery={debouncedQuery}
-              filterState={{ priceFrom, priceTo, ratingFrom, ratingTo }}
+              filterState={debouncedFilter}
             />
           </div>
         </section>
