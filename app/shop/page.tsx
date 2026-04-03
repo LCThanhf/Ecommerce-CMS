@@ -111,7 +111,6 @@ const ShopPage = () => {
   const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [cartCount, setCartCount] = useState(0)
   const searchParams = useSearchParams()
 
   const dispatch = useDispatch<AppDispatch>()
@@ -125,11 +124,6 @@ const ShopPage = () => {
     if (view === 'profile') setActiveView('profile')
     if (view === 'cart') setActiveView('cart')
   }, [searchParams])
-
-  useEffect(() => {
-    const stored = localStorage.getItem('ms-cart-count')
-    if (stored) setCartCount(Number(stored))
-  }, [])
 
   const currentViewLabel = navItems.find((item) => item.key === activeView)?.label ?? 'Shop'
   const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel

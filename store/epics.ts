@@ -1,7 +1,10 @@
 import { type Epic, ofType, combineEpics } from 'redux-observable'
-import { debounceTime, map } from 'rxjs/operators'
+import { debounceTime, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators'
+import { EMPTY } from 'rxjs'
 import { setSearchQuery, setDebouncedQuery } from './searchSlice'
 import { setFilter, setDebouncedFilter } from './filterSlice'
+import { addItem, removeItem, updateQty } from './cartSlice'
+import type { CartItem } from './cartSlice'
 import type { Action } from '@reduxjs/toolkit'
 
 export const searchDebounceEpic: Epic<Action, Action, unknown> = (action$) =>
@@ -18,4 +21,18 @@ export const filterDebounceEpic: Epic<Action, Action, unknown> = (action$) =>
     map((action) => setDebouncedFilter((action as ReturnType<typeof setFilter>).payload)),
   )
 
-export const rootEpic = combineEpics(searchDebounceEpic, filterDebounceEpic)
+export const cartPersistEpic: Epic<Action, Action, unknown> = (action$, state$) =>
+  action$.pipe(
+    ofType(addItem.type, removeItem.type, updateQty.type),
+    debounceTime(150),
+    withLatestFrom(state$),
+    tap(([, state]) => {
+      const items = (state as { cart: { items: CartItem[] } }).cart.items
+      localStorage.setItem('ms-cart', JSON.stringify(items))
+      const totalQty = items.reduce((sum, i) => sum + i.qty, 0)
+      localStorage.setItem('ms-cart-count', String(totalQty))
+    }),
+    mergeMap(() => EMPTY),
+  )
+
+export const rootEpic = combineEpics(searchDebounceEpic, filterDebounceEpic, cartPersistEpic)

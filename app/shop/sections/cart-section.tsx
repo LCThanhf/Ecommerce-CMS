@@ -1,57 +1,28 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
+import { useDispatch, useSelector } from 'react-redux'
+import { removeItem as removeItemAction, updateQty as updateQtyAction } from '@/store/cartSlice'
+import type { RootState, AppDispatch } from '@/store/store'
 import galaxyA31 from '../../assets/samsung-galaxy-a31.png'
-
-type CartItem = {
-  id: number
-  name: string
-  description: string
-  priceValue: number
-  priceFormatted: string
-  qty: number
-}
-
-const CART_KEY = 'ms-cart'
-const CART_COUNT_KEY = 'ms-cart-count'
 
 const formatVND = (value: number): string => {
   if (value === 0) return '0\u00a0VN\u0110'
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VN\u0110'
 }
 
-const saveCart = (items: CartItem[]) => {
-  localStorage.setItem(CART_KEY, JSON.stringify(items))
-  const totalQty = items.reduce((sum, i) => sum + i.qty, 0)
-  localStorage.setItem(CART_COUNT_KEY, String(totalQty))
-}
-
 const CartSection = () => {
-  const [items, setItems] = useState<CartItem[]>([])
+  const dispatch = useDispatch<AppDispatch>()
+  const items = useSelector((state: RootState) => state.cart.items)
   const [confirmId, setConfirmId] = useState<number | null>(null)
 
-  useEffect(() => {
-    const stored = localStorage.getItem(CART_KEY)
-    if (stored) setItems(JSON.parse(stored))
-  }, [])
-
   const updateQty = (id: number, delta: number) => {
-    setItems((prev) => {
-      const updated = prev
-        .map((item) => (item.id === id ? { ...item, qty: item.qty + delta } : item))
-        .filter((item) => item.qty > 0)
-      saveCart(updated)
-      return updated
-    })
+    dispatch(updateQtyAction({ id, delta }))
   }
 
   const removeItem = (id: number) => {
-    setItems((prev) => {
-      const updated = prev.filter((item) => item.id !== id)
-      saveCart(updated)
-      return updated
-    })
+    dispatch(removeItemAction(id))
     setConfirmId(null)
   }
 

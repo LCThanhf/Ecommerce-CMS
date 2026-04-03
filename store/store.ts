@@ -3,6 +3,7 @@ import { createEpicMiddleware } from 'redux-observable'
 import type { Action } from '@reduxjs/toolkit'
 import searchReducer from './searchSlice'
 import filterReducer from './filterSlice'
+import cartReducer from './cartSlice'
 import { rootEpic } from './epics'
 
 const epicMiddleware = createEpicMiddleware<Action, Action, unknown>()
@@ -11,6 +12,7 @@ export const store = configureStore({
   reducer: {
     search: searchReducer,
     filter: filterReducer,
+    cart: cartReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(epicMiddleware),

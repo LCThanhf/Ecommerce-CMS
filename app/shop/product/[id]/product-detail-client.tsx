@@ -3,8 +3,11 @@
 import Image, { type StaticImageData } from 'next/image'
 import Link from 'next/link'
 import { Menu } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useDispatch, useSelector } from 'react-redux'
+import { addItem, selectCartCount } from '@/store/cartSlice'
+import type { AppDispatch, RootState } from '@/store/store'
 import logoIcon from '../../../assets/logo.png'
 import avatarIcon from '../../../assets/avatar.png'
 import shopIcon from '../../../assets/shop.png'
@@ -59,18 +62,6 @@ const navItems: { key: NavKey; label: string; icon: StaticImageData }[] = [
   { key: 'profile', label: 'My Profile', icon: profileIcon },
 ]
 
-const CART_STORAGE_KEY = 'ms-cart-count'
-const CART_DATA_KEY = 'ms-cart'
-
-type CartItem = {
-  id: number
-  name: string
-  description: string
-  priceValue: number
-  priceFormatted: string
-  qty: number
-}
-
 const RatingStar = ({ className = '' }: { className?: string }) => {
   return (
     <svg
@@ -110,36 +101,20 @@ const ProductDetailClient = ({ id }: { id: string }) => {
   const description =
     PRODUCT_DESCRIPTIONS[productName] ?? PRODUCT_DESCRIPTIONS['Samsung Galaxy A31']
 
+  const dispatch = useDispatch<AppDispatch>()
+  const cartCount = useSelector((state: RootState) => selectCartCount(state))
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [selectedVariant, setSelectedVariant] = useState(0)
-  const [cartCount, setCartCount] = useState(0)
-
-  useEffect(() => {
-    const stored = localStorage.getItem(CART_STORAGE_KEY)
-    if (stored) setCartCount(Number(stored))
-  }, [])
 
   const addToCart = () => {
-    const stored = localStorage.getItem(CART_DATA_KEY)
-    const existing: CartItem[] = stored ? JSON.parse(stored) : []
-    const found = existing.find((i) => i.id === productId)
-    const updated: CartItem[] = found
-      ? existing.map((i) => (i.id === productId ? { ...i, qty: i.qty + 1 } : i))
-      : [
-          ...existing,
-          {
-            id: productId,
-            name: `Điện thoại ${productName}`,
-            description,
-            priceValue,
-            priceFormatted,
-            qty: 1,
-          },
-        ]
-    localStorage.setItem(CART_DATA_KEY, JSON.stringify(updated))
-    const totalQty = updated.reduce((sum, i) => sum + i.qty, 0)
-    setCartCount(totalQty)
-    localStorage.setItem(CART_STORAGE_KEY, String(totalQty))
+    dispatch(addItem({
+      id: productId,
+      name: `Điện thoại ${productName}`,
+      description,
+      priceValue,
+      priceFormatted,
+      qty: 1,
+    }))
   }
 
   return (
