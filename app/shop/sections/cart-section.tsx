@@ -42,7 +42,7 @@ const CartSection = () => {
   return (
     <div className="pb-10">
       {/* Items count */}
-      <div className="flex justify-end px-6 py-3">
+      <div className="flex justify-end px-4 sm:px-6 py-3">
         <span className="text-lg text-neutral-700">{totalItems} Items in bag</span>
       </div>
 
@@ -60,9 +60,9 @@ const CartSection = () => {
               x
             </button>
           </div>
-          <div className="flex gap-6 px-6 py-6 pr-14">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 px-4 sm:px-6 py-4 sm:py-6 pr-4 sm:pr-14">
             {/* Product image */}
-            <div className="h-64 w-56 shrink-0">
+            <div className="h-40 w-36 self-center sm:self-auto sm:h-64 sm:w-56 shrink-0">
               <Image
                 src={galaxyA31}
                 alt={item.name}
@@ -71,7 +71,7 @@ const CartSection = () => {
             </div>
 
             {/* Details */}
-            <div className="flex flex-1 items-center gap-8">
+            <div className="flex flex-1 flex-col sm:flex-row sm:items-center gap-3 sm:gap-8">
               <div className="flex-1">
                 <p className="relative -top-2 text-lg font-bold text-neutral-900 md:text-xl">{item.name}</p>
                 <p className="mt-5 max-w-lg text-pretty text-lg leading-7 text-neutral-600 md:text-xl">
@@ -139,7 +139,7 @@ const CartSection = () => {
       )}
 
       {/* Summary */}
-      <div className="mt-6 flex flex-col items-end gap-4 px-6 text-lg md:text-xl">
+      <div className="mt-6 flex flex-col items-end gap-4 px-3 sm:px-6 text-base sm:text-lg md:text-xl">
         <div className="flex items-baseline justify-end gap-1">
           <span className="w-28 text-right font-bold text-neutral-900">SubTotal</span>
           <span className="w-52 text-right text-neutral-900">{formatVND(subTotal)}</span>

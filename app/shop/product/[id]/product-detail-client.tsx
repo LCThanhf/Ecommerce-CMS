@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addItem, selectCartCount } from '@/store/cartSlice'
 import type { AppDispatch, RootState } from '@/store/store'
 import logoIcon from '../../../assets/logo.png'
-import avatarIcon from '../../../assets/avatar.png'
 import shopIcon from '../../../assets/shop.png'
 import cartIcon from '../../../assets/cart.png'
 import profileIcon from '../../../assets/profile.png'
@@ -17,6 +16,7 @@ import galaxyA31 from '../../../assets/samsung-galaxy-a31.png'
 import galaxyA31Xanh from '../../../assets/samsung-galaxy-a31-xanh.png'
 import galaxyA31Den from '../../../assets/samsung-galaxy-a31-den.png'
 import galaxyA31Trang from '../../../assets/samsung-galaxy-a31-trang.png'
+import AvatarDropdown from '@/components/avatar-dropdown'
 
 const PRODUCT_NAMES = [
   'Samsung Galaxy A31',
@@ -130,16 +130,9 @@ const ProductDetailClient = ({ id }: { id: string }) => {
             >
               <Image src={logoIcon} alt="Shop logo" className="h-18 w-18 object-contain md:h-20 md:w-20" />
             </Link>
-            <h1 className="text-3xl leading-none font-normal md:text-[2.5rem]">Mobile Shopping</h1>
+            <h1 className="text-xl leading-none font-normal sm:text-3xl md:text-[2.5rem]">Mobile Shopping</h1>
           </div>
-          <button
-            type="button"
-            onClick={() => router.push('/shop?view=profile')}
-            className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-200 bg-white text-slate-600 md:h-15 md:w-15"
-            aria-label="Profile"
-          >
-            <Image src={avatarIcon} alt="Profile" className="h-full w-full rounded-full object-cover" />
-          </button>
+          <AvatarDropdown />
         </div>
       </header>
 
@@ -147,15 +140,15 @@ const ProductDetailClient = ({ id }: { id: string }) => {
         {/* Sidebar */}
         <aside
           className={`h-full overflow-hidden border-r border-neutral-300 bg-[#ffffff] transition-all duration-200 ${
-            isCollapsed ? 'w-14 md:w-16' : 'w-52 md:w-60'
+            isCollapsed ? 'w-14 md:w-16' : 'w-14 sm:w-52 md:w-60'
           }`}
         >
           <div className="flex h-14 items-center justify-between border-b border-neutral-300 px-3 md:px-4">
-            <span className={`${isCollapsed ? 'hidden' : 'block'} text-base font-normal md:text-lg`}>Menu</span>
+            <span className={`${isCollapsed ? 'hidden' : 'hidden sm:block'} text-base font-normal md:text-lg`}>Menu</span>
             <button
               type="button"
               onClick={() => setIsCollapsed((p) => !p)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-sm text-neutral-600 hover:bg-neutral-200 md:h-9 md:w-9"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-sm text-neutral-600 md:h-9 md:w-9"
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               <Menu className="h-5 w-5 md:h-6 md:w-6" />
@@ -172,8 +165,8 @@ const ProductDetailClient = ({ id }: { id: string }) => {
                   className={`flex h-12 w-full items-center gap-2 px-3 text-left text-base transition md:px-3 md:text-lg ${
                     isActive
                       ? 'border-y border-[#00b7ee] bg-[#e8f7ff] text-[#02a8df]'
-                      : 'text-neutral-900 hover:bg-neutral-200/70'
-                  } ${isCollapsed ? 'justify-center px-0' : ''}`}
+                      : 'text-neutral-900'
+                  } ${isCollapsed ? 'justify-center px-0' : 'justify-center px-0 sm:justify-start sm:px-3'}`}
                 >
                   <Image
                     src={item.icon}
@@ -184,7 +177,7 @@ const ProductDetailClient = ({ id }: { id: string }) => {
                         : ''
                     }`}
                   />
-                  {!isCollapsed ? <span>{item.label}</span> : null}
+                  {!isCollapsed ? <span className="hidden sm:inline">{item.label}</span> : null}
                 </button>
               )
             })}
@@ -227,8 +220,8 @@ const ProductDetailClient = ({ id }: { id: string }) => {
             <div className="flex flex-col gap-8 md:flex-row md:gap-10">
 
               {/* Left: image + colour variants */}
-              <div className="flex flex-col items-center -mt-10">
-                <div className="relative h-144 w-96 shrink-0">
+              <div className="flex flex-col items-center -mt-4 sm:-mt-10">
+                <div className="relative h-56 w-44 sm:h-96 sm:w-64 md:h-144 md:w-96 shrink-0">
                   <Image
                     src={galaxyA31}
                     alt={productName}
@@ -272,7 +265,7 @@ const ProductDetailClient = ({ id }: { id: string }) => {
               </div>
 
               {/* Right: details */}
-              <div className="flex flex-1 flex-col pt-10">
+              <div className="flex flex-1 flex-col pt-2 sm:pt-10">
                 <h1 className="text-lg font-bold leading-snug text-neutral-900 md:text-xl">
                   Điện thoại {productName}
                 </h1>
@@ -291,14 +284,14 @@ const ProductDetailClient = ({ id }: { id: string }) => {
                   <button
                     type="button"
                     onClick={() => { addToCart(); router.push('/shop?view=cart') }}
-                    className="w-72 rounded-sm bg-[#00C2FF] py-5 text-2xl font-bold text-white transition hover:brightness-90 active:scale-95"
+                    className="w-full sm:w-72 rounded-sm bg-[#00C2FF] py-5 text-2xl font-bold text-white transition hover:brightness-90 active:scale-95"
                   >
                     Mua Ngay
                   </button>
                   <button
                     type="button"
                     onClick={addToCart}
-                    className="w-72 rounded-sm py-5 text-2xl font-bold text-white transition bg-[#00FF19] hover:brightness-90 active:scale-95"
+                    className="w-full sm:w-72 rounded-sm py-5 text-2xl font-bold text-white transition bg-[#00FF19] hover:brightness-90 active:scale-95"
                   >
                     Thêm vào giỏ hàng
                   </button>

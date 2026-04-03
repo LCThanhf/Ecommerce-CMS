@@ -24,29 +24,29 @@ const ProfileSection = () => {
   )
 
   return (
-    <div className="h-full overflow-y-auto px-12 pt-14 pb-7 md:px-20 md:pt-16">
+    <div className="h-full overflow-y-auto px-4 sm:px-12 pt-6 sm:pt-14 pb-7 md:px-20 md:pt-16">
       {/* Avatar + name + email */}
-      <div className="mb-12 flex items-center gap-10 md:gap-14">
-        <div className="h-36 w-36 shrink-0 overflow-hidden rounded-full border border-neutral-200 md:h-44 md:w-44">
+      <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-10 md:gap-14">
+        <div className="h-24 w-24 sm:h-36 sm:w-36 shrink-0 overflow-hidden rounded-full border border-neutral-200 md:h-44 md:w-44">
           <Image
             src={avatarIcon}
             alt="User avatar"
             className="h-full w-full object-cover"
           />
         </div>
-        <div>
-          <h2 className="text-4xl font-bold text-neutral-900 md:text-5xl">MR. USER</h2>
-          <p className="mt-10 text-2xl text-neutral-800 md:text-3xl">
+        <div className="text-center sm:text-left">
+          <h2 className="text-2xl sm:text-4xl font-bold text-neutral-900 md:text-5xl">MR. USER</h2>
+          <p className="mt-4 sm:mt-10 text-lg sm:text-2xl text-neutral-800 md:text-3xl">
             Email: user@gmail.com
           </p>
         </div>
       </div>
 
       {/* Form fields */}
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-5 sm:gap-7">
         {/* Date of birth */}
-        <div className="flex items-center gap-4">
-          <span className="w-40 shrink-0 text-base text-neutral-800 md:text-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
             Date of birth:
           </span>
           <div className="inline-flex items-end gap-2 border-b border-neutral-800 pb-0">
@@ -72,15 +72,15 @@ const ProfileSection = () => {
         </div>
 
         {/* Sex / Gender */}
-        <div className="flex items-center gap-4">
-          <span className="w-40 shrink-0 text-base text-neutral-800 md:text-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
             Sex:
           </span>
           <div className="relative inline-flex items-center">
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="appearance-none bg-transparent pr-7 text-base text-neutral-800 outline-none md:text-lg"
+              className="appearance-none bg-transparent pl-1 pr-7 text-base text-neutral-800 outline-none md:text-lg"
               aria-label="Gender"
             >
               {GENDER_OPTIONS.map((opt) => (
@@ -102,11 +102,11 @@ const ProfileSection = () => {
         </div>
 
         {/* Address Company */}
-        <div className="flex items-center gap-4">
-          <span className="w-40 shrink-0 text-base text-neutral-800 md:text-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
             Address Company:
           </span>
-          <span className="relative inline-block border-b border-neutral-800 pb-1">
+          <span className="relative inline-block border-b border-neutral-800 pb-1 w-full sm:w-auto">
             <span aria-hidden className="invisible whitespace-pre text-base md:text-lg">{addressCompany || ' '}</span>
             <input
               type="text"
@@ -119,11 +119,11 @@ const ProfileSection = () => {
         </div>
 
         {/* Address Home */}
-        <div className="flex items-center gap-4">
-          <span className="w-40 shrink-0 text-base text-neutral-800 md:text-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
             Address Home:
           </span>
-          <span className="relative inline-block border-b border-neutral-800 pb-1">
+          <span className="relative inline-block border-b border-neutral-800 pb-1 w-full sm:w-auto">
             <span aria-hidden className="invisible whitespace-pre text-base md:text-lg">{addressHome || ' '}</span>
             <input
               type="text"

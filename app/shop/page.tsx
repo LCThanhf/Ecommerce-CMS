@@ -11,12 +11,12 @@ import { setSearchQuery } from '@/store/searchSlice'
 import { setFilter } from '@/store/filterSlice'
 import type { RootState, AppDispatch } from '@/store/store'
 import logoIcon from '../assets/logo.png'
-import avatarIcon from '../assets/avatar.png'
 import shopIcon from '../assets/shop.png'
 import cartIcon from '../assets/cart.png'
 import profileIcon from '../assets/profile.png'
 import searchIcon from '../assets/search.png'
 import filterIcon from '../assets/filter.png'
+import AvatarDropdown from '@/components/avatar-dropdown'
 
 const ShopSection = dynamic(() => import('./sections/shop-section'))
 const CartSection = dynamic(() => import('./sections/cart-section'))
@@ -141,32 +141,25 @@ const ShopPage = () => {
             >
               <Image src={logoIcon} alt="Shop logo" className="h-18 w-18 object-contain md:h-20 md:w-20" />
             </Link>
-            <h1 className="text-3xl leading-none font-normal md:text-[2.5rem]">Mobile Shopping</h1>
+            <h1 className="text-xl leading-none font-normal sm:text-3xl md:text-[2.5rem]">Mobile Shopping</h1>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setActiveView('profile')}
-            className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-200 bg-white text-slate-600 md:h-15 md:w-15"
-            aria-label="Profile"
-          >
-            <Image src={avatarIcon} alt="Profile" className="h-full w-full rounded-full object-cover" />
-          </button>
+          <AvatarDropdown onProfileClick={() => setActiveView('profile')} />
         </div>
       </header>
 
       <div className="flex h-[calc(100vh-5.5rem)] overflow-hidden md:h-[calc(100vh-6.5rem)]">
         <aside
           className={`h-full overflow-hidden border-r border-neutral-300 bg-[#ffffff] transition-all duration-200 ${
-            isCollapsed ? 'w-14 md:w-16' : 'w-52 md:w-60'
+            isCollapsed ? 'w-14 md:w-16' : 'w-14 sm:w-52 md:w-60'
           }`}
         >
           <div className="flex h-14 items-center justify-between border-b border-neutral-300 px-3 md:px-4">
-            <span className={`${isCollapsed ? 'hidden' : 'block'} text-base font-normal md:text-lg`}>Menu</span>
+            <span className={`${isCollapsed ? 'hidden' : 'hidden sm:block'} text-base font-normal md:text-lg`}>Menu</span>
             <button
               type="button"
               onClick={() => setIsCollapsed((previous) => !previous)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-sm text-neutral-600 hover:bg-neutral-200 md:h-9 md:w-9"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-sm text-neutral-600 md:h-9 md:w-9"
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               <Menu className="h-5 w-5 md:h-6 md:w-6" />
@@ -187,8 +180,8 @@ const ShopPage = () => {
                   className={`flex h-12 w-full items-center gap-2 px-3 text-left text-base transition md:px-3 md:text-lg ${
                     isActive
                       ? 'border-y border-[#00b7ee] bg-[#e8f7ff] text-[#02a8df]'
-                      : 'text-neutral-900 hover:bg-neutral-200/70'
-                  } ${isCollapsed ? 'justify-center px-0' : ''}`}
+                      : 'text-neutral-900'
+                  } ${isCollapsed ? 'justify-center px-0' : 'justify-center px-0 sm:justify-start sm:px-3'}`}
                 >
                   <Image
                     src={item.icon}
@@ -199,7 +192,7 @@ const ShopPage = () => {
                         : ''
                     }`}
                   />
-                  {!isCollapsed ? <span>{item.label}</span> : null}
+                  {!isCollapsed ? <span className="hidden sm:inline">{item.label}</span> : null}
                 </button>
               )
             })}
@@ -213,7 +206,7 @@ const ShopPage = () => {
             </div>
 
             {activeView === 'shop' && <div className="flex h-12 items-center justify-between">
-              <p className="text-lg leading-none font-normal text-neutral-900 md:text-xl">{stripSubtitle}</p>
+              <p className="hidden sm:block text-lg leading-none font-normal text-neutral-900 md:text-xl">{stripSubtitle}</p>
                 <div className="relative flex items-stretch gap-2 w-full max-w-120 justify-end">
                 <div className="flex min-w-0 flex-1 items-stretch overflow-hidden border border-neutral-500 bg-white">
                   <input
