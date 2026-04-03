@@ -315,6 +315,7 @@ const ProductDetailClient = ({ id }: { id: string }) => {
                 <div className="mt-7 flex flex-wrap gap-6">
                   <button
                     type="button"
+                    onClick={() => { addToCart(); router.push('/shop?view=cart') }}
                     className="w-72 rounded-sm bg-[#00C2FF] py-5 text-2xl font-bold text-white transition hover:brightness-90 active:scale-95"
                   >
                     Mua Ngay

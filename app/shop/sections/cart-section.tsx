@@ -29,6 +29,7 @@ const saveCart = (items: CartItem[]) => {
 
 const CartSection = () => {
   const [items, setItems] = useState<CartItem[]>([])
+  const [confirmId, setConfirmId] = useState<number | null>(null)
 
   useEffect(() => {
     const stored = localStorage.getItem(CART_KEY)
@@ -51,6 +52,7 @@ const CartSection = () => {
       saveCart(updated)
       return updated
     })
+    setConfirmId(null)
   }
 
   const totalItems = items.reduce((sum, i) => sum + i.qty, 0)
@@ -80,7 +82,7 @@ const CartSection = () => {
           <div className="relative border-t border-black">
             <button
               type="button"
-              onClick={() => removeItem(item.id)}
+              onClick={() => setConfirmId(item.id)}
               className="absolute right-0 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-neutral-300 text-lg font-bold leading-none text-neutral-700 hover:bg-neutral-400"
               aria-label="Remove item"
             >
@@ -134,6 +136,36 @@ const CartSection = () => {
         </div>
       ))}
       <div className="border-t border-black" />
+
+      {/* Confirmation dialog */}
+      {confirmId !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-80 rounded-sm border border-neutral-300 bg-white px-8 py-7 shadow-xl">
+            <p className="text-center text-lg font-bold text-neutral-900 md:text-xl">
+              Xoá sản phẩm
+            </p>
+            <p className="mt-3 text-center text-base text-neutral-600 md:text-lg">
+              Bạn có chắc muốn xoá sản phẩm này khỏi giỏ hàng?
+            </p>
+            <div className="mt-6 flex gap-4">
+              <button
+                type="button"
+                onClick={() => setConfirmId(null)}
+                className="flex-1 rounded-sm border border-neutral-400 py-2.5 text-base font-medium text-neutral-700 transition hover:bg-neutral-100 md:text-lg"
+              >
+                Huỷ
+              </button>
+              <button
+                type="button"
+                onClick={() => removeItem(confirmId)}
+                className="flex-1 rounded-sm bg-neutral-800 py-2.5 text-base font-medium text-white transition hover:bg-neutral-700 md:text-lg"
+              >
+                Xoá
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Summary */}
       <div className="mt-6 flex flex-col items-end gap-4 px-6 text-lg md:text-xl">
