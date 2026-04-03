@@ -28,10 +28,10 @@ const filterSlice = createSlice({
   name: 'filter',
   initialState,
   reducers: {
-    setFilter(state, action: PayloadAction<FilterValues>) {
+    setFilter: (state, action: PayloadAction<FilterValues>) => {
       state.filter = action.payload
     },
-    setDebouncedFilter(state, action: PayloadAction<FilterValues>) {
+    setDebouncedFilter: (state, action: PayloadAction<FilterValues>) => {
       state.debouncedFilter = action.payload
     },
   },

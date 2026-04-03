@@ -9,7 +9,7 @@ import logoIcon from '../assets/logo.png'
 import vectorBg from '../assets/Vector.png'
 import group19 from '../assets/Group 19.png'
 
-function NetworkDecoration() {
+const NetworkDecoration = () => {
   return (
     <>
       <div
@@ -40,7 +40,7 @@ function NetworkDecoration() {
   )
 }
 
-function TopCircle() {
+const TopCircle = () => {
   return (
     <div
       className="mx-auto inline-flex h-24 w-24 items-center justify-center rounded-full bg-white/90 shadow-[0_10px_20px_rgba(0,0,0,0.2)]"
@@ -51,7 +51,7 @@ function TopCircle() {
   )
 }
 
-function FieldRow({
+const FieldRow = ({
   type,
   placeholder,
   leftIcon,
@@ -65,7 +65,7 @@ function FieldRow({
   value: string
   onChange: (value: string) => void
   rightIcon?: ReactNode
-}) {
+}) => {
   return (
     <label className="relative block">
       <span className="pointer-events-none absolute left-4 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-[#1598d6] leading-none text-white">
@@ -86,7 +86,7 @@ function FieldRow({
   )
 }
 
-export default function LoginPage() {
+const LoginPage = () => {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState('')
@@ -189,3 +189,5 @@ export default function LoginPage() {
     </main>
   )
 }
+
+export default LoginPage

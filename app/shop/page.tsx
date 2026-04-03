@@ -25,7 +25,7 @@ const ProfileSection = dynamic(() => import('./sections/profile-section'))
 const PRICE_OPTIONS = Array.from({ length: 11 }, (_, i) => i * 1_000_000)
 const RATING_OPTIONS = [0, 1, 2, 3, 4, 5]
 
-function formatVND(value: number): string {
+const formatVND = (value: number): string => {
   if (value === 0) return '0 VN\u0110'
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VN\u0110'
 }
@@ -51,7 +51,7 @@ const navItems: NavItem[] = [
   { key: 'profile', label: 'My Profile', icon: profileIcon },
 ]
 
-function MainContent({
+const MainContent = ({
   view,
   searchQuery,
   filterState,
@@ -59,7 +59,7 @@ function MainContent({
   view: ViewKey
   searchQuery: string
   filterState: FilterState
-}) {
+}) => {
   if (view === 'cart') {
     return (
       <Suspense
@@ -107,7 +107,7 @@ function MainContent({
   )
 }
 
-export default function ShopPage() {
+const ShopPage = () => {
   const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -342,3 +342,5 @@ export default function ShopPage() {
     </main>
   )
 }
+
+export default ShopPage

@@ -7,13 +7,13 @@ import calendarIcon from '../../assets/calendar.png'
 
 const GENDER_OPTIONS = ['Male', 'Female']
 
-function formatDisplayDate(isoDate: string): string {
+const formatDisplayDate = (isoDate: string): string => {
   if (!isoDate) return ''
   const [year, month, day] = isoDate.split('-')
   return `${month}/${day}/${year}`
 }
 
-export default function ProfileSection() {
+const ProfileSection = () => {
   const [dob, setDob] = useState('2018-01-01')
   const [gender, setGender] = useState('Male')
   const [addressCompany, setAddressCompany] = useState(
@@ -138,3 +138,5 @@ export default function ProfileSection() {
     </div>
   )
 }
+
+export default ProfileSection

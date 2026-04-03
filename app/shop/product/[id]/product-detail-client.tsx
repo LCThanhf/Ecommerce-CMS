@@ -71,7 +71,7 @@ type CartItem = {
   qty: number
 }
 
-function RatingStar({ className = '' }: { className?: string }) {
+const RatingStar = ({ className = '' }: { className?: string }) => {
   return (
     <svg
       viewBox="0 0 59 60"
@@ -97,7 +97,7 @@ function RatingStar({ className = '' }: { className?: string }) {
   )
 }
 
-export default function ProductDetailClient({ id }: { id: string }) {
+const ProductDetailClient = ({ id }: { id: string }) => {
   const router = useRouter()
 
   const productId = Number(id)
@@ -336,3 +336,5 @@ export default function ProductDetailClient({ id }: { id: string }) {
     </main>
   )
 }
+
+export default ProductDetailClient

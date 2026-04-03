@@ -16,18 +16,18 @@ type CartItem = {
 const CART_KEY = 'ms-cart'
 const CART_COUNT_KEY = 'ms-cart-count'
 
-function formatVND(value: number): string {
+const formatVND = (value: number): string => {
   if (value === 0) return '0\u00a0VN\u0110'
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VN\u0110'
 }
 
-function saveCart(items: CartItem[]) {
+const saveCart = (items: CartItem[]) => {
   localStorage.setItem(CART_KEY, JSON.stringify(items))
   const totalQty = items.reduce((sum, i) => sum + i.qty, 0)
   localStorage.setItem(CART_COUNT_KEY, String(totalQty))
 }
 
-export default function CartSection() {
+const CartSection = () => {
   const [items, setItems] = useState<CartItem[]>([])
 
   useEffect(() => {
@@ -153,3 +153,5 @@ export default function CartSection() {
     </div>
   )
 }
+
+export default CartSection

@@ -14,10 +14,10 @@ const searchSlice = createSlice({
   name: 'search',
   initialState,
   reducers: {
-    setSearchQuery(state, action: PayloadAction<string>) {
+    setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload
     },
-    setDebouncedQuery(state, action: PayloadAction<string>) {
+    setDebouncedQuery: (state, action: PayloadAction<string>) => {
       state.debouncedQuery = action.payload
     },
   },

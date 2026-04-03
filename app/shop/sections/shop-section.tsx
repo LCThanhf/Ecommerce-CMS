@@ -41,7 +41,7 @@ const INITIAL_VISIBLE_COUNT = 16
 const LOAD_MORE_COUNT = 4
 const LOAD_DELAY_MS = 700
 
-function RatingStar({ className = '' }: { className?: string }) {
+const RatingStar = ({ className = '' }: { className?: string }) => {
   return (
     <svg
       viewBox="0 0 59 60"
@@ -67,7 +67,7 @@ function RatingStar({ className = '' }: { className?: string }) {
   )
 }
 
-function PhoneThumbnail() {
+const PhoneThumbnail = () => {
   return (
     <div className="relative h-36 w-28 md:h-44 md:w-32">
       <Image
@@ -82,7 +82,7 @@ function PhoneThumbnail() {
   )
 }
 
-function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetails: (id: number) => void }) {
+const ProductRow = ({ product, onOpenDetails }: { product: Product; onOpenDetails: (id: number) => void }) => {
   return (
     <button
       type="button"
@@ -104,7 +104,7 @@ function ProductRow({ product, onOpenDetails }: { product: Product; onOpenDetail
   )
 }
 
-export default function ShopSection({
+const ShopSection = ({
   searchQuery = '',
   priceFrom = 0,
   priceTo = 10_000_000,
@@ -116,7 +116,7 @@ export default function ShopSection({
   priceTo?: number
   ratingFrom?: number
   ratingTo?: number
-}) {
+}) => {
   const router = useRouter()
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const loadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -212,3 +212,5 @@ export default function ShopSection({
     </div>
   )
 }
+
+export default ShopSection
