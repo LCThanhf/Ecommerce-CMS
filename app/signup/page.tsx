@@ -5,9 +5,12 @@ import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { getUsers, saveUser } from '@/store/usersStorage'
 import logoIcon from '../assets/logo.png'
 import vectorBg from '../assets/Vector.png'
 import group19 from '../assets/Group 19.png'
+
+const PASSWORD_PATTERN = '(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}'
 
 const NetworkDecoration = () => {
   return (
@@ -58,6 +61,7 @@ const FieldRow = ({
   value,
   onChange,
   rightIcon,
+  required,
 }: {
   type: string
   placeholder: string
@@ -65,6 +69,7 @@ const FieldRow = ({
   value: string
   onChange: (value: string) => void
   rightIcon?: ReactNode
+  required?: boolean
 }) => {
   return (
     <label className="relative block">
@@ -76,6 +81,7 @@ const FieldRow = ({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
+        required={required}
         className="h-16 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-10 text-[16px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
       />
       {rightIcon ? (
@@ -103,13 +109,24 @@ const SignUpPage = () => {
       return
     }
 
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[!@#$%^&*]/.test(password)) {
+      setErrorMessage('Mật khẩu phải có ít nhất 8 ký tự, 1 chữ hoa và 1 ký tự đặc biệt (vd: @, &, !).')
+      return
+    }
+
     if (password !== confirmPassword) {
       setErrorMessage('Mật khẩu xác nhận không khớp.')
       return
     }
 
-    setErrorMessage('')
-    router.push('/shop')
+    const existing = getUsers().find((u) => u.username === username.trim())
+    if (existing) {
+      setErrorMessage('Tên đăng nhập đã được sử dụng.')
+      return
+    }
+
+    saveUser({ username: username.trim(), email: email.trim(), password })
+    router.push('/login')
   }
 
   return (
@@ -128,6 +145,7 @@ const SignUpPage = () => {
             onChange={setUsername}
             placeholder="Tên đăng nhập"
             leftIcon={<User className="block h-3 w-3" strokeWidth={2.25} />}
+            required
           />
 
           <FieldRow
@@ -136,6 +154,7 @@ const SignUpPage = () => {
             onChange={setEmail}
             placeholder="Email"
             leftIcon={<Mail className="block h-3 w-3" strokeWidth={2.25} />}
+            required
           />
 
           <label className="relative block">
@@ -149,6 +168,9 @@ const SignUpPage = () => {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Mật khẩu"
+              required
+              pattern={PASSWORD_PATTERN}
+              title="ít nhất 8 ký tự, 1 chữ hoa và 1 ký tự đặc biệt"
               className="h-16 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-12 text-[16px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
             />
             <button
@@ -172,6 +194,9 @@ const SignUpPage = () => {
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               placeholder="Xác nhận mật khẩu"
+              required
+              pattern={password.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}
+              title="Vui lòng nhập lại mật khẩu"
               className="h-16 w-full rounded-sm border border-[#d6dee4] bg-[#eff1f3] pl-14 pr-12 text-[16px] text-[#52606d] placeholder:text-[#98a6b4] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] outline-none transition focus:border-[#a6d8f2]"
             />
             <button

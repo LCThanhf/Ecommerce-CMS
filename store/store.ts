@@ -4,6 +4,7 @@ import type { Action } from '@reduxjs/toolkit'
 import searchReducer from './searchSlice'
 import filterReducer from './filterSlice'
 import cartReducer from './cartSlice'
+import authReducer from './authSlice'
 import { rootEpic } from './epics'
 
 const epicMiddleware = createEpicMiddleware<Action, Action, unknown>()
@@ -13,6 +14,7 @@ export const store = configureStore({
     search: searchReducer,
     filter: filterReducer,
     cart: cartReducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(epicMiddleware),

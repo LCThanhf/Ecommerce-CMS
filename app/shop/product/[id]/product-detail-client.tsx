@@ -17,6 +17,7 @@ import galaxyA31Xanh from '../../../assets/samsung-galaxy-a31-xanh.png'
 import galaxyA31Den from '../../../assets/samsung-galaxy-a31-den.png'
 import galaxyA31Trang from '../../../assets/samsung-galaxy-a31-trang.png'
 import AvatarDropdown from '@/components/avatar-dropdown'
+import useAuthGuard from '@/hooks/use-auth-guard'
 
 const PRODUCT_NAMES = [
   'Samsung Galaxy A31',
@@ -89,6 +90,7 @@ const RatingStar = ({ className = '' }: { className?: string }) => {
 }
 
 const ProductDetailClient = ({ id }: { id: string }) => {
+  useAuthGuard()
   const router = useRouter()
 
   const productId = Number(id)

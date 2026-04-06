@@ -4,6 +4,8 @@ import { useEffect } from 'react'
 import { Provider, useDispatch } from 'react-redux'
 import { store } from './store'
 import { hydrateCart } from './cartSlice'
+import { loginUser } from './authSlice'
+import { getSession } from './usersStorage'
 import type { AppDispatch } from './store'
 
 function CartHydrator() {
@@ -21,10 +23,22 @@ function CartHydrator() {
   return null
 }
 
+function AuthHydrator() {
+  const dispatch = useDispatch<AppDispatch>()
+  useEffect(() => {
+    const session = getSession()
+    if (session) {
+      dispatch(loginUser(session))
+    }
+  }, [dispatch])
+  return null
+}
+
 export function ReduxProvider({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <CartHydrator />
+      <AuthHydrator />
       {children}
     </Provider>
   )

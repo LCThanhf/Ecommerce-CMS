@@ -17,6 +17,7 @@ import profileIcon from '../assets/profile.png'
 import searchIcon from '../assets/search.png'
 import filterIcon from '../assets/filter.png'
 import AvatarDropdown from '@/components/avatar-dropdown'
+import useAuthGuard from '@/hooks/use-auth-guard'
 
 const ShopSection = dynamic(() => import('./sections/shop-section'))
 const CartSection = dynamic(() => import('./sections/cart-section'))
@@ -108,6 +109,7 @@ const MainContent = ({
 }
 
 const ShopPage = () => {
+  useAuthGuard()
   const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)

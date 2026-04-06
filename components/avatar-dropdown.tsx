@@ -2,9 +2,13 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useDispatch } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import { LogOut, User } from 'lucide-react'
 import avatarIcon from '@/app/assets/avatar.png'
+import { logoutUser } from '@/store/authSlice'
+import { clearSession } from '@/store/usersStorage'
+import type { AppDispatch } from '@/store/store'
 
 type AvatarDropdownProps = {
   onProfileClick?: () => void
@@ -12,6 +16,7 @@ type AvatarDropdownProps = {
 
 const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
   const router = useRouter()
+  const dispatch = useDispatch<AppDispatch>()
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -36,6 +41,8 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
 
   const handleLogout = () => {
     setOpen(false)
+    dispatch(logoutUser())
+    clearSession()
     router.push('/login')
   }
 
