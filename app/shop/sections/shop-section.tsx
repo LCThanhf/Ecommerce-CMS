@@ -4,38 +4,8 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import galaxyA31 from '../../assets/samsung-galaxy-a31.png'
+import useProducts, { type Product } from '@/hooks/use-products'
 
-type Product = {
-  id: number
-  name: string
-  price: string
-  priceValue: number
-  rating: number
-}
-
-const PRODUCT_NAMES = [
-  'Samsung Galaxy A31',
-  'Samsung Galaxy A52',
-  'Samsung Galaxy M32',
-  'Samsung Galaxy S21 FE',
-  'Samsung Galaxy A22',
-  'Samsung Galaxy M52',
-  'Samsung Galaxy A72',
-  'Samsung Galaxy F62',
-]
-
-const products: Product[] = Array.from({ length: 40 }, (_, index) => {
-  const id = index + 1
-  const priceValue = ((id % 10) + 1) * 1_000_000
-  const rating = (id % 5) + 1
-  return {
-    id,
-    name: PRODUCT_NAMES[index % PRODUCT_NAMES.length],
-    price: priceValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VN\u0110',
-    priceValue,
-    rating,
-  }
-})
 
 const INITIAL_VISIBLE_COUNT = 16
 const LOAD_MORE_COUNT = 4
@@ -118,6 +88,7 @@ const ShopSection = ({
   ratingTo?: number
 }) => {
   const router = useRouter()
+  const { products, loading, error } = useProducts()
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const loadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isLoadingMoreRef = useRef(false)
@@ -138,7 +109,7 @@ const ShopSection = ({
       if (product.rating < ratingFrom || product.rating > ratingTo) return false
       return true
     })
-  }, [normalizedQuery, priceFrom, priceTo, ratingFrom, ratingTo])
+  }, [products, normalizedQuery, priceFrom, priceTo, ratingFrom, ratingTo])
 
   useEffect(() => {
     setVisibleCount(INITIAL_VISIBLE_COUNT)
@@ -196,19 +167,27 @@ const ShopSection = ({
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-y-4 pb-6 xl:grid-cols-[max-content_max-content] xl:justify-start xl:gap-x-30">
-        {productsToRender.map((product) => (
-          <ProductRow key={product.id} product={product} onOpenDetails={openDetails} />
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex items-center justify-center py-16 text-lg text-neutral-500">Đang tải sản phẩm...</div>
+      ) : error ? (
+        <div className="rounded-md border border-dashed border-red-300 bg-red-50 p-6 text-center text-lg text-red-600">{error}</div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-y-4 pb-6 xl:grid-cols-[max-content_max-content] xl:justify-start xl:gap-x-30">
+            {productsToRender.map((product) => (
+              <ProductRow key={product.id} product={product} onOpenDetails={openDetails} />
+            ))}
+          </div>
 
-      {hasMore ? <div ref={sentinelRef} className="h-10 w-full" aria-hidden="true" /> : null}
+          {hasMore ? <div ref={sentinelRef} className="h-10 w-full" aria-hidden="true" /> : null}
 
-      {filteredProducts.length === 0 ? (
-        <div className="rounded-md border border-dashed border-neutral-300 bg-white/70 p-6 text-center text-lg text-neutral-600">
-          No products found.
-        </div>
-      ) : null}
+          {filteredProducts.length === 0 ? (
+            <div className="rounded-md border border-dashed border-neutral-300 bg-white/70 p-6 text-center text-lg text-neutral-600">
+              No products found.
+            </div>
+          ) : null}
+        </>
+      )}
     </div>
   )
 }
