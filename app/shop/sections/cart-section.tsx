@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeItem as removeItemAction, updateQty as updateQtyAction } from '@/store/cartSlice'
 import type { RootState, AppDispatch } from '@/store/store'
@@ -14,6 +15,7 @@ const formatVND = (value: number): string => {
 
 const CartSection = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const router = useRouter()
   const items = useSelector((state: RootState) => state.cart.items)
   const [confirmId, setConfirmId] = useState<number | null>(null)
 
@@ -62,13 +64,17 @@ const CartSection = () => {
           </div>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 px-4 sm:px-6 py-4 sm:py-6 pr-4 sm:pr-14">
             {/* Product image */}
-            <div className="h-40 w-36 self-center sm:self-auto sm:h-64 sm:w-56 shrink-0">
+            <button
+              type="button"
+              onClick={() => router.push(`/shop/product/${item.id}`)}
+              className="h-40 w-36 self-center sm:self-auto sm:h-64 sm:w-56 shrink-0 cursor-pointer"
+            >
               <Image
                 src={galaxyA31}
                 alt={item.name}
                 className="h-full w-full object-contain"
               />
-            </div>
+            </button>
 
             {/* Details */}
             <div className="flex flex-1 flex-col sm:flex-row sm:items-center gap-3 sm:gap-8">
@@ -95,7 +101,7 @@ const CartSection = () => {
                 <span className="w-6 text-center text-xl text-neutral-900">{item.qty}</span>
                 <button
                   type="button"
-                  onClick={() => updateQty(item.id, -1)}
+                  onClick={() => item.qty === 1 ? setConfirmId(item.id) : updateQty(item.id, -1)}
                   className="flex h-7 w-7 items-center justify-center text-xl font-thin text-neutral-900 hover:text-neutral-600"
                   aria-label="Decrease quantity"
                 >

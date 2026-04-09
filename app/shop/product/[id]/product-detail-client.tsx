@@ -6,7 +6,7 @@ import { Menu } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
-import { addItem, selectCartCount } from '@/store/cartSlice'
+import { addItem, addItemSilent, selectCartCount } from '@/store/cartSlice'
 import type { AppDispatch, RootState } from '@/store/store'
 import logoIcon from '../../../assets/logo.png'
 import shopIcon from '../../../assets/shop.png'
@@ -17,6 +17,7 @@ import galaxyA31Xanh from '../../../assets/samsung-galaxy-a31-xanh.png'
 import galaxyA31Den from '../../../assets/samsung-galaxy-a31-den.png'
 import galaxyA31Trang from '../../../assets/samsung-galaxy-a31-trang.png'
 import AvatarDropdown from '@/components/avatar-dropdown'
+import ToastNotification from '@/components/toast-notification'
 import useAuthGuard from '@/hooks/use-auth-guard'
 
 const PRODUCT_NAMES = [
@@ -105,6 +106,7 @@ const ProductDetailClient = ({ id }: { id: string }) => {
 
   const dispatch = useDispatch<AppDispatch>()
   const cartCount = useSelector((state: RootState) => selectCartCount(state))
+  const cartItems = useSelector((state: RootState) => state.cart.items)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [selectedVariant, setSelectedVariant] = useState(0)
 
@@ -285,7 +287,13 @@ const ProductDetailClient = ({ id }: { id: string }) => {
                 <div className="mt-7 flex flex-wrap gap-6">
                   <button
                     type="button"
-                    onClick={() => { addToCart(); router.push('/shop?view=cart') }}
+                    onClick={() => {
+                      const alreadyInCart = cartItems.some((i) => i.id === productId)
+                      if (!alreadyInCart) {
+                        dispatch(addItemSilent({ id: productId, name: `Điện thoại ${productName}`, description, priceValue, priceFormatted, qty: 1 }))
+                      }
+                      router.push('/shop?view=cart')
+                    }}
                     className="w-full sm:w-72 rounded-sm bg-[#00C2FF] py-5 text-2xl font-bold text-white transition hover:brightness-90 active:scale-95"
                   >
                     Mua Ngay
@@ -304,6 +312,7 @@ const ProductDetailClient = ({ id }: { id: string }) => {
           </div>
         </section>
       </div>
+      <ToastNotification />
     </main>
   )
 }

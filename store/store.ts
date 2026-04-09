@@ -5,6 +5,7 @@ import searchReducer from './searchSlice'
 import filterReducer from './filterSlice'
 import cartReducer from './cartSlice'
 import authReducer from './authSlice'
+import toastReducer from './toastSlice'
 import { rootEpic } from './epics'
 
 const epicMiddleware = createEpicMiddleware<Action, Action, unknown>()
@@ -15,6 +16,7 @@ export const store = configureStore({
     filter: filterReducer,
     cart: cartReducer,
     auth: authReducer,
+    toast: toastReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(epicMiddleware),

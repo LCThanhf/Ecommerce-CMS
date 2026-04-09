@@ -1,10 +1,11 @@
 import { type Epic, ofType, combineEpics } from 'redux-observable'
-import { debounceTime, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators'
-import { EMPTY } from 'rxjs'
+import { debounceTime, map, mergeMap, tap, withLatestFrom, switchMap, delay } from 'rxjs/operators'
+import { EMPTY, concat, of } from 'rxjs'
 import { setSearchQuery, setDebouncedQuery } from './searchSlice'
 import { setFilter, setDebouncedFilter } from './filterSlice'
-import { addItem, removeItem, updateQty } from './cartSlice'
+import { addItem, addItemSilent, removeItem, updateQty } from './cartSlice'
 import type { CartItem } from './cartSlice'
+import { showToast, hideToast } from './toastSlice'
 import type { Action } from '@reduxjs/toolkit'
 
 export const searchDebounceEpic: Epic<Action, Action, unknown> = (action$) =>
@@ -23,7 +24,7 @@ export const filterDebounceEpic: Epic<Action, Action, unknown> = (action$) =>
 
 export const cartPersistEpic: Epic<Action, Action, unknown> = (action$, state$) =>
   action$.pipe(
-    ofType(addItem.type, removeItem.type, updateQty.type),
+    ofType(addItem.type, addItemSilent.type, removeItem.type, updateQty.type),
     debounceTime(150),
     withLatestFrom(state$),
     tap(([, state]) => {
@@ -35,4 +36,15 @@ export const cartPersistEpic: Epic<Action, Action, unknown> = (action$, state$) 
     mergeMap(() => EMPTY),
   )
 
-export const rootEpic = combineEpics(searchDebounceEpic, filterDebounceEpic, cartPersistEpic)
+export const cartToastEpic: Epic<Action, Action, unknown> = (action$) =>
+  action$.pipe(
+    ofType(addItem.type),
+    switchMap(() =>
+      concat(
+        of(showToast('Đã thêm vào giỏ hàng!')),
+        of(hideToast()).pipe(delay(2000)),
+      )
+    ),
+  )
+
+export const rootEpic = combineEpics(searchDebounceEpic, filterDebounceEpic, cartPersistEpic, cartToastEpic)

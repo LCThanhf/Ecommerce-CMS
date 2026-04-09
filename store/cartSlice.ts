@@ -32,6 +32,14 @@ const cartSlice = createSlice({
         state.items.push(action.payload)
       }
     },
+    addItemSilent(state, action: PayloadAction<CartItem>) {
+      const existing = state.items.find((i) => i.id === action.payload.id)
+      if (existing) {
+        existing.qty += 1
+      } else {
+        state.items.push(action.payload)
+      }
+    },
     removeItem(state, action: PayloadAction<number>) {
       state.items = state.items.filter((i) => i.id !== action.payload)
     },
@@ -47,7 +55,7 @@ const cartSlice = createSlice({
   },
 })
 
-export const { hydrateCart, addItem, removeItem, updateQty } = cartSlice.actions
+export const { hydrateCart, addItem, addItemSilent, removeItem, updateQty } = cartSlice.actions
 export default cartSlice.reducer
 
 export const selectCartCount = (state: { cart: CartState }): number =>
