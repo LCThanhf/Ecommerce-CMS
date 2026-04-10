@@ -8,7 +8,7 @@ import { loginUser } from './authSlice'
 import { getSession } from './usersStorage'
 import type { AppDispatch } from './store'
 
-function CartHydrator() {
+const CartHydrator = () => {
   const dispatch = useDispatch<AppDispatch>()
   useEffect(() => {
     const stored = localStorage.getItem('ms-cart')
@@ -23,7 +23,7 @@ function CartHydrator() {
   return null
 }
 
-function AuthHydrator() {
+const AuthHydrator = () => {
   const dispatch = useDispatch<AppDispatch>()
   useEffect(() => {
     const session = getSession()
@@ -34,7 +34,7 @@ function AuthHydrator() {
   return null
 }
 
-export function ReduxProvider({ children }: { children: React.ReactNode }) {
+export const ReduxProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={store}>
       <CartHydrator />
