@@ -5,7 +5,7 @@ import Image, { type StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
 import { Menu, ChevronDown } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSearchQuery } from '@/store/searchSlice'
 import { setFilter } from '@/store/filterSlice'
@@ -51,14 +51,6 @@ const navItems: NavItem[] = [
   { key: 'cart', label: 'Cart', icon: cartIcon },
   { key: 'profile', label: 'My Profile', icon: profileIcon },
 ]
-
-const getViewFromSearchParams = (params: { get: (name: string) => string | null }): ViewKey => {
-  const view = params.get('view')
-  if (view === 'cart' || view === 'profile') {
-    return view
-  }
-  return 'shop'
-}
 
 const MainContent = ({
   view,
@@ -118,24 +110,10 @@ const MainContent = ({
 
 const ShopPage = () => {
   useAuthGuard()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [activeView, setActiveView] = useState<ViewKey>(() => getViewFromSearchParams(searchParams))
+  const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-
-  const updateViewInUrl = (view: ViewKey) => {
-    const params = new URLSearchParams(searchParams.toString())
-
-    if (view === 'shop') {
-      params.delete('view')
-    } else {
-      params.set('view', view)
-    }
-
-    const nextQuery = params.toString()
-    router.replace(nextQuery ? `/shop?${nextQuery}` : '/shop')
-  }
+  const searchParams = useSearchParams()
 
   const dispatch = useDispatch<AppDispatch>()
   const searchQuery = useSelector((state: RootState) => state.search.searchQuery)
@@ -144,11 +122,10 @@ const ShopPage = () => {
   const debouncedFilter = useSelector((state: RootState) => state.filter.debouncedFilter)
 
   useEffect(() => {
-    const viewFromUrl = getViewFromSearchParams(searchParams)
-    if (viewFromUrl !== activeView) {
-      setActiveView(viewFromUrl)
-    }
-  }, [searchParams, activeView])
+    const view = searchParams.get('view')
+    if (view === 'profile') setActiveView('profile')
+    if (view === 'cart') setActiveView('cart')
+  }, [searchParams])
 
   const currentViewLabel = navItems.find((item) => item.key === activeView)?.label ?? 'Shop'
   const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel
@@ -161,10 +138,7 @@ const ShopPage = () => {
             <Link
               href="/shop"
               aria-label="Go to shop main page"
-              onClick={() => {
-                setActiveView('shop')
-                updateViewInUrl('shop')
-              }}
+              onClick={() => setActiveView('shop')}
               className="inline-flex h-18 w-18 items-center justify-center md:h-20 md:w-20"
             >
               <Image src={logoIcon} alt="Shop logo" className="h-18 w-18 object-contain md:h-20 md:w-20" />
@@ -172,10 +146,7 @@ const ShopPage = () => {
             <h1 className="text-xl leading-none font-normal sm:text-3xl md:text-[2.5rem]">Mobile Shopping</h1>
           </div>
 
-          <AvatarDropdown onProfileClick={() => {
-            setActiveView('profile')
-            updateViewInUrl('profile')
-          }} />
+          <AvatarDropdown onProfileClick={() => setActiveView('profile')} />
         </div>
       </header>
 
@@ -207,7 +178,6 @@ const ShopPage = () => {
                   type="button"
                   onClick={() => {
                     setActiveView(item.key)
-                    updateViewInUrl(item.key)
                   }}
                   className={`flex h-12 w-full items-center gap-2 px-3 text-left text-base transition md:px-3 md:text-lg ${
                     isActive

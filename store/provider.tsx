@@ -6,10 +6,7 @@ import { store } from './store'
 import { hydrateCart } from './cartSlice'
 import { loginUser } from './authSlice'
 import { getSession } from './usersStorage'
-import { fetchProductsRequested, hydrateProducts, markProductsHydrated, type Product } from './productsSlice'
 import type { AppDispatch } from './store'
-
-const PRODUCTS_CACHE_KEY = 'ms-products-cache'
 
 const CartHydrator = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -37,43 +34,11 @@ const AuthHydrator = () => {
   return null
 }
 
-const ProductsHydrator = () => {
-  const dispatch = useDispatch<AppDispatch>()
-
-  useEffect(() => {
-    let hasCachedProducts = false
-    const stored = localStorage.getItem(PRODUCTS_CACHE_KEY)
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as { items: Product[]; lastFetchedAt: number | null }
-        const hasValidItems = Array.isArray(parsed.items)
-        const hasValidTimestamp = parsed.lastFetchedAt === null || typeof parsed.lastFetchedAt === 'number'
-
-        if (hasValidItems && hasValidTimestamp) {
-          hasCachedProducts = parsed.items.length > 0
-          dispatch(hydrateProducts(parsed))
-        }
-      } catch {
-        // ignore malformed data
-      }
-    }
-
-    dispatch(markProductsHydrated())
-
-    if (!hasCachedProducts) {
-      dispatch(fetchProductsRequested())
-    }
-  }, [dispatch])
-
-  return null
-}
-
 export const ReduxProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={store}>
       <CartHydrator />
       <AuthHydrator />
-      <ProductsHydrator />
       {children}
     </Provider>
   )
