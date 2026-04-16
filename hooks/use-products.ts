@@ -1,59 +1,42 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  fetchProductsRequested,
+  selectProducts,
+  selectProductsError,
+  selectProductsHasHydrated,
+  selectProductsLastFetchedAt,
+  selectProductsLoading,
+  type Product,
+} from '@/store/productsSlice'
+import type { AppDispatch, RootState } from '@/store/store'
 
-// Shape trả về từ JSONPlaceholder /posts
-type Post = {
-  id: number
-  title: string
-  body: string
-  userId: number
-}
+const PRODUCTS_CACHE_TTL_MS = 5 * 60 * 1000
 
-export type Product = {
-  id: number
-  name: string
-  price: string
-  priceValue: number
-  rating: number
-}
-
-const PRODUCT_NAMES = [
-  'Samsung Galaxy A31',
-  'Samsung Galaxy A52',
-  'Samsung Galaxy M32',
-  'Samsung Galaxy S21 FE',
-  'Samsung Galaxy A22',
-  'Samsung Galaxy M52',
-  'Samsung Galaxy A72',
-  'Samsung Galaxy F62',
-]
-
-// Map một Post từ API → Product hiển thị trên UI
-const mapPostToProduct = (post: Post, index: number): Product => {
-  const priceValue = ((post.id % 10) + 1) * 1_000_000
-  return {
-    id: post.id,
-    name: PRODUCT_NAMES[index % PRODUCT_NAMES.length],
-    priceValue,
-    price: priceValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VNĐ',
-    rating: (post.id % 5) + 1,
-  }
-}
+export type { Product }
 
 const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const dispatch = useDispatch<AppDispatch>()
+  const products = useSelector((state: RootState) => selectProducts(state))
+  const loading = useSelector((state: RootState) => selectProductsLoading(state))
+  const error = useSelector((state: RootState) => selectProductsError(state))
+  const hasHydrated = useSelector((state: RootState) => selectProductsHasHydrated(state))
+  const lastFetchedAt = useSelector((state: RootState) => selectProductsLastFetchedAt(state))
+  const hasRequestedRef = useRef(false)
 
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/posts')
-      .then((res) => {
-        if (!res.ok) throw new Error('Bad response')
-        return res.json() as Promise<Post[]>
-      })
-      .then((posts) => setProducts(posts.map(mapPostToProduct)))
-      .catch(() => setError('Không thể tải sản phẩm. Vui lòng thử lại.'))
-      .finally(() => setLoading(false))
-  }, [])
+    if (!hasHydrated || loading || hasRequestedRef.current) {
+      return
+    }
+
+    const isStale = !lastFetchedAt || (Date.now() - lastFetchedAt) > PRODUCTS_CACHE_TTL_MS
+    const shouldFetch = products.length === 0 || isStale
+
+    if (shouldFetch) {
+      hasRequestedRef.current = true
+      dispatch(fetchProductsRequested())
+    }
+  }, [dispatch, hasHydrated, loading, products.length, lastFetchedAt])
 
   return { products, loading, error }
 }
