@@ -1,11 +1,12 @@
 import { type Epic, ofType, combineEpics } from 'redux-observable'
-import { debounceTime, map, mergeMap, tap, withLatestFrom, switchMap, delay } from 'rxjs/operators'
-import { EMPTY, concat, of } from 'rxjs'
+import { debounceTime, map, mergeMap, tap, withLatestFrom, switchMap, delay, catchError } from 'rxjs/operators'
+import { EMPTY, concat, of, from } from 'rxjs'
 import { setSearchQuery, setDebouncedQuery } from './searchSlice'
 import { setFilter, setDebouncedFilter } from './filterSlice'
 import { addItem, addItemSilent, removeItem, updateQty } from './cartSlice'
 import type { CartItem } from './cartSlice'
 import { showToast, hideToast } from './toastSlice'
+import { fetchProducts, fetchProductsSuccess, fetchProductsFailed, mapPostToProduct, type Post } from './productsSlice'
 import type { Action } from '@reduxjs/toolkit'
 
 export const searchDebounceEpic: Epic<Action, Action, unknown> = (action$) =>
@@ -47,4 +48,20 @@ export const cartToastEpic: Epic<Action, Action, unknown> = (action$) =>
     ),
   )
 
-export const rootEpic = combineEpics(searchDebounceEpic, filterDebounceEpic, cartPersistEpic, cartToastEpic)
+export const fetchProductsEpic: Epic<Action, Action, unknown> = (action$) =>
+  action$.pipe(
+    ofType(fetchProducts.type),
+    switchMap(() =>
+      from(
+        fetch('https://jsonplaceholder.typicode.com/posts').then((res) => {
+          if (!res.ok) throw new Error('Bad response')
+          return res.json() as Promise<Post[]>
+        }),
+      ).pipe(
+        map((posts) => fetchProductsSuccess(posts.map(mapPostToProduct))),
+        catchError(() => of(fetchProductsFailed('Không thể tải sản phẩm. Vui lòng thử lại.'))),
+      )
+    ),
+  )
+
+export const rootEpic = combineEpics(searchDebounceEpic, filterDebounceEpic, cartPersistEpic, cartToastEpic, fetchProductsEpic)
