@@ -4,8 +4,8 @@ import Link from 'next/link'
 import Image, { type StaticImageData } from 'next/image'
 import dynamic from 'next/dynamic'
 import { Menu, ChevronDown } from 'lucide-react'
-import { Suspense, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSearchQuery } from '@/store/searchSlice'
 import { setFilter } from '@/store/filterSlice'
@@ -110,9 +110,9 @@ const MainContent = ({
 
 const ShopPage = () => {
   useAuthGuard()
-  const [activeView, setActiveView] = useState<ViewKey>('shop')
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const router = useRouter()
   const searchParams = useSearchParams()
 
   const dispatch = useDispatch<AppDispatch>()
@@ -121,11 +121,13 @@ const ShopPage = () => {
   const filter = useSelector((state: RootState) => state.filter.filter)
   const debouncedFilter = useSelector((state: RootState) => state.filter.debouncedFilter)
 
-  useEffect(() => {
-    const view = searchParams.get('view')
-    if (view === 'profile') setActiveView('profile')
-    if (view === 'cart') setActiveView('cart')
-  }, [searchParams])
+  const activeViewParam = searchParams.get('view')
+  const activeView: ViewKey =
+    activeViewParam === 'cart' || activeViewParam === 'profile' ? activeViewParam : 'shop'
+
+  const setView = (view: ViewKey) => {
+    router.push(`/shop?view=${view}`)
+  }
 
   const currentViewLabel = navItems.find((item) => item.key === activeView)?.label ?? 'Shop'
   const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel
@@ -138,7 +140,10 @@ const ShopPage = () => {
             <Link
               href="/shop"
               aria-label="Go to shop main page"
-              onClick={() => setActiveView('shop')}
+              onClick={(event) => {
+                event.preventDefault()
+                setView('shop')
+              }}
               className="inline-flex h-18 w-18 items-center justify-center md:h-20 md:w-20"
             >
               <Image src={logoIcon} alt="Shop logo" className="h-18 w-18 object-contain md:h-20 md:w-20" />
@@ -146,7 +151,7 @@ const ShopPage = () => {
             <h1 className="text-xl leading-none font-normal sm:text-3xl md:text-[2.5rem]">Mobile Shopping</h1>
           </div>
 
-          <AvatarDropdown onProfileClick={() => setActiveView('profile')} />
+          <AvatarDropdown onProfileClick={() => setView('profile')} />
         </div>
       </header>
 
@@ -177,7 +182,7 @@ const ShopPage = () => {
                   key={item.key}
                   type="button"
                   onClick={() => {
-                    setActiveView(item.key)
+                    setView(item.key)
                   }}
                   className={`flex h-12 w-full items-center gap-2 px-3 text-left text-base transition md:px-3 md:text-lg ${
                     isActive

@@ -11,10 +11,12 @@ export type CartItem = {
 
 interface CartState {
   items: CartItem[]
+  hasHydrated: boolean
 }
 
 const initialState: CartState = {
   items: [],
+  hasHydrated: false,
 }
 
 const cartSlice = createSlice({
@@ -23,6 +25,10 @@ const cartSlice = createSlice({
   reducers: {
     hydrateCart(state, action: PayloadAction<CartItem[]>) {
       state.items = action.payload
+      state.hasHydrated = true
+    },
+    markCartHydrated(state) {
+      state.hasHydrated = true
     },
     addItem(state, action: PayloadAction<CartItem>) {
       const existing = state.items.find((i) => i.id === action.payload.id)
@@ -55,7 +61,7 @@ const cartSlice = createSlice({
   },
 })
 
-export const { hydrateCart, addItem, addItemSilent, removeItem, updateQty } = cartSlice.actions
+export const { hydrateCart, markCartHydrated, addItem, addItemSilent, removeItem, updateQty } = cartSlice.actions
 export default cartSlice.reducer
 
 export const selectCartCount = (state: { cart: CartState }): number =>

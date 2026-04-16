@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { useSelector } from 'react-redux'
+import type { RootState } from '@/store/store'
 import avatarIcon from '../../assets/avatar.png'
 import calendarIcon from '../../assets/calendar.png'
 
@@ -14,6 +16,7 @@ const formatDisplayDate = (isoDate: string): string => {
 }
 
 const ProfileSection = () => {
+  const hasAuthHydrated = useSelector((state: RootState) => state.auth.hasHydrated)
   const [dob, setDob] = useState('2018-01-01')
   const [gender, setGender] = useState('Male')
   const [addressCompany, setAddressCompany] = useState(
@@ -22,6 +25,14 @@ const ProfileSection = () => {
   const [addressHome, setAddressHome] = useState(
     '15, Duy Tan, Dich Vong Hau, Cau Giay, Ha Noi',
   )
+
+  if (!hasAuthHydrated) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-xl text-neutral-500">Đang tải hồ sơ...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="h-full overflow-y-auto px-4 sm:px-12 pt-6 sm:pt-14 pb-7 md:px-20 md:pt-16">

@@ -167,11 +167,17 @@ const ShopSection = ({
   }, [filteredProducts.length, hasMore])
 
   return (
-    <div>
+    <div className="h-full">
       {loading || !hasFetched ? (
-        <div className="flex items-center justify-center py-16 text-lg text-neutral-500">Đang tải sản phẩm...</div>
+        <div className="flex h-full items-center justify-center">
+          <p className="text-xl text-neutral-500">Đang tải sản phẩm...</p>
+        </div>
       ) : error ? (
         <div className="rounded-md border border-dashed border-red-300 bg-red-50 p-6 text-center text-lg text-red-600">{error}</div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="flex h-full items-center justify-center">
+          <p className="text-xl text-neutral-500">No products found.</p>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-y-4 pb-6 xl:grid-cols-[max-content_max-content] xl:justify-start xl:gap-x-30">
@@ -181,12 +187,6 @@ const ShopSection = ({
           </div>
 
           {hasMore ? <div ref={sentinelRef} className="h-10 w-full" aria-hidden="true" /> : null}
-
-          {filteredProducts.length === 0 ? (
-            <div className="rounded-md border border-dashed border-neutral-300 bg-white/70 p-6 text-center text-lg text-neutral-600">
-              No products found.
-            </div>
-          ) : null}
         </>
       )}
     </div>

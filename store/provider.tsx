@@ -3,8 +3,8 @@
 import { useEffect } from 'react'
 import { Provider, useDispatch } from 'react-redux'
 import { store } from './store'
-import { hydrateCart } from './cartSlice'
-import { loginUser } from './authSlice'
+import { hydrateCart, markCartHydrated } from './cartSlice'
+import { loginUser, markAuthHydrated } from './authSlice'
 import { getSession } from './usersStorage'
 import type { AppDispatch } from './store'
 
@@ -19,6 +19,7 @@ const CartHydrator = () => {
         // ignore malformed data
       }
     }
+    dispatch(markCartHydrated())
   }, [dispatch])
   return null
 }
@@ -30,6 +31,7 @@ const AuthHydrator = () => {
     if (session) {
       dispatch(loginUser(session))
     }
+    dispatch(markAuthHydrated())
   }, [dispatch])
   return null
 }

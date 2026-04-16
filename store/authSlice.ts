@@ -7,10 +7,12 @@ export interface AuthUser {
 
 interface AuthState {
   user: AuthUser | null
+  hasHydrated: boolean
 }
 
 const initialState: AuthState = {
   user: null,
+  hasHydrated: false,
 }
 
 const authSlice = createSlice({
@@ -23,8 +25,11 @@ const authSlice = createSlice({
     logoutUser(state) {
       state.user = null
     },
+    markAuthHydrated(state) {
+      state.hasHydrated = true
+    },
   },
 })
 
-export const { loginUser, logoutUser } = authSlice.actions
+export const { loginUser, logoutUser, markAuthHydrated } = authSlice.actions
 export default authSlice.reducer

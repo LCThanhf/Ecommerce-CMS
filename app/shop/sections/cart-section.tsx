@@ -16,6 +16,7 @@ const formatVND = (value: number): string => {
 const CartSection = () => {
   const dispatch = useDispatch<AppDispatch>()
   const router = useRouter()
+  const hasHydrated = useSelector((state: RootState) => state.cart.hasHydrated)
   const items = useSelector((state: RootState) => state.cart.items)
   const [confirmId, setConfirmId] = useState<number | null>(null)
 
@@ -32,6 +33,14 @@ const CartSection = () => {
   const subTotal = items.reduce((sum, i) => sum + i.priceValue * i.qty, 0)
   const tax = Math.round(subTotal * 0.1)
   const total = subTotal + tax
+
+  if (!hasHydrated) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-xl text-neutral-500">Đang tải giỏ hàng...</p>
+      </div>
+    )
+  }
 
   if (items.length === 0) {
     return (
