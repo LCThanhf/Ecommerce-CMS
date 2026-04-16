@@ -89,7 +89,7 @@ const ShopSection = ({
   ratingTo?: number
 }) => {
   const router = useRouter()
-  const { products, loading, error } = useProducts()
+  const { products, loading, error, hasFetched } = useProducts()
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const loadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isLoadingMoreRef = useRef(false)
@@ -168,7 +168,7 @@ const ShopSection = ({
 
   return (
     <div>
-      {loading ? (
+      {loading || !hasFetched ? (
         <div className="flex items-center justify-center py-16 text-lg text-neutral-500">Đang tải sản phẩm...</div>
       ) : error ? (
         <div className="rounded-md border border-dashed border-red-300 bg-red-50 p-6 text-center text-lg text-red-600">{error}</div>

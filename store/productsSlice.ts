@@ -41,18 +41,23 @@ type ProductsState = {
   items: Product[]
   loading: boolean
   error: string | null
+  hasFetched: boolean
 }
 
 const initialState: ProductsState = {
   items: [],
   loading: false,
   error: null,
+  hasFetched: false,
 }
 
 const productsSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
+    resetProducts() {
+      return initialState
+    },
     fetchProducts(state) {
       state.loading = true
       state.error = null
@@ -61,13 +66,15 @@ const productsSlice = createSlice({
       state.items = action.payload
       state.loading = false
       state.error = null
+      state.hasFetched = true
     },
     fetchProductsFailed(state, action: PayloadAction<string>) {
       state.loading = false
       state.error = action.payload
+      state.hasFetched = true
     },
   },
 })
 
-export const { fetchProducts, fetchProductsSuccess, fetchProductsFailed } = productsSlice.actions
+export const { resetProducts, fetchProducts, fetchProductsSuccess, fetchProductsFailed } = productsSlice.actions
 export default productsSlice.reducer

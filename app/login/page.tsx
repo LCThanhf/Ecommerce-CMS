@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { loginUser } from '@/store/authSlice'
+import { resetProducts } from '@/store/productsSlice'
 import { findUser, saveSession } from '@/store/usersStorage'
 import type { AppDispatch } from '@/store/store'
 import logoIcon from '../assets/logo.png'
@@ -110,6 +111,7 @@ const LoginPage = () => {
       return
     }
 
+    dispatch(resetProducts())
     dispatch(loginUser({ username: user.username, email: user.email }))
     saveSession({ username: user.username, email: user.email })
     router.push('/shop')

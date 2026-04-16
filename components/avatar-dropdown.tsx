@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { LogOut, User } from 'lucide-react'
 import avatarIcon from '@/app/assets/avatar.png'
 import { logoutUser } from '@/store/authSlice'
+import { resetProducts } from '@/store/productsSlice'
 import { clearSession } from '@/store/usersStorage'
 import type { AppDispatch } from '@/store/store'
 
@@ -41,6 +42,7 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
 
   const handleLogout = () => {
     setOpen(false)
+    dispatch(resetProducts())
     dispatch(logoutUser())
     clearSession()
     router.push('/login')

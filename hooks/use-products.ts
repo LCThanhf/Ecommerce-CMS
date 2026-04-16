@@ -7,15 +7,15 @@ export type { Product } from '@/store/productsSlice'
 
 const useProducts = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { items: products, loading, error } = useSelector((state: RootState) => state.products)
+  const { items: products, loading, error, hasFetched } = useSelector((state: RootState) => state.products)
 
   useEffect(() => {
-    if (products.length === 0 && !loading && !error) {
+    if (!hasFetched && !loading) {
       dispatch(fetchProducts())
     }
-  }, [dispatch, products.length, loading, error])
+  }, [dispatch, hasFetched, loading])
 
-  return { products, loading, error }
+  return { products, loading, error, hasFetched }
 }
 
 export default useProducts
