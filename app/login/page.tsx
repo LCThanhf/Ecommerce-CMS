@@ -4,11 +4,11 @@ import Image from 'next/image'
 import { Eye, EyeOff, Lock, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { loginUser } from '@/store/authSlice'
 import { resetProducts } from '@/store/productsSlice'
-import { findUser, saveSession } from '@/store/usersStorage'
+import { findUser, getSession, saveSession } from '@/store/usersStorage'
 import type { AppDispatch } from '@/store/store'
 import logoIcon from '../assets/logo.png'
 import vectorBg from '../assets/Vector.png'
@@ -100,7 +100,14 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberLogin, setRememberLogin] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+
+  useEffect(() => {
+    if (getSession()) {
+      router.replace('/shop')
+    }
+  }, [router])
 
   const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -113,7 +120,7 @@ const LoginPage = () => {
 
     dispatch(resetProducts())
     dispatch(loginUser({ username: user.username, email: user.email }))
-    saveSession({ username: user.username, email: user.email })
+    saveSession({ username: user.username, email: user.email }, rememberLogin)
     router.push('/shop')
   }
 
@@ -164,6 +171,8 @@ const LoginPage = () => {
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
+                checked={rememberLogin}
+                onChange={(event) => setRememberLogin(event.target.checked)}
                 className="h-3.25 w-3.25 rounded-sm border-white/60"
               />
               <span>Lưu đăng nhập</span>
