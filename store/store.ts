@@ -1,25 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { createEpicMiddleware } from 'redux-observable'
 import type { Action } from '@reduxjs/toolkit'
-import searchReducer from './searchSlice'
-import filterReducer from './filterSlice'
-import cartReducer from './cartSlice'
-import authReducer from './authSlice'
-import toastReducer from './toastSlice'
-import productsReducer from './productsSlice'
-import { rootEpic } from './epics'
+import { rootReducer } from './rootReducer'
+import { rootEpic } from './rootEpic'
 
 const epicMiddleware = createEpicMiddleware<Action, Action, unknown>()
 
 export const store = configureStore({
-  reducer: {
-    search: searchReducer,
-    filter: filterReducer,
-    cart: cartReducer,
-    auth: authReducer,
-    toast: toastReducer,
-    products: productsReducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(epicMiddleware),
 })

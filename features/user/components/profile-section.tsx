@@ -4,8 +4,8 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/store/store'
-import avatarIcon from '../../assets/avatar.png'
-import calendarIcon from '../../assets/calendar.png'
+import avatarIcon from '@/app/assets/avatar.png'
+import calendarIcon from '@/app/assets/calendar.png'
 
 const GENDER_OPTIONS = ['Male', 'Female']
 

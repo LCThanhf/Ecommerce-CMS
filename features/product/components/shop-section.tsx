@@ -3,9 +3,9 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import galaxyA31 from '../../assets/samsung-galaxy-a31.png'
-import useProducts from '@/hooks/use-products'
-import type { Product } from '@/store/productsSlice'
+import galaxyA31 from '@/app/assets/samsung-galaxy-a31.png'
+import useProducts from '@/features/product/product.hooks'
+import type { Product } from '@/features/product/product.slice'
 
 
 const INITIAL_VISIBLE_COUNT = 16

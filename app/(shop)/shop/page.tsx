@@ -7,21 +7,21 @@ import { Menu, ChevronDown } from 'lucide-react'
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
-import { setSearchQuery } from '@/store/searchSlice'
-import { setFilter } from '@/store/filterSlice'
+import { setSearchQuery } from '@/features/search/search.slice'
+import { setFilter } from '@/features/filter/filter.slice'
 import type { RootState, AppDispatch } from '@/store/store'
-import logoIcon from '../assets/logo.png'
-import shopIcon from '../assets/shop.png'
-import cartIcon from '../assets/cart.png'
-import profileIcon from '../assets/profile.png'
-import searchIcon from '../assets/search.png'
-import filterIcon from '../assets/filter.png'
+import logoIcon from '../../assets/logo.png'
+import shopIcon from '../../assets/shop.png'
+import cartIcon from '../../assets/cart.png'
+import profileIcon from '../../assets/profile.png'
+import searchIcon from '../../assets/search.png'
+import filterIcon from '../../assets/filter.png'
 import AvatarDropdown from '@/components/avatar-dropdown'
-import useAuthGuard from '@/hooks/use-auth-guard'
+import useAuthGuard from '@/features/auth/auth.hooks'
 
-const ShopSection = dynamic(() => import('./sections/shop-section'))
-const CartSection = dynamic(() => import('./sections/cart-section'))
-const ProfileSection = dynamic(() => import('./sections/profile-section'))
+const ShopSection = dynamic(() => import('@/features/product/components/shop-section'))
+const CartSection = dynamic(() => import('@/features/cart/components/cart-section'))
+const ProfileSection = dynamic(() => import('@/features/user/components/profile-section'))
 
 const PRICE_OPTIONS = Array.from({ length: 11 }, (_, i) => i * 1_000_000)
 const RATING_OPTIONS = [0, 1, 2, 3, 4, 5]
@@ -108,7 +108,7 @@ const MainContent = ({
   )
 }
 
-const ShopPage = () => {
+const ShopPageContent = () => {
   useAuthGuard()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -334,6 +334,14 @@ const ShopPage = () => {
         </section>
       </div>
     </main>
+  )
+}
+
+const ShopPage = () => {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-neutral-500">Loading...</div>}>
+      <ShopPageContent />
+    </Suspense>
   )
 }
 

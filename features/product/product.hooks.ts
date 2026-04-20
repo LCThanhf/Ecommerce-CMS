@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchProducts } from '@/store/productsSlice'
+import { fetchProducts } from '@/features/product/product.slice'
 import type { AppDispatch, RootState } from '@/store/store'
 
-export type { Product } from '@/store/productsSlice'
+export type { Product } from '@/features/product/product.slice'
 
 const useProducts = () => {
   const dispatch = useDispatch<AppDispatch>()

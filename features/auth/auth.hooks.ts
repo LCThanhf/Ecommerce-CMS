@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/store/store'
-import { getSession } from '@/store/usersStorage'
+import { getSession } from '@/features/auth/auth.storage'
 
 const useAuthGuard = () => {
   const router = useRouter()
