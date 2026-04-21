@@ -91,7 +91,7 @@ const RatingStar = ({ className = '' }: { className?: string }) => {
 }
 
 const ProductDetailClient = ({ id }: { id: string }) => {
-  useAuthGuard()
+  const { isReady } = useAuthGuard()
   const router = useRouter()
 
   const productId = Number(id)
@@ -119,6 +119,18 @@ const ProductDetailClient = ({ id }: { id: string }) => {
       priceFormatted,
       qty: 1,
     }))
+  }
+
+  // Show spinner until auth hydration is confirmed to prevent content flash.
+  if (!isReady) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 border-t-[#00b7ee]" />
+          <p className="text-base text-neutral-400">Loading…</p>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -109,7 +109,7 @@ const MainContent = ({
 }
 
 const ShopPageContent = () => {
-  useAuthGuard()
+  const { isReady } = useAuthGuard()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const router = useRouter()
@@ -131,6 +131,18 @@ const ShopPageContent = () => {
 
   const currentViewLabel = navItems.find((item) => item.key === activeView)?.label ?? 'Shop'
   const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel
+
+  // Show spinner until auth hydration is confirmed to prevent content flash.
+  if (!isReady) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-neutral-200 border-t-[#00b7ee]" />
+          <p className="text-base text-neutral-400">Loading…</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <main className="h-screen overflow-hidden bg-[#ffffff] text-neutral-900">
