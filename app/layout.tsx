@@ -30,7 +30,7 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${roboto.className} font-sans antialiased`}>
+      <body className={`${roboto.className} font-sans antialiased`} suppressHydrationWarning>
         <ReduxProvider>
           {children}
         </ReduxProvider>
