@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import { Subject } from 'rxjs'
 import type { Action } from '@reduxjs/toolkit'
 import { cartPersistEpic, cartToastEpic } from './cart.epic'
-import { addItem, removeItem, updateQty } from './cart.slice'
+import { addItem, addItemSilent, removeItem, updateQty } from './cart.slice'
 import { showToast, hideToast } from '@/features/toast/toast.slice'
 import type { CartItem } from './cart.slice'
 
@@ -130,7 +130,7 @@ describe('cartToastEpic', () => {
     )
 
     // addItemSilent should not trigger the toast epic (it only listens to addItem.type)
-    action$.next({ type: 'cart/addItemSilent', payload: SAMPLE_ITEM })
+    action$.next(addItemSilent(SAMPLE_ITEM))
 
     expect(emitted).toHaveLength(0)
   })
