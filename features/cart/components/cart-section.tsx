@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
-import { removeItem as removeItemAction, updateQty as updateQtyAction } from '@/features/cart/cart.slice'
+import { removeItem as removeItemAction, updateQty as updateQtyAction } from '@/features/cart/store/cart.slice'
 import type { RootState, AppDispatch } from '@/store/store'
 import galaxyA31 from '@/app/assets/samsung-galaxy-a31.png'
 

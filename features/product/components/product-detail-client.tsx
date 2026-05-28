@@ -6,7 +6,7 @@ import { Menu } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
-import { addItem, addItemSilent, selectCartCount } from '@/features/cart/cart.slice'
+import { addItem, addItemSilent, selectCartCount } from '@/features/cart/store/cart.slice'
 import type { AppDispatch, RootState } from '@/store/store'
 import logoIcon from '@/app/assets/logo.png'
 import shopIcon from '@/app/assets/shop.png'
@@ -18,7 +18,7 @@ import galaxyA31Den from '@/app/assets/samsung-galaxy-a31-den.png'
 import galaxyA31Trang from '@/app/assets/samsung-galaxy-a31-trang.png'
 import AvatarDropdown from '@/components/avatar-dropdown'
 import ToastNotification from '@/components/toast-notification'
-import useAuthGuard from '@/features/auth/auth.hooks'
+import useAuthGuard from '@/features/auth/store/auth.hooks'
 
 const PRODUCT_NAMES = [
   'Samsung Galaxy A31',

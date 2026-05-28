@@ -3,7 +3,7 @@ import { screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 import { renderWithStore } from '@/test-utils'
 import ShopSection from './shop-section'
-import type { Product } from '../product.slice'
+import type { Product } from '../store/product.slice'
 
 // ── Next.js mocks ──────────────────────────────────────────────────────────
 const mockPush = vi.fn()

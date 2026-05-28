@@ -34,7 +34,7 @@ vi.mock('next/dynamic', () => ({
 }))
 
 // ── Auth Guard Mock ────────────────────────────────────────────────────────
-vi.mock('@/features/auth/auth.hooks', () => ({
+vi.mock('@/features/auth/store/auth.hooks', () => ({
   default: () => {},
 }))
 

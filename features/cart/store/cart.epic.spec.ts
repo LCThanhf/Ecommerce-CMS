@@ -3,7 +3,7 @@ import { Subject } from 'rxjs'
 import type { Action } from '@reduxjs/toolkit'
 import { cartPersistEpic, cartToastEpic } from './cart.epic'
 import { addItem, addItemSilent, removeItem, updateQty } from './cart.slice'
-import { showToast, hideToast } from '@/features/toast/toast.slice'
+import { showToast, hideToast } from '@/features/toast/store/toast.slice'
 import type { CartItem } from './cart.slice'
 
 const SAMPLE_ITEM: CartItem = {

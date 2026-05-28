@@ -3,7 +3,7 @@ import { screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 import { renderWithStore } from '@/test-utils'
 import CartSection from './cart-section'
-import type { CartItem } from '../cart.slice'
+import type { CartItem } from '../store/cart.slice'
 
 // ── Next.js mocks ──────────────────────────────────────────────────────────
 const mockPush = vi.fn()

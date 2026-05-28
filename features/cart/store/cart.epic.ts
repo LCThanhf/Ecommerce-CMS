@@ -3,7 +3,7 @@ import { debounceTime, delay, mergeMap, switchMap, tap, withLatestFrom } from 'r
 import { EMPTY, concat, of } from 'rxjs'
 import type { Action } from '@reduxjs/toolkit'
 import { addItem, addItemSilent, removeItem, updateQty, type CartItem } from './cart.slice'
-import { showToast, hideToast } from '@/features/toast/toast.slice'
+import { showToast, hideToast } from '@/features/toast/store/toast.slice'
 
 export const cartPersistEpic: Epic<Action, Action, unknown> = (action$, state$) =>
   action$.pipe(

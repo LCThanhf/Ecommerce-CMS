@@ -6,9 +6,9 @@ import { useDispatch } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import { LogOut, User } from 'lucide-react'
 import avatarIcon from '@/app/assets/avatar.png'
-import { logoutUser } from '@/features/auth/auth.slice'
-import { resetProducts } from '@/features/product/product.slice'
-import { clearSession } from '@/features/auth/auth.storage'
+import { logoutUser } from '@/features/auth/store/auth.slice'
+import { resetProducts } from '@/features/product/store/product.slice'
+import { clearSession } from '@/features/auth/store/auth.storage'
 import type { AppDispatch } from '@/store/store'
 
 type AvatarDropdownProps = {

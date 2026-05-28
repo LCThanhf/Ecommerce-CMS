@@ -11,12 +11,12 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: mockReplace }),
 }))
 
-vi.mock('@/features/auth/auth.storage', () => ({
+vi.mock('@/features/auth/store/auth.storage', () => ({
   getSession: vi.fn(() => null),
 }))
 
 // Must use the same specifier as vi.mock so vi.mocked() operates on the mock, not the real function
-import { getSession } from '@/features/auth/auth.storage'
+import { getSession } from '@/features/auth/store/auth.storage'
 
 describe('useAuthGuard', () => {
   beforeEach(() => {

@@ -3,9 +3,9 @@
 import { useEffect } from 'react'
 import { Provider, useDispatch } from 'react-redux'
 import { store } from './store'
-import { hydrateCart, markCartHydrated } from '@/features/cart/cart.slice'
-import { loginUser, markAuthHydrated } from '@/features/auth/auth.slice'
-import { getSession } from '@/features/auth/auth.storage'
+import { hydrateCart, markCartHydrated } from '@/features/cart/store/cart.slice'
+import { loginUser, markAuthHydrated } from '@/features/auth/store/auth.slice'
+import { getSession } from '@/features/auth/store/auth.storage'
 import type { AppDispatch } from './store'
 
 const CartHydrator = () => {

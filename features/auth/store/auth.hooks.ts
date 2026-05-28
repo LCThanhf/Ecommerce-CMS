@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/store/store'
-import { getSession } from '@/features/auth/auth.storage'
+import { getSession } from '@/features/auth/store/auth.storage'
 
 // Redirects to /login after auth hydration. Returns isReady to block render until confirmed.
 const useAuthGuard = (): { isReady: boolean } => {
