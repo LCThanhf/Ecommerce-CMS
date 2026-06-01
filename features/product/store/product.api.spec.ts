@@ -1,5 +1,13 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { fetchPosts } from './product.api'
+import { ajax } from 'rxjs/ajax'
+import { of, throwError, firstValueFrom } from 'rxjs'
+
+vi.mock('rxjs/ajax', () => ({
+  ajax: {
+    getJSON: vi.fn(),
+  },
+}))
 
 const MOCK_POSTS = [
   { id: 1, title: 'Post 1', body: 'Body 1', userId: 1 },
@@ -9,39 +17,26 @@ const MOCK_POSTS = [
 describe('product.api', () => {
   afterEach(() => {
     vi.restoreAllMocks()
-    vi.unstubAllGlobals() // vi.restoreAllMocks() does NOT undo stubGlobal
   })
 
   it('should call the correct API endpoint', async () => {
-    const mockFetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(MOCK_POSTS),
-    })
-    vi.stubGlobal('fetch', mockFetch)
+    vi.mocked(ajax.getJSON).mockReturnValue(of(MOCK_POSTS))
 
-    await fetchPosts()
-    expect(mockFetch).toHaveBeenCalledWith('https://jsonplaceholder.typicode.com/posts')
+    await firstValueFrom(fetchPosts())
+    expect(ajax.getJSON).toHaveBeenCalledWith('https://jsonplaceholder.typicode.com/posts')
   })
 
   it('should return the list of posts on success', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(MOCK_POSTS),
-    }))
+    vi.mocked(ajax.getJSON).mockReturnValue(of(MOCK_POSTS))
 
-    const posts = await fetchPosts()
+    const posts = await firstValueFrom(fetchPosts())
     expect(posts).toHaveLength(2)
     expect(posts[0].id).toBe(1)
     expect(posts[0].title).toBe('Post 1')
   })
 
-  it('should throw when the server returns a non-ok status', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }))
-    await expect(fetchPosts()).rejects.toThrow('Bad response')
-  })
-
-  it('should throw on a network failure', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Failed to fetch')))
-    await expect(fetchPosts()).rejects.toThrow('Failed to fetch')
+  it('should propagate errors when the API fails', async () => {
+    vi.mocked(ajax.getJSON).mockReturnValue(throwError(() => new Error('Failed to fetch')))
+    await expect(firstValueFrom(fetchPosts())).rejects.toThrow('Failed to fetch')
   })
 })

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { Subject } from 'rxjs'
+import { Subject, of, throwError } from 'rxjs'
 import type { Action } from '@reduxjs/toolkit'
 import { fetchProductsEpic } from './product.epic'
 import { fetchProducts, fetchProductsSuccess, fetchProductsFailed } from './product.slice'
@@ -15,7 +15,7 @@ describe('fetchProductsEpic', () => {
   })
 
   it('should dispatch fetchProductsSuccess with mapped products on a successful fetch', async () => {
-    vi.spyOn(productApi, 'fetchPosts').mockResolvedValue(MOCK_POSTS)
+    vi.spyOn(productApi, 'fetchPosts').mockReturnValue(of(MOCK_POSTS))
 
     const action$ = new Subject<Action>()
     const emitted: Action[] = []
@@ -37,7 +37,9 @@ describe('fetchProductsEpic', () => {
   })
 
   it('should dispatch fetchProductsFailed when fetchPosts throws', async () => {
-    vi.spyOn(productApi, 'fetchPosts').mockRejectedValue(new Error('Network error'))
+    vi.spyOn(productApi, 'fetchPosts').mockReturnValue(
+      throwError(() => new Error('Network error')),
+    )
 
     const action$ = new Subject<Action>()
     const emitted: Action[] = []
@@ -57,12 +59,11 @@ describe('fetchProductsEpic', () => {
   })
 
   it('should cancel an in-flight request when a new fetchProducts is dispatched', async () => {
-    let resolveFirst!: (v: typeof MOCK_POSTS) => void
-    const firstFetch = new Promise<typeof MOCK_POSTS>((res) => { resolveFirst = res })
+    const firstFetchSubject = new Subject<typeof MOCK_POSTS>()
 
     vi.spyOn(productApi, 'fetchPosts')
-      .mockReturnValueOnce(firstFetch)
-      .mockResolvedValueOnce([{ id: 2, title: 'Post 2', body: 'Body', userId: 1 }])
+      .mockReturnValueOnce(firstFetchSubject)
+      .mockReturnValueOnce(of([{ id: 2, title: 'Post 2', body: 'Body', userId: 1 }]))
 
     const action$ = new Subject<Action>()
     const emitted: Action[] = []
@@ -75,7 +76,7 @@ describe('fetchProductsEpic', () => {
     action$.next(fetchProducts()) // second request cancels the first (switchMap)
 
     await vi.waitFor(() => emitted.length > 0)
-    resolveFirst(MOCK_POSTS) // resolve first — should be ignored
+    firstFetchSubject.next(MOCK_POSTS) // emit first request result — should be ignored
 
     // Only the second request result should arrive
     await new Promise((r) => setTimeout(r, 20))

@@ -1,9 +1,8 @@
+import { ajax } from 'rxjs/ajax'
+import type { Observable } from 'rxjs'
 import type { Post } from './product.slice'
 
-export const fetchPosts = async (): Promise<Post[]> => {
-  const response = await fetch('https://jsonplaceholder.typicode.com/posts')
-  if (!response.ok) {
-    throw new Error('Bad response')
-  }
-  return response.json() as Promise<Post[]>
+export const fetchPosts = (): Observable<Post[]> => {
+  return ajax.getJSON<Post[]>('https://jsonplaceholder.typicode.com/posts')
 }
+
