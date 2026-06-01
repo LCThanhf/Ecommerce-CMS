@@ -1,79 +1,11 @@
 'use client'
 
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import galaxyA31 from '@/app/assets/samsung-galaxy-a31.png'
+import { useEffect, useMemo, useState } from 'react'
 import useProducts from '@/features/product/store/product.hooks'
-import type { Product } from '@/features/product/store/product.slice'
+import ProductRow from './product-row'
 
-
-const INITIAL_VISIBLE_COUNT = 16
-const LOAD_MORE_COUNT = 4
-const LOAD_DELAY_MS = 700
-
-const RatingStar = ({ className = '' }: { className?: string }) => {
-  return (
-    <svg
-      viewBox="0 0 59 60"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M47.7227 59.9961L29.4928 49.7439L11.2586 59.9886L14.7446 38.2831L-0.00270414 22.9072L20.3817 19.7446L29.5016 -0.00265632L38.6141 19.7488L58.9973 22.92L44.2447 38.2892L47.7227 59.9961Z"
-        fill="#FFCC00"
-      />
-      <path
-        d="M38.6758 19.623C29.444 33.0596 29.3438 33.2058 29.3438 33.2058L58.9352 22.845L38.6758 19.623Z"
-        fill="#FFE680"
-      />
-      <path d="M29.4955 32.917V49.7877L11.0774 59.8945L29.4955 32.917Z" fill="#FFDD55" />
-      <path d="M29.4955 32.917L47.6047 59.3803L44.2057 37.9488L29.4955 32.917Z" fill="#FFDD55" />
-      <path d="M0.117065 22.8678L29.4971 32.9177L20.4195 19.6523L0.117065 22.8678Z" fill="#FFE680" />
-      <path d="M29.4955 32.917V0.0409241L38.5572 19.6448L29.4955 32.917Z" fill="#FFDD55" />
-      <path d="M11.2657 59.622L14.6866 38.0095L29.498 32.917L11.2657 59.622Z" fill="#FFD42A" />
-    </svg>
-  )
-}
-
-const PhoneThumbnail = () => {
-  return (
-    <div className="relative h-36 w-28 md:h-44 md:w-32">
-      <Image
-        src={galaxyA31}
-        alt="Samsung Galaxy A31"
-        fill
-        loading="lazy"
-        sizes="(max-width: 768px) 112px, 128px"
-        className="rounded-sm object-contain"
-      />
-    </div>
-  )
-}
-
-const ProductRow = ({ product, onOpenDetails }: { product: Product; onOpenDetails: (id: number) => void }) => {
-  return (
-    <button
-      type="button"
-      onClick={() => onOpenDetails(product.id)}
-      className="flex w-fit gap-3 rounded-md px-1 py-2 text-left transition hover:bg-white/40 md:gap-4"
-    >
-      <PhoneThumbnail />
-
-      <div className="flex flex-col justify-center">
-        <h3 className="text-lg leading-none font-semibold text-neutral-900 md:text-2xl">{product.name}</h3>
-        <p className="mt-2 text-2xl leading-none font-extrabold text-neutral-900 md:mt-4 md:text-4xl">{product.price}</p>
-        <div className="mt-2 flex items-center gap-1 text-amber-400">
-          {Array.from({ length: product.rating }).map((_, index) => (
-            <RatingStar key={index} className="h-10 w-10 shrink-0 md:h-14 md:w-14" />
-          ))}
-        </div>
-      </div>
-    </button>
-  )
-}
+const ITEMS_PER_PAGE = 10
 
 const ShopSection = ({
   searchQuery = '',
@@ -90,10 +22,7 @@ const ShopSection = ({
 }) => {
   const router = useRouter()
   const { products, loading, error, hasFetched } = useProducts()
-  const sentinelRef = useRef<HTMLDivElement | null>(null)
-  const loadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const isLoadingMoreRef = useRef(false)
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const openDetails = (id: number) => {
     router.push(`/shop/product/${id}`)
@@ -112,82 +41,81 @@ const ShopSection = ({
     })
   }, [products, normalizedQuery, priceFrom, priceTo, ratingFrom, ratingTo])
 
+  // Reset page to 1 whenever filtering/searching criteria change
   useEffect(() => {
-    setVisibleCount(INITIAL_VISIBLE_COUNT)
-    isLoadingMoreRef.current = false
-    if (loadTimerRef.current) {
-      clearTimeout(loadTimerRef.current)
-      loadTimerRef.current = null
-    }
+    setCurrentPage(1)
   }, [normalizedQuery, priceFrom, priceTo, ratingFrom, ratingTo])
 
-  const productsToRender = useMemo(
-    () => filteredProducts.slice(0, visibleCount),
-    [filteredProducts, visibleCount]
-  )
-  const hasMore = visibleCount < filteredProducts.length
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE)
 
-  useEffect(() => {
-    if (!hasMore || !sentinelRef.current) {
-      return
-    }
-
-    const scrollRoot = document.getElementById('shop-scroll-container')
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0]?.isIntersecting || isLoadingMoreRef.current) {
-          return
-        }
-
-        isLoadingMoreRef.current = true
-        loadTimerRef.current = setTimeout(() => {
-          setVisibleCount((previousCount) =>
-            Math.min(previousCount + LOAD_MORE_COUNT, filteredProducts.length)
-          )
-          isLoadingMoreRef.current = false
-        }, LOAD_DELAY_MS)
-      },
-      {
-        root: scrollRoot,
-        rootMargin: '160px 0px'
-      }
-    )
-
-    observer.observe(sentinelRef.current)
-
-    return () => {
-      if (loadTimerRef.current) {
-        clearTimeout(loadTimerRef.current)
-        loadTimerRef.current = null
-      }
-      isLoadingMoreRef.current = false
-      observer.disconnect()
-    }
-  }, [filteredProducts.length, hasMore])
+  const productsToRender = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  }, [filteredProducts, currentPage])
 
   return (
-    <div className="h-full">
-      {loading || !hasFetched ? (
-        <div className="flex h-full items-center justify-center">
-          <p className="text-xl text-neutral-500">Đang tải sản phẩm...</p>
-        </div>
-      ) : error ? (
-        <div className="rounded-md border border-dashed border-red-300 bg-red-50 p-6 text-center text-lg text-red-600">{error}</div>
-      ) : filteredProducts.length === 0 ? (
-        <div className="flex h-full items-center justify-center">
-          <p className="text-xl text-neutral-500">No products found.</p>
-        </div>
-      ) : (
-        <>
+    <div className="flex h-full flex-col justify-between">
+      <div>
+        {loading || !hasFetched ? (
+          <div className="flex h-full min-h-[400px] items-center justify-center">
+            <p className="text-xl text-neutral-500">Đang tải sản phẩm...</p>
+          </div>
+        ) : error ? (
+          <div className="rounded-md border border-dashed border-red-300 bg-red-50 p-6 text-center text-lg text-red-600">
+            {error}
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="flex h-full min-h-[400px] items-center justify-center">
+            <p className="text-xl text-neutral-500">No products found.</p>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 gap-y-4 pb-6 xl:grid-cols-[max-content_max-content] xl:justify-start xl:gap-x-30">
             {productsToRender.map((product) => (
               <ProductRow key={product.id} product={product} onOpenDetails={openDetails} />
             ))}
           </div>
+        )}
+      </div>
 
-          {hasMore ? <div ref={sentinelRef} className="h-10 w-full" aria-hidden="true" /> : null}
-        </>
+      {/* Pagination Controls */}
+      {totalPages > 1 && !loading && hasFetched && (
+        <div className="mt-8 flex items-center justify-center gap-2 pb-6">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="flex h-10 w-10 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50 disabled:opacity-50 disabled:hover:bg-white"
+            aria-label="Previous Page"
+          >
+            &lt;
+          </button>
+
+          {Array.from({ length: totalPages }).map((_, index) => {
+            const pageNum = index + 1
+            const isActive = pageNum === currentPage
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`flex h-10 w-10 items-center justify-center rounded-md border text-sm font-semibold transition ${
+                  isActive
+                    ? 'border-neutral-900 bg-neutral-900 text-white'
+                    : 'border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50'
+                }`}
+              >
+                {pageNum}
+              </button>
+            )
+          })}
+
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="flex h-10 w-10 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50 disabled:opacity-50 disabled:hover:bg-white"
+            aria-label="Next Page"
+          >
+            &gt;
+          </button>
+        </div>
       )}
     </div>
   )
