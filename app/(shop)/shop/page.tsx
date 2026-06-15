@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSearchQuery } from '@/features/search/store/search.slice'
 import { setFilter } from '@/features/filter/store/filter.slice'
+import ProductFilters from '@/features/product/components/product-filters'
 import type { RootState, AppDispatch } from '@/store/store'
 import logoIcon from '../../assets/logo.png'
 import shopIcon from '../../assets/shop.png'
@@ -23,13 +24,6 @@ const ShopSection = dynamic(() => import('@/features/product/components/shop-sec
 const CartSection = dynamic(() => import('@/features/cart/components/cart-section'))
 const ProfileSection = dynamic(() => import('@/features/user/components/profile-section'))
 
-const PRICE_OPTIONS = Array.from({ length: 11 }, (_, i) => i * 1_000_000)
-const RATING_OPTIONS = [0, 1, 2, 3, 4, 5]
-
-const formatVND = (value: number): string => {
-  if (value === 0) return '0 VN\u0110'
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VN\u0110'
-}
 
 type FilterState = {
   priceFrom: number
@@ -243,83 +237,12 @@ const ShopPageContent = () => {
                   <Image src={filterIcon} alt="Filter" className="h-8 w-8 object-contain md:h-10 md:w-10" />
                 </button>
 
-                {isFilterOpen ? (
-                  <div className="absolute right-0 top-full z-50 mt-1 w-64 border border-neutral-200 bg-white px-5 py-4 shadow-lg">
-                    {/* Price Filter */}
-                    <div className="mb-4">
-                      <p className="mb-2 text-center text-sm font-normal text-neutral-500">Giá</p>
-                      <div className="mb-2 flex items-center gap-3">
-                        <span className="w-9 shrink-0 text-sm text-neutral-500">Từ:</span>
-                        <div className="relative flex-1">
-                          <select
-                            value={filter.priceFrom}
-                            onChange={(e) => dispatch(setFilter({ ...filter, priceFrom: Number(e.target.value) }))}
-                            aria-label="Giá từ"
-                            className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
-                          >
-                            {PRICE_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>{formatVND(opt)}</option>
-                            ))}
-                          </select>
-                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="w-9 shrink-0 text-sm text-neutral-500">Đến:</span>
-                        <div className="relative flex-1">
-                          <select
-                            value={filter.priceTo}
-                            onChange={(e) => dispatch(setFilter({ ...filter, priceTo: Number(e.target.value) }))}
-                            aria-label="Giá đến"
-                            className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
-                          >
-                            {PRICE_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>{formatVND(opt)}</option>
-                            ))}
-                          </select>
-                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Rating Filter */}
-                    <div>
-                      <p className="mb-2 text-center text-sm font-normal text-neutral-500">Đánh giá</p>
-                      <div className="mb-2 flex items-center gap-3">
-                        <span className="w-9 shrink-0 text-sm text-neutral-500">Từ:</span>
-                        <div className="relative flex-1">
-                          <select
-                            value={filter.ratingFrom}
-                            onChange={(e) => dispatch(setFilter({ ...filter, ratingFrom: Number(e.target.value) }))}
-                            aria-label="Đánh giá từ"
-                            className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
-                          >
-                            {RATING_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>{opt} Sao</option>
-                            ))}
-                          </select>
-                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="w-9 shrink-0 text-sm text-neutral-500">Đến:</span>
-                        <div className="relative flex-1">
-                          <select
-                            value={filter.ratingTo}
-                            onChange={(e) => dispatch(setFilter({ ...filter, ratingTo: Number(e.target.value) }))}
-                            aria-label="Đánh giá đến"
-                            className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
-                          >
-                            {RATING_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>{opt} Sao</option>
-                            ))}
-                          </select>
-                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-600" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
+                {isFilterOpen && (
+                  <ProductFilters
+                    filter={filter}
+                    onFilterChange={(newFilter) => dispatch(setFilter(newFilter))}
+                  />
+                )}
                 </div>
             </div>}
           </div>
