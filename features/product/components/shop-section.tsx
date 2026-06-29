@@ -47,6 +47,14 @@ const ShopSection = ({
     setCurrentPage(1)
   }, [normalizedQuery, priceFrom, priceTo, ratingFrom, ratingTo])
 
+  // Scroll to top of products when page changes
+  useEffect(() => {
+    const scrollContainer = document.getElementById('shop-scroll-container')
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0
+    }
+  }, [currentPage])
+
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE)
 
   const productsToRender = useMemo(() => {
@@ -55,7 +63,7 @@ const ShopSection = ({
   }, [filteredProducts, currentPage])
 
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="flex min-h-full flex-col justify-between">
       <div>
         {loading || !hasFetched ? (
           <div className="flex h-full min-h-[400px] items-center justify-center">

@@ -14,7 +14,7 @@ export const PaginationControls = ({
   if (totalPages <= 1) return null
 
   return (
-    <div className="mt-8 flex items-center justify-center gap-2 pb-6">
+    <div className="sticky bottom-0 z-10 mt-auto flex items-center justify-center gap-2 border-t border-neutral-200/85 bg-white/95 pt-4 pb-7 backdrop-blur-xs shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.05)] -mx-4 md:-mx-5 px-4 md:px-5">
       <button
         onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
         disabled={currentPage === 1}

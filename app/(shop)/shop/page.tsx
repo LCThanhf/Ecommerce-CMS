@@ -247,7 +247,7 @@ const ShopPageContent = () => {
             </div>}
           </div>
 
-          <div id="shop-scroll-container" className={`overflow-y-auto px-4 pb-4 md:px-5 ${activeView === 'shop' ? 'h-[calc(100%-6.5rem)]' : 'h-[calc(100%-3.5rem)]'}`}>
+          <div id="shop-scroll-container" className={`overflow-y-auto px-4 md:px-5 ${activeView === 'shop' ? 'h-[calc(100%-6.5rem)] pb-0' : 'h-[calc(100%-3.5rem)] pb-4'}`}>
             <MainContent
               view={activeView}
               searchQuery={debouncedQuery}
