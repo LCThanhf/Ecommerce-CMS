@@ -19,6 +19,8 @@ import searchIcon from '../../assets/search.png'
 import filterIcon from '../../assets/filter.png'
 import AvatarDropdown from '@/components/avatar-dropdown'
 import useAuthGuard from '@/features/auth/store/auth.hooks'
+import TranslateButton from '@/components/translate-button'
+import { useTranslation } from '@/hooks/use-translation'
 
 const ShopSection = dynamic(() => import('@/features/product/components/shop-section'))
 const CartSection = dynamic(() => import('@/features/cart/components/cart-section'))
@@ -104,6 +106,7 @@ const MainContent = ({
 
 const ShopPageContent = () => {
   useAuthGuard()
+  const { t } = useTranslation()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const router = useRouter()
@@ -123,8 +126,8 @@ const ShopPageContent = () => {
     router.push(`/shop?view=${view}`)
   }
 
-  const currentViewLabel = navItems.find((item) => item.key === activeView)?.label ?? 'Shop'
-  const stripSubtitle = activeView === 'shop' ? 'Shop' : currentViewLabel
+  const currentViewLabel = t(activeView)
+  const stripSubtitle = activeView === 'shop' ? t('shop') : currentViewLabel
 
   return (
     <main className="h-screen overflow-hidden bg-[#ffffff] text-neutral-900">
@@ -145,7 +148,10 @@ const ShopPageContent = () => {
             <h1 className="text-xl leading-none font-normal sm:text-3xl md:text-[2.5rem]">Mobile Shopping</h1>
           </div>
 
-          <AvatarDropdown onProfileClick={() => setView('profile')} />
+          <div className="flex items-center gap-3">
+            <TranslateButton />
+            <AvatarDropdown onProfileClick={() => setView('profile')} />
+          </div>
         </div>
       </header>
 
@@ -186,14 +192,14 @@ const ShopPageContent = () => {
                 >
                   <Image
                     src={item.icon}
-                    alt={item.label}
+                    alt={t(item.key)}
                     className={`h-8 w-8 shrink-0 object-contain md:h-9 md:w-9 ${
                       isActive
                         ? 'filter-[invert(52%)_sepia(93%)_saturate(1695%)_hue-rotate(159deg)_brightness(95%)_contrast(98%)]'
                         : ''
                     }`}
                   />
-                  {!isCollapsed ? <span className="hidden sm:inline">{item.label}</span> : null}
+                  {!isCollapsed ? <span className="hidden sm:inline">{t(item.key)}</span> : null}
                 </button>
               )
             })}
@@ -214,7 +220,7 @@ const ShopPageContent = () => {
                     value={searchQuery}
                     onChange={(event) => dispatch(setSearchQuery(event.target.value))}
                     className="h-10 w-full px-3 text-base text-neutral-800 outline-none md:h-11 md:text-lg"
-                    placeholder="Search..."
+                    placeholder={t('search')}
                     aria-label="Search products"
                   />
                   <button

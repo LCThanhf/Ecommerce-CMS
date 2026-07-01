@@ -10,6 +10,7 @@ import { logoutUser } from '@/features/auth/store/auth.slice'
 import { resetProducts } from '@/features/product/store/product.slice'
 import { clearSession } from '@/features/auth/store/auth.storage'
 import type { AppDispatch } from '@/store/store'
+import { useTranslation } from '@/hooks/use-translation'
 
 type AvatarDropdownProps = {
   onProfileClick?: () => void
@@ -18,6 +19,7 @@ type AvatarDropdownProps = {
 const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -69,7 +71,7 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
             className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-neutral-900 transition hover:bg-neutral-100 md:text-lg"
           >
             <User className="h-4 w-4 shrink-0 text-neutral-600 md:h-5 md:w-5" />
-            My Profile
+            {t('profile')}
           </button>
           <div className="border-t border-neutral-200" />
           <button
@@ -78,7 +80,7 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
             className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-red-600 transition hover:bg-neutral-100 md:text-lg"
           >
             <LogOut className="h-4 w-4 shrink-0 text-red-600 md:h-5 md:w-5" />
-            Log out
+            {t('logout')}
           </button>
         </div>
       )}

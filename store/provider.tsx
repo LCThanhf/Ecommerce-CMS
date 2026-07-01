@@ -6,6 +6,8 @@ import { store } from './store'
 import { hydrateCart, markCartHydrated } from '@/features/cart/store/cart.slice'
 import { loginUser, markAuthHydrated } from '@/features/auth/store/auth.slice'
 import { getSession } from '@/features/auth/store/auth.storage'
+import { hydrateLanguage, markLanguageHydrated } from '@/features/language/store/language.slice'
+import type { Language } from '@/features/language/store/language.slice'
 import type { AppDispatch } from './store'
 
 const CartHydrator = () => {
@@ -36,11 +38,25 @@ const AuthHydrator = () => {
   return null
 }
 
+const LanguageHydrator = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  useEffect(() => {
+    const stored = localStorage.getItem('ms-language') as Language | null
+    if (stored === 'en' || stored === 'vi') {
+      dispatch(hydrateLanguage(stored))
+    } else {
+      dispatch(markLanguageHydrated())
+    }
+  }, [dispatch])
+  return null
+}
+
 export const ReduxProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={store}>
       <CartHydrator />
       <AuthHydrator />
+      <LanguageHydrator />
       {children}
     </Provider>
   )

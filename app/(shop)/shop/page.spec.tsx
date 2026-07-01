@@ -115,16 +115,16 @@ describe('ShopPage', () => {
     const filterButton = screen.getByLabelText('Filter')
     
     // Closed initially
-    expect(screen.queryByText('Giá')).not.toBeInTheDocument()
+    expect(screen.queryByText('Price')).not.toBeInTheDocument()
 
     // Open
     fireEvent.click(filterButton)
-    expect(screen.getByText('Giá')).toBeInTheDocument()
-    expect(screen.getByText('Đánh giá')).toBeInTheDocument()
+    expect(screen.getByText('Price')).toBeInTheDocument()
+    expect(screen.getByText('Rating')).toBeInTheDocument()
 
     // Close
     fireEvent.click(filterButton)
-    expect(screen.queryByText('Giá')).not.toBeInTheDocument()
+    expect(screen.queryByText('Price')).not.toBeInTheDocument()
   })
 
   it('should dispatch setFilter when price/rating dropdowns change in filter popup', () => {
@@ -135,12 +135,12 @@ describe('ShopPage', () => {
     fireEvent.click(filterButton)
 
     // Change Price From dropdown
-    const priceFromSelect = screen.getByLabelText('Giá từ')
+    const priceFromSelect = screen.getByLabelText('Price from')
     fireEvent.change(priceFromSelect, { target: { value: '2000000' } })
     expect(store.getState().filter.filter.priceFrom).toBe(2000000)
 
     // Change Rating To dropdown
-    const ratingToSelect = screen.getByLabelText('Đánh giá đến')
+    const ratingToSelect = screen.getByLabelText('Rating to')
     fireEvent.change(ratingToSelect, { target: { value: '4' } })
     expect(store.getState().filter.filter.ratingTo).toBe(4)
   })

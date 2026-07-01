@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import type { RootState } from '@/store/store'
 import avatarIcon from '@/app/assets/avatar.png'
 import calendarIcon from '@/app/assets/calendar.png'
+import { useTranslation } from '@/hooks/use-translation'
 
 const GENDER_OPTIONS = ['Male', 'Female']
 
@@ -17,6 +18,7 @@ const formatDisplayDate = (isoDate: string): string => {
 
 const ProfileSection = () => {
   const hasAuthHydrated = useSelector((state: RootState) => state.auth.hasHydrated)
+  const { t } = useTranslation()
   const [dob, setDob] = useState('2018-01-01')
   const [gender, setGender] = useState('Male')
   const [addressCompany, setAddressCompany] = useState(
@@ -58,7 +60,7 @@ const ProfileSection = () => {
         {/* Date of birth */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
           <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
-            Date of birth:
+            {t('dob')}
           </span>
           <div className="inline-flex items-end gap-2 border-b border-neutral-800 pb-0">
             <span className="text-base leading-none text-neutral-800 md:text-lg">
@@ -85,7 +87,7 @@ const ProfileSection = () => {
         {/* Sex / Gender */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
           <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
-            Sex:
+            {t('sex')}
           </span>
           <div className="relative inline-flex items-center">
             <select
@@ -96,7 +98,7 @@ const ProfileSection = () => {
             >
               {GENDER_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
-                  {opt}
+                  {opt === 'Male' ? t('male') : t('female')}
                 </option>
               ))}
             </select>
@@ -115,7 +117,7 @@ const ProfileSection = () => {
         {/* Address Company */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
           <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
-            Address Company:
+            {t('address-company')}
           </span>
           <span className="relative inline-block border-b border-neutral-800 pb-1 w-full sm:w-auto">
             <span aria-hidden className="invisible whitespace-pre text-base md:text-lg">{addressCompany || ' '}</span>
@@ -132,7 +134,7 @@ const ProfileSection = () => {
         {/* Address Home */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
           <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
-            Address Home:
+            {t('address-home')}
           </span>
           <span className="relative inline-block border-b border-neutral-800 pb-1 w-full sm:w-auto">
             <span aria-hidden className="invisible whitespace-pre text-base md:text-lg">{addressHome || ' '}</span>

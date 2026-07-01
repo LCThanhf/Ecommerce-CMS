@@ -1,5 +1,6 @@
 import React from 'react'
 import { ChevronDown } from 'lucide-react'
+import { useTranslation } from '@/hooks/use-translation'
 
 type FilterState = {
   priceFrom: number
@@ -25,6 +26,7 @@ export const ProductFilters = ({
   filter,
   onFilterChange,
 }: ProductFiltersProps) => {
+  const { t } = useTranslation()
   const handlePriceFromChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onFilterChange({ ...filter, priceFrom: Number(e.target.value) })
   }
@@ -45,14 +47,14 @@ export const ProductFilters = ({
     <div className="absolute right-0 top-full z-50 mt-1 w-64 border border-neutral-200 bg-white px-5 py-4 shadow-lg">
       {/* Price Filter */}
       <div className="mb-4">
-        <p className="mb-2 text-center text-sm font-normal text-neutral-500">Giá</p>
+        <p className="mb-2 text-center text-sm font-normal text-neutral-500">{t('price')}</p>
         <div className="mb-2 flex items-center gap-3">
-          <span className="w-9 shrink-0 text-sm text-neutral-500">Từ:</span>
+          <span className="w-9 shrink-0 text-sm text-neutral-500">{t('from')}</span>
           <div className="relative flex-1">
             <select
               value={filter.priceFrom}
               onChange={handlePriceFromChange}
-              aria-label="Giá từ"
+              aria-label={t('price-from')}
               className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
             >
               {PRICE_OPTIONS.map((opt) => (
@@ -65,12 +67,12 @@ export const ProductFilters = ({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="w-9 shrink-0 text-sm text-neutral-500">Đến:</span>
+          <span className="w-9 shrink-0 text-sm text-neutral-500">{t('to')}</span>
           <div className="relative flex-1">
             <select
               value={filter.priceTo}
               onChange={handlePriceToChange}
-              aria-label="Giá đến"
+              aria-label={t('price-to')}
               className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
             >
               {PRICE_OPTIONS.map((opt) => (
@@ -86,19 +88,19 @@ export const ProductFilters = ({
 
       {/* Rating Filter */}
       <div>
-        <p className="mb-2 text-center text-sm font-normal text-neutral-500">Đánh giá</p>
+        <p className="mb-2 text-center text-sm font-normal text-neutral-500">{t('rating')}</p>
         <div className="mb-2 flex items-center gap-3">
-          <span className="w-9 shrink-0 text-sm text-neutral-500">Từ:</span>
+          <span className="w-9 shrink-0 text-sm text-neutral-500">{t('from')}</span>
           <div className="relative flex-1">
             <select
               value={filter.ratingFrom}
               onChange={handleRatingFromChange}
-              aria-label="Đánh giá từ"
+              aria-label={t('rating-from')}
               className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
             >
               {RATING_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
-                  {opt} Sao
+                  {opt} {opt === 1 ? t('star') : t('stars')}
                 </option>
               ))}
             </select>
@@ -106,17 +108,17 @@ export const ProductFilters = ({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="w-9 shrink-0 text-sm text-neutral-500">Đến:</span>
+          <span className="w-9 shrink-0 text-sm text-neutral-500">{t('to')}</span>
           <div className="relative flex-1">
             <select
               value={filter.ratingTo}
               onChange={handleRatingToChange}
-              aria-label="Đánh giá đến"
+              aria-label={t('rating-to')}
               className="h-9 w-full appearance-none border border-neutral-300 bg-white pl-3 pr-8 text-sm text-neutral-800 outline-none"
             >
               {RATING_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
-                  {opt} Sao
+                  {opt} {opt === 1 ? t('star') : t('stars')}
                 </option>
               ))}
             </select>

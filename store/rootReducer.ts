@@ -5,6 +5,7 @@ import cartReducer from '@/features/cart/store/cart.slice'
 import authReducer from '@/features/auth/store/auth.slice'
 import toastReducer from '@/features/toast/store/toast.slice'
 import productsReducer from '@/features/product/store/product.slice'
+import languageReducer from '@/features/language/store/language.slice'
 
 export const rootReducer = combineReducers({
   search: searchReducer,
@@ -13,6 +14,7 @@ export const rootReducer = combineReducers({
   auth: authReducer,
   toast: toastReducer,
   products: productsReducer,
+  language: languageReducer,
 })
 
 export type RootReducerState = ReturnType<typeof rootReducer>

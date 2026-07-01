@@ -20,6 +20,8 @@ import AvatarDropdown from '@/components/avatar-dropdown'
 import ToastNotification from '@/components/toast-notification'
 import useAuthGuard from '@/features/auth/store/auth.hooks'
 import RatingStar from './rating-star'
+import TranslateButton from '@/components/translate-button'
+import { useTranslation } from '@/hooks/use-translation'
 
 const PRODUCT_NAMES = [
   'Samsung Galaxy A31',
@@ -69,6 +71,7 @@ const navItems: { key: NavKey; label: string; icon: StaticImageData }[] = [
 const ProductDetailClient = ({ id }: { id: string }) => {
   useAuthGuard()
   const router = useRouter()
+  const { t } = useTranslation()
 
   const productId = Number(id)
   const nameIndex = (productId - 1) % PRODUCT_NAMES.length
@@ -112,7 +115,10 @@ const ProductDetailClient = ({ id }: { id: string }) => {
             </Link>
             <h1 className="text-xl leading-none font-normal sm:text-3xl md:text-[2.5rem]">Mobile Shopping</h1>
           </div>
-          <AvatarDropdown />
+          <div className="flex items-center gap-3">
+            <TranslateButton />
+            <AvatarDropdown />
+          </div>
         </div>
       </header>
 
@@ -150,14 +156,14 @@ const ProductDetailClient = ({ id }: { id: string }) => {
                 >
                   <Image
                     src={item.icon}
-                    alt={item.label}
+                    alt={t(item.key)}
                     className={`h-8 w-8 shrink-0 object-contain md:h-9 md:w-9 ${
                       isActive
                         ? 'filter-[invert(52%)_sepia(93%)_saturate(1695%)_hue-rotate(159deg)_brightness(95%)_contrast(98%)]'
                         : ''
                     }`}
                   />
-                  {!isCollapsed ? <span className="hidden sm:inline">{item.label}</span> : null}
+                  {!isCollapsed ? <span className="hidden sm:inline">{t(item.key)}</span> : null}
                 </button>
               )
             })}
@@ -169,16 +175,16 @@ const ProductDetailClient = ({ id }: { id: string }) => {
           {/* Content header */}
           <div className="shrink-0 border-b border-neutral-300 px-4 md:px-5">
             <div className="flex h-14 items-center">
-              <h2 className="text-2xl leading-none font-bold md:text-3xl">Shop</h2>
+              <h2 className="text-2xl leading-none font-bold md:text-3xl">{t('shop')}</h2>
             </div>
             <div className="flex h-12 items-center justify-between">
               <nav
                 aria-label="breadcrumb"
                 className="flex items-center gap-1.5 text-lg font-normal text-neutral-900 md:text-xl"
               >
-                <Link href="/shop" className="hover:underline">Shop</Link>
+                <Link href="/shop" className="hover:underline">{t('shop')}</Link>
                 <span className="text-neutral-400">/</span>
-                <span>Product</span>
+                <span>{t('product')}</span>
               </nav>
               <Link
                 href="/shop?view=cart"

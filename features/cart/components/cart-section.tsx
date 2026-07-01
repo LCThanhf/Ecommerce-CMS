@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { removeItem as removeItemAction, updateQty as updateQtyAction } from '@/features/cart/store/cart.slice'
 import type { RootState, AppDispatch } from '@/store/store'
 import galaxyA31 from '@/app/assets/samsung-galaxy-a31.png'
+import { useTranslation } from '@/hooks/use-translation'
 
 const formatVND = (value: number): string => {
   if (value === 0) return '0\u00a0VN\u0110'
@@ -16,6 +17,7 @@ const formatVND = (value: number): string => {
 const CartSection = () => {
   const dispatch = useDispatch<AppDispatch>()
   const router = useRouter()
+  const { t } = useTranslation()
   const hasHydrated = useSelector((state: RootState) => state.cart.hasHydrated)
   const items = useSelector((state: RootState) => state.cart.items)
   const [confirmId, setConfirmId] = useState<number | null>(null)
@@ -45,7 +47,7 @@ const CartSection = () => {
   if (items.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-xl text-neutral-500">No items in cart yet.</p>
+        <p className="text-xl text-neutral-500">{t('no-items')}</p>
       </div>
     )
   }
@@ -54,7 +56,7 @@ const CartSection = () => {
     <div className="pb-10">
       {/* Items count */}
       <div className="flex justify-end px-4 sm:px-6 py-3">
-        <span className="text-lg text-neutral-700">{totalItems} Items in bag</span>
+        <span className="text-lg text-neutral-700">{totalItems} {t('items-in-bag')}</span>
       </div>
 
       {/* Item list */}
@@ -156,15 +158,15 @@ const CartSection = () => {
       {/* Summary */}
       <div className="mt-6 flex flex-col items-end gap-4 px-3 sm:px-6 text-base sm:text-lg md:text-xl">
         <div className="flex items-baseline justify-end gap-1">
-          <span className="w-28 text-right font-bold text-neutral-900">SubTotal</span>
+          <span className="w-28 text-right font-bold text-neutral-900">{t('subtotal')}</span>
           <span className="w-52 text-right text-neutral-900">{formatVND(subTotal)}</span>
         </div>
         <div className="flex items-baseline justify-end gap-1">
-          <span className="w-28 text-right font-bold text-neutral-900">Tax</span>
+          <span className="w-28 text-right font-bold text-neutral-900">{t('tax')}</span>
           <span className="w-52 text-right text-neutral-900">{formatVND(tax)}</span>
         </div>
         <div className="flex items-baseline justify-end gap-1">
-          <span className="w-28 text-right font-bold text-neutral-900">Total</span>
+          <span className="w-28 text-right font-bold text-neutral-900">{t('total')}</span>
           <span className="w-52 text-right text-neutral-900">{formatVND(total)}</span>
         </div>
       </div>
