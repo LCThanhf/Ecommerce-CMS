@@ -55,7 +55,7 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-200 bg-white text-slate-600 md:h-15 md:w-15"
+        className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-300 bg-white p-0.5 text-slate-600 shadow-sm transition-all duration-200 hover:border-sky-400 md:h-15 md:w-15"
         aria-label="Account menu"
         aria-expanded={open}
         aria-haspopup="true"
