@@ -5,6 +5,9 @@ import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { HicasLogo } from './hicas-logo'
+import { AdminButton } from './ui/admin-button'
+import { AdminInput } from './ui/admin-input'
+import { AdminLabel } from './ui/admin-label'
 
 export const AdminSignupForm: React.FC = () => {
   const router = useRouter()
@@ -45,58 +48,50 @@ export const AdminSignupForm: React.FC = () => {
     <div className="flex flex-col items-center w-full">
       {/* Header Logo & Title */}
       <HicasLogo className="mb-3" />
-      <h1 className="text-[26px] font-bold tracking-tight text-[#1E293B] mb-6 text-center">
+      <h1 className="text-[26px] font-bold tracking-tight text-[#1E293B] mb-5 text-center">
         Đăng ký
       </h1>
 
       {/* Register Form */}
-      <form onSubmit={handleSubmit} className="w-full space-y-4">
+      <form onSubmit={handleSubmit} className="w-full space-y-3.5">
         {/* Full Name Field */}
         <div>
-          <label htmlFor="signup-name" className="block text-xs font-medium text-slate-600 mb-1.5">
-            Họ và tên
-          </label>
-          <input
+          <AdminLabel htmlFor="signup-name">Họ và tên</AdminLabel>
+          <AdminInput
             id="signup-name"
             type="text"
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Nhập họ và tên"
-            className="h-11 w-full rounded-md border border-slate-200 bg-white px-3.5 text-sm text-slate-800 placeholder:text-slate-300 focus:border-[#1867FF] focus:outline-none focus:ring-1 focus:ring-[#1867FF] transition duration-150"
           />
         </div>
 
         {/* Email Field */}
         <div>
-          <label htmlFor="signup-email" className="block text-xs font-medium text-slate-600 mb-1.5">
-            Email
-          </label>
-          <input
+          <AdminLabel htmlFor="signup-email">Email</AdminLabel>
+          <AdminInput
             id="signup-email"
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Nhập email"
-            className="h-11 w-full rounded-md border border-slate-200 bg-white px-3.5 text-sm text-slate-800 placeholder:text-slate-300 focus:border-[#1867FF] focus:outline-none focus:ring-1 focus:ring-[#1867FF] transition duration-150"
           />
         </div>
 
         {/* Password Field */}
         <div>
-          <label htmlFor="signup-password" className="block text-xs font-medium text-slate-600 mb-1.5">
-            Mật khẩu
-          </label>
+          <AdminLabel htmlFor="signup-password">Mật khẩu</AdminLabel>
           <div className="relative">
-            <input
+            <AdminInput
               id="signup-password"
               type={showPassword ? 'text' : 'password'}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="h-11 w-full rounded-md border border-slate-200 bg-white pl-3.5 pr-10 text-sm text-slate-800 placeholder:text-slate-300 focus:border-[#1867FF] focus:outline-none focus:ring-1 focus:ring-[#1867FF] transition duration-150"
+              className="pr-10"
             />
             <button
               type="button"
@@ -115,18 +110,16 @@ export const AdminSignupForm: React.FC = () => {
 
         {/* Confirm Password Field */}
         <div>
-          <label htmlFor="signup-confirm-password" className="block text-xs font-medium text-slate-600 mb-1.5">
-            Nhập lại mật khẩu
-          </label>
+          <AdminLabel htmlFor="signup-confirm-password">Nhập lại mật khẩu</AdminLabel>
           <div className="relative">
-            <input
+            <AdminInput
               id="signup-confirm-password"
               type={showConfirmPassword ? 'text' : 'password'}
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="h-11 w-full rounded-md border border-slate-200 bg-white pl-3.5 pr-10 text-sm text-slate-800 placeholder:text-slate-300 focus:border-[#1867FF] focus:outline-none focus:ring-1 focus:ring-[#1867FF] transition duration-150"
+              className="pr-10"
             />
             <button
               type="button"
@@ -149,16 +142,16 @@ export const AdminSignupForm: React.FC = () => {
         )}
 
         {/* Submit Button */}
-        <button
+        <AdminButton
           type="submit"
           disabled={isLoading}
-          className="w-full mt-2 h-11 rounded-lg bg-[#1867FF] text-sm font-medium text-white shadow-sm transition duration-150 hover:bg-[#1056E0] active:scale-[0.99] disabled:opacity-70"
+          className="w-full mt-1.5"
         >
           {isLoading ? 'Đang xử lý...' : 'Đăng ký'}
-        </button>
+        </AdminButton>
 
         {/* Login Redirect Link */}
-        <p className="mt-6 text-center text-xs text-slate-600">
+        <p className="mt-4.5 text-center text-xs text-slate-600">
           Bạn đã có tài khoản?{' '}
           <Link href="/admin/login" className="font-medium text-[#1867FF] hover:underline">
             Đăng nhập

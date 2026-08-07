@@ -5,6 +5,10 @@ import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { HicasLogo } from './hicas-logo'
+import { AdminButton } from './ui/admin-button'
+import { AdminInput } from './ui/admin-input'
+import { AdminLabel } from './ui/admin-label'
+import { AdminCheckbox } from './ui/admin-checkbox'
 
 export const AdminLoginForm: React.FC = () => {
   const router = useRouter()
@@ -37,42 +41,37 @@ export const AdminLoginForm: React.FC = () => {
     <div className="flex flex-col items-center w-full">
       {/* Header Logo & Title */}
       <HicasLogo className="mb-3" />
-      <h1 className="text-[26px] font-bold tracking-tight text-[#1E293B] mb-8 text-center">
+      <h1 className="text-[26px] font-bold tracking-tight text-[#1E293B] mb-7 text-center">
         Đăng nhập
       </h1>
 
       {/* Login Form */}
-      <form onSubmit={handleSubmit} className="w-full space-y-5">
+      <form onSubmit={handleSubmit} className="w-full space-y-4">
         {/* Email Field */}
         <div>
-          <label htmlFor="admin-email" className="block text-xs font-medium text-slate-600 mb-1.5">
-            Email
-          </label>
-          <input
+          <AdminLabel htmlFor="admin-email">Email</AdminLabel>
+          <AdminInput
             id="admin-email"
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Nhập email"
-            className="h-11 w-full rounded-md border border-slate-200 bg-white px-3.5 text-sm text-slate-800 placeholder:text-slate-300 focus:border-[#1867FF] focus:outline-none focus:ring-1 focus:ring-[#1867FF] transition duration-150"
           />
         </div>
 
         {/* Password Field */}
         <div>
-          <label htmlFor="admin-password" className="block text-xs font-medium text-slate-600 mb-1.5">
-            Mật khẩu
-          </label>
+          <AdminLabel htmlFor="admin-password">Mật khẩu</AdminLabel>
           <div className="relative">
-            <input
+            <AdminInput
               id="admin-password"
               type={showPassword ? 'text' : 'password'}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="h-11 w-full rounded-md border border-slate-200 bg-white pl-3.5 pr-10 text-sm text-slate-800 placeholder:text-slate-300 focus:border-[#1867FF] focus:outline-none focus:ring-1 focus:ring-[#1867FF] transition duration-150"
+              className="pr-10"
             />
             <button
               type="button"
@@ -90,16 +89,13 @@ export const AdminLoginForm: React.FC = () => {
         </div>
 
         {/* Options Row: Remember Me & Forgot Password */}
-        <div className="flex items-center justify-between pt-1 text-xs">
-          <label className="inline-flex items-center gap-2 cursor-pointer text-slate-600 select-none">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-[#1867FF] focus:ring-[#1867FF] cursor-pointer"
-            />
-            <span>Ghi nhớ Đăng nhập</span>
-          </label>
+        <div className="flex items-center justify-between pt-0.5 text-xs">
+          <AdminCheckbox
+            id="remember-me"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            label="Ghi nhớ Đăng nhập"
+          />
           <a href="#" className="font-medium text-[#1867FF] hover:underline transition">
             Quên mật khẩu?
           </a>
@@ -111,16 +107,16 @@ export const AdminLoginForm: React.FC = () => {
         )}
 
         {/* Submit Button */}
-        <button
+        <AdminButton
           type="submit"
           disabled={isLoading}
-          className="w-full mt-2 h-11 rounded-lg bg-[#1867FF] text-sm font-medium text-white shadow-sm transition duration-150 hover:bg-[#1056E0] active:scale-[0.99] disabled:opacity-70"
+          className="w-full mt-1.5"
         >
           {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
-        </button>
+        </AdminButton>
 
-        {/* Signup Redirect Link */}
-        <p className="mt-8 text-center text-xs text-slate-600">
+        {/* Signup Redirect Link - Tighter spacing mt-4.5 matching screenshot */}
+        <p className="mt-4.5 text-center text-xs text-slate-600">
           Bạn chưa có tài khoản?{' '}
           <Link href="/admin/signup" className="font-medium text-[#1867FF] hover:underline">
             Đăng ký
