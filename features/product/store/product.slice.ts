@@ -13,6 +13,9 @@ export type Product = {
   price: string
   priceValue: number
   rating: number
+  quantity?: number
+  description?: string
+  image?: string
 }
 
 const PRODUCT_NAMES = [
@@ -34,6 +37,8 @@ export const mapPostToProduct = (post: Post, index: number): Product => {
     priceValue,
     price: priceValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0VNĐ',
     rating: (post.id % 5) + 1,
+    quantity: (post.id * 3) % 50 + 1,
+    description: 'Lorem ipsum dolor sit amet',
   }
 }
 
@@ -73,8 +78,21 @@ const productsSlice = createSlice({
       state.error = action.payload
       state.hasFetched = true
     },
+    addProduct(state, action: PayloadAction<Product>) {
+      state.items.unshift(action.payload)
+    },
+    deleteProduct(state, action: PayloadAction<number>) {
+      state.items = state.items.filter((item) => item.id !== action.payload)
+    },
   },
 })
 
-export const { resetProducts, fetchProducts, fetchProductsSuccess, fetchProductsFailed } = productsSlice.actions
-export default productsSlice.reducer
+export const {
+  resetProducts,
+  fetchProducts,
+  fetchProductsSuccess,
+  fetchProductsFailed,
+  addProduct,
+  deleteProduct,
+} = productsSlice.actions
+export default productsSlice.reducer
