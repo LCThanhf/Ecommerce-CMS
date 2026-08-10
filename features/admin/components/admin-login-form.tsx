@@ -96,7 +96,7 @@ export const AdminLoginForm: React.FC = () => {
             onChange={(e) => setRememberMe(e.target.checked)}
             label="Ghi nhớ Đăng nhập"
           />
-          <a href="#" className="font-medium text-[#1867FF] hover:underline transition">
+          <a href="#" className="font-medium text-[#0F60FF] hover:underline transition">
             Quên mật khẩu?
           </a>
         </div>
@@ -118,7 +118,7 @@ export const AdminLoginForm: React.FC = () => {
         {/* Signup Redirect Link - Tighter spacing mt-4.5 matching screenshot */}
         <p className="mt-4.5 text-center text-xs text-slate-600">
           Bạn chưa có tài khoản?{' '}
-          <Link href="/admin/signup" className="font-medium text-[#1867FF] hover:underline">
+          <Link href="/admin/signup" className="font-medium text-[#0F60FF] hover:underline">
             Đăng ký
           </Link>
         </p>

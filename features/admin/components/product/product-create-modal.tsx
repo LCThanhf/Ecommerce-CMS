@@ -80,7 +80,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
           const formElement = document.getElementById('create-product-form') as HTMLFormElement
           if (formElement) formElement.requestSubmit()
         }}
-        className="px-6 bg-[#1867FF] hover:bg-[#1056E0] text-white font-medium"
+        className="px-6 bg-[#0F60FF] hover:bg-[#0C53DF] text-white font-medium"
       >
         Tạo mới
       </AdminButton>
@@ -98,7 +98,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
         {/* Tên sản phẩm */}
         <div>
           <AdminLabel htmlFor="product-name">
-            Tên sản phẩm <span className="text-[#1867FF]">*</span>
+            Tên sản phẩm <span className="text-[#0F60FF]">*</span>
           </AdminLabel>
           <AdminInput
             id="product-name"
@@ -112,7 +112,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
         {/* Giá */}
         <div>
           <AdminLabel htmlFor="product-price">
-            Giá <span className="text-[#1867FF]">*</span>
+            Giá <span className="text-[#0F60FF]">*</span>
           </AdminLabel>
           <AdminInput
             id="product-price"
@@ -126,7 +126,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
         {/* Số lượng */}
         <div>
           <AdminLabel htmlFor="product-quantity">
-            Số lượng <span className="text-[#1867FF]">*</span>
+            Số lượng <span className="text-[#0F60FF]">*</span>
           </AdminLabel>
           <AdminInput
             id="product-quantity"
@@ -153,7 +153,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
         {/* Ảnh sản phẩm */}
         <div>
           <AdminLabel htmlFor="product-image">
-            Ảnh sản phẩm <span className="text-[#1867FF]">*</span>
+            Ảnh sản phẩm <span className="text-[#0F60FF]">*</span>
           </AdminLabel>
           <AdminInput
             id="product-image"

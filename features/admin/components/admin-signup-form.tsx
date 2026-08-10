@@ -153,7 +153,7 @@ export const AdminSignupForm: React.FC = () => {
         {/* Login Redirect Link */}
         <p className="mt-4.5 text-center text-xs text-slate-600">
           Bạn đã có tài khoản?{' '}
-          <Link href="/admin/login" className="font-medium text-[#1867FF] hover:underline">
+          <Link href="/admin/login" className="font-medium text-[#0F60FF] hover:underline">
             Đăng nhập
           </Link>
         </p>

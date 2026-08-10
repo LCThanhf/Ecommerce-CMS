@@ -86,7 +86,7 @@ export const AdminTableCell: React.FC<AdminTableCellProps> = ({
   return (
     <td
       colSpan={colSpan}
-      className={`px-5 py-3.5 text-slate-700 font-medium ${className}`}
+      className={`px-5 py-3.5 text-slate-700 font-medium align-middle ${className}`}
       {...props}
     >
       {children}

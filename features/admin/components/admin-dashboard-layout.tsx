@@ -5,10 +5,14 @@ import { AdminSidebar } from './admin-sidebar'
 import { AdminHeader } from './admin-header'
 
 interface AdminDashboardLayoutProps {
+  title?: React.ReactNode
   children: React.ReactNode
 }
 
-export const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) => {
+export const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({
+  title,
+  children,
+}) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   return (
@@ -21,7 +25,7 @@ export const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({ chil
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader />
+        <AdminHeader title={title} />
         <main className="flex-1 px-8 pb-12">{children}</main>
       </div>
     </div>

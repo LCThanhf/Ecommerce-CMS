@@ -5,7 +5,7 @@ import { ProductListPage } from '@/features/admin/components/product/product-lis
 
 export default function AdminProductsPage() {
   return (
-    <AdminDashboardLayout>
+    <AdminDashboardLayout title="Danh sách sản phẩm">
       <ProductListPage />
     </AdminDashboardLayout>
   )

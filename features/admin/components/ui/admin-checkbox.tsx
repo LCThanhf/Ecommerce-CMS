@@ -19,7 +19,7 @@ export const AdminCheckbox: React.FC<AdminCheckboxProps> = ({
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className={`h-4 w-4 rounded border-slate-300 text-[#1867FF] focus:ring-[#1867FF] cursor-pointer accent-[#1867FF] ${className}`}
+        className={`h-4 w-4 rounded border-slate-300 text-[#0F60FF] focus:ring-[#0F60FF] cursor-pointer accent-[#0F60FF] ${className}`}
         {...props}
       />
       {label && <span className="text-xs text-slate-600 font-normal">{label}</span>}

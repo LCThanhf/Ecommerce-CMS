@@ -17,7 +17,7 @@ export const AdminButton: React.FC<AdminButtonProps> = ({
     'inline-flex items-center justify-center font-medium transition duration-150 active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none select-none'
 
   const variants = {
-    primary: 'bg-[#1867FF] hover:bg-[#1056E0] text-white shadow-sm rounded-[6px]',
+    primary: 'bg-[#0F60FF] hover:bg-[#0C53DF] text-white shadow-sm rounded-[6px]',
     secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-[6px]',
     outline: 'border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-[6px]',
   }

@@ -2,9 +2,11 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Box, Users, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Box, Users } from 'lucide-react'
 import { HicasLogo } from './hicas-logo'
+import indentIcon from '@/app/assets/indent-decrease.svg'
 
 interface AdminSidebarProps {
   isCollapsed: boolean
@@ -42,7 +44,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           isCollapsed ? 'justify-center' : 'justify-between'
         }`}
       >
-        {!isCollapsed && <HicasLogo className="h-8" />}
+        {!isCollapsed && <HicasLogo imageClassName="h-7 w-auto" />}
         <button
           type="button"
           onClick={onToggleCollapse}
@@ -50,11 +52,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           aria-label={isCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
           title={isCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
         >
-          {isCollapsed ? (
-            <PanelLeftOpen className="h-5 w-5 stroke-[1.75]" />
-          ) : (
-            <PanelLeftClose className="h-5 w-5 stroke-[1.75]" />
-          )}
+          <Image
+            src={indentIcon}
+            alt="Toggle Sidebar"
+            className={`h-5 w-5 object-contain transition-transform duration-200 ${
+              isCollapsed ? 'rotate-180' : ''
+            }`}
+          />
         </button>
       </div>
 

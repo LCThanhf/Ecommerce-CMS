@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import Image from 'next/image'
-import { Search, Plus, Edit3, Trash2 } from 'lucide-react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useState } from "react";
+import Image from "next/image";
+import { Search, Plus } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   AdminTable,
   AdminTableHeader,
@@ -11,75 +11,177 @@ import {
   AdminTableBody,
   AdminTableRow,
   AdminTableCell,
-} from '../ui/admin-table'
-import { AdminPagination } from '../ui/admin-pagination'
-import { AdminButton } from '../ui/admin-button'
-import { AdminInput } from '../ui/admin-input'
-import { ProductCreateModal } from './product-create-modal'
-import { Product, addProduct, deleteProduct } from '@/features/product/store/product.slice'
-import type { RootState } from '@/store/store'
+} from "../ui/admin-table";
+import { AdminPagination } from "../ui/admin-pagination";
+import { AdminButton } from "../ui/admin-button";
+import { AdminInput } from "../ui/admin-input";
+import { ProductCreateModal } from "./product-create-modal";
+import {
+  Product,
+  addProduct,
+  deleteProduct,
+} from "@/features/product/store/product.slice";
+import type { RootState } from "@/store/store";
+import editIcon from "@/app/assets/edit.svg";
+import trashIcon from "@/app/assets/trash.svg";
 
 // Initial mock products matching the screenshot input_file_0.png
 const INITIAL_PRODUCTS: Product[] = [
-  { id: 1, name: 'Sản phẩm 1', price: '$6,000', priceValue: 6000, quantity: 1, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&auto=format&fit=crop&q=80' },
-  { id: 2, name: 'Sản phẩm 2', price: '$5,000', priceValue: 5000, quantity: 3, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&auto=format&fit=crop&q=80' },
-  { id: 3, name: 'Sản phẩm 3', price: '$40,000', priceValue: 40000, quantity: 6, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&auto=format&fit=crop&q=80' },
-  { id: 4, name: 'Sản phẩm 4', price: '$12,000', priceValue: 12000, quantity: 355, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=100&auto=format&fit=crop&q=80' },
-  { id: 5, name: 'Sản phẩm 5', price: '$45,000', priceValue: 45000, quantity: 42, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=100&auto=format&fit=crop&q=80' },
-  { id: 6, name: 'Sản phẩm 6', price: '$15,000', priceValue: 15000, quantity: 45, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=100&auto=format&fit=crop&q=80' },
-  { id: 7, name: 'Sản phẩm 7', price: '$8,000', priceValue: 8000, quantity: 144, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=100&auto=format&fit=crop&q=80' },
-  { id: 8, name: 'Sản phẩm 8', price: '$80,000', priceValue: 80000, quantity: 677, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=100&auto=format&fit=crop&q=80' },
-  { id: 9, name: 'Sản phẩm 9', price: '$35,000', priceValue: 35000, quantity: 533, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=100&auto=format&fit=crop&q=80' },
-  { id: 10, name: 'Sản phẩm 10', price: '$20,000', priceValue: 20000, quantity: 532, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=100&auto=format&fit=crop&q=80' },
-]
+  {
+    id: 1,
+    name: "Sản phẩm 1",
+    price: "$6,000",
+    priceValue: 6000,
+    quantity: 1,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 2,
+    name: "Sản phẩm 2",
+    price: "$5,000",
+    priceValue: 5000,
+    quantity: 3,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 3,
+    name: "Sản phẩm 3",
+    price: "$40,000",
+    priceValue: 40000,
+    quantity: 6,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 4,
+    name: "Sản phẩm 4",
+    price: "$12,000",
+    priceValue: 12000,
+    quantity: 355,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 5,
+    name: "Sản phẩm 5",
+    price: "$45,000",
+    priceValue: 45000,
+    quantity: 42,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 6,
+    name: "Sản phẩm 6",
+    price: "$15,000",
+    priceValue: 15000,
+    quantity: 45,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 7,
+    name: "Sản phẩm 7",
+    price: "$8,000",
+    priceValue: 8000,
+    quantity: 144,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 8,
+    name: "Sản phẩm 8",
+    price: "$80,000",
+    priceValue: 80000,
+    quantity: 677,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 9,
+    name: "Sản phẩm 9",
+    price: "$35,000",
+    priceValue: 35000,
+    quantity: 533,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=100&auto=format&fit=crop&q=80",
+  },
+  {
+    id: 10,
+    name: "Sản phẩm 10",
+    price: "$20,000",
+    priceValue: 20000,
+    quantity: 532,
+    description: "Lorem ipsum dolor sit amet",
+    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=100&auto=format&fit=crop&q=80",
+  },
+];
 
 export const ProductListPage: React.FC = () => {
-  const dispatch = useDispatch()
-  const reduxProducts = useSelector((state: RootState) => state.products.items)
+  const dispatch = useDispatch();
+  const reduxProducts = useSelector((state: RootState) => state.products.items);
 
-  const [localProducts, setLocalProducts] = useState<Product[]>(INITIAL_PRODUCTS)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [localProducts, setLocalProducts] =
+    useState<Product[]>(INITIAL_PRODUCTS);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // Merge redux & local state
-  const allProducts = reduxProducts.length > 0 ? reduxProducts : localProducts
+  const allProducts = reduxProducts.length > 0 ? reduxProducts : localProducts;
 
   // Filter products by search query
   const filteredProducts = allProducts.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   // Pagination logic
-  const totalItems = filteredProducts.length || 50
-  const totalPages = Math.ceil(filteredProducts.length / pageSize) || 5
+  const totalItems = filteredProducts.length || 50;
+  const totalPages = Math.ceil(filteredProducts.length / pageSize) || 5;
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  )
+    currentPage * pageSize,
+  );
 
   const handleAddProduct = (newProduct: Product) => {
-    dispatch(addProduct(newProduct))
-    setLocalProducts((prev) => [newProduct, ...prev])
-  }
+    dispatch(addProduct(newProduct));
+    setLocalProducts((prev) => [newProduct, ...prev]);
+  };
 
   const handleDeleteProduct = (id: number) => {
-    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-      dispatch(deleteProduct(id))
-      setLocalProducts((prev) => prev.filter((p) => p.id !== id))
+    if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
+      dispatch(deleteProduct(id));
+      setLocalProducts((prev) => prev.filter((p) => p.id !== id));
     }
-  }
+  };
 
   return (
     <div className="w-full space-y-6">
-      {/* Page Title */}
-      <h1 className="text-xl font-bold text-[#1E293B] tracking-tight">
-        Danh sách sản phẩm
-      </h1>
-
       {/* Control Bar: Search & Action Button */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-3 mb-6">
         {/* Search Input Box */}
         <div className="relative w-full sm:w-72">
           <AdminInput
@@ -87,18 +189,18 @@ export const ProductListPage: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm kiếm"
-            className="pl-3.5 pr-9 bg-white shadow-2xs text-xs font-medium border-slate-200"
+            className="h-8 pl-3.5 pr-9 bg-white shadow-2xs text-xs font-medium border-slate-200"
           />
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
         </div>
 
         {/* Create Button */}
         <AdminButton
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="w-full sm:w-auto bg-[#1867FF] hover:bg-[#1056E0] text-white px-4 py-2 rounded-[6px] text-sm font-medium inline-flex items-center justify-center gap-1.5 shadow-2xs"
+          className="h-8 w-full sm:w-auto bg-[#0F60FF] hover:bg-[#0C53DF] text-white px-3.5 text-xs font-medium inline-flex items-center justify-center gap-1.5 shadow-2xs"
         >
-          <Plus className="h-4 w-4 stroke-[2.5]" />
+          <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
           <span>Tạo mới</span>
         </AdminButton>
       </div>
@@ -135,44 +237,54 @@ export const ProductListPage: React.FC = () => {
                   </AdminTableCell>
 
                   {/* Description */}
-                  <AdminTableCell className="text-slate-600 font-normal line-clamp-1 max-w-[220px]">
-                    {product.description || 'Lorem ipsum dolor sit amet'}
+                  <AdminTableCell className="text-slate-600 font-normal max-w-[220px]">
+                    <div className="line-clamp-1">
+                      {product.description || "Lorem ipsum dolor sit amet"}
+                    </div>
                   </AdminTableCell>
 
                   {/* Image Preview */}
                   <AdminTableCell>
-                    <div className="h-9 w-9 rounded-md bg-purple-900/80 overflow-hidden flex items-center justify-center text-white border border-slate-100 shadow-2xs">
+                    <div className="h-10 w-10 rounded-[4px] bg-slate-100 overflow-hidden flex items-center justify-center text-white border border-slate-100 shadow-2xs">
                       {product.image ? (
                         <Image
                           src={product.image}
                           alt={product.name}
-                          width={36}
-                          height={36}
+                          width={40}
+                          height={40}
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <span className="text-[10px] font-bold">IMG</span>
+                        <span className="text-[10px] font-bold text-slate-400">IMG</span>
                       )}
                     </div>
                   </AdminTableCell>
 
                   {/* Actions (Edit & Delete) */}
                   <AdminTableCell>
-                    <div className="flex items-center gap-2 text-slate-400">
+                    <div className="flex items-center gap-2.5">
                       <button
                         type="button"
-                        className="hover:text-slate-700 transition p-1 cursor-pointer"
+                        className="hover:opacity-75 transition p-1 cursor-pointer"
                         title="Sửa sản phẩm"
                       >
-                        <Edit3 className="h-4 w-4 stroke-[1.75]" />
+                        <Image
+                          src={editIcon}
+                          alt="Sửa sản phẩm"
+                          className="h-5.5 w-5.5 object-contain"
+                        />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteProduct(product.id)}
-                        className="hover:text-red-600 transition p-1 cursor-pointer"
+                        className="hover:opacity-75 transition p-1 cursor-pointer"
                         title="Xóa sản phẩm"
                       >
-                        <Trash2 className="h-4 w-4 stroke-[1.75]" />
+                        <Image
+                          src={trashIcon}
+                          alt="Xóa sản phẩm"
+                          className="h-5.5 w-5.5 object-contain"
+                        />
                       </button>
                     </div>
                   </AdminTableCell>
@@ -180,7 +292,10 @@ export const ProductListPage: React.FC = () => {
               ))
             ) : (
               <AdminTableRow>
-                <AdminTableCell className="text-center py-8 text-slate-400" colSpan={6}>
+                <AdminTableCell
+                  className="text-center py-8 text-slate-400"
+                  colSpan={6}
+                >
                   Không tìm thấy sản phẩm nào.
                 </AdminTableCell>
               </AdminTableRow>
@@ -206,5 +321,5 @@ export const ProductListPage: React.FC = () => {
         onAddProduct={handleAddProduct}
       />
     </div>
-  )
-}
+  );
+};
