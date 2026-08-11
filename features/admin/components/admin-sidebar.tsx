@@ -68,7 +68,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <div>
           {!isCollapsed && (
             <h2 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 mb-2.5 select-none">
-              Quản lý sản phẩm
+              {pathname?.startsWith('/admin/users') ? 'Quản lý người dùng' : 'Quản lý sản phẩm'}
             </h2>
           )}
 
