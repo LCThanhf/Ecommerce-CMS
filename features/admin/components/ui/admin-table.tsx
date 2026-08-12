@@ -39,7 +39,7 @@ export const AdminTableHead: React.FC<AdminTableHeadProps> = ({
 }) => {
   return (
     <th
-      className={`px-5 py-3.5 text-[11px] font-semibold tracking-wider text-slate-400 uppercase select-none ${className}`}
+      className={`px-5 py-3.5 text-left text-[11px] font-semibold tracking-wider text-slate-400 uppercase select-none ${className}`}
       {...props}
     >
       {children}

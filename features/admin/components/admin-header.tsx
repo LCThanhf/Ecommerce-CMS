@@ -51,7 +51,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
             />
           </div>
           {/* Online status indicator */}
-          <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+          <span className="absolute bottom-0 right-[1px] h-3 w-3 rounded-full bg-[#28C76F] border-[2px] border-white shadow-2xs" />
         </div>
       </div>
     </header>
