@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface AdminButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline'
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger'
   size?: 'default' | 'sm' | 'lg'
 }
 
@@ -20,6 +20,7 @@ export const AdminButton: React.FC<AdminButtonProps> = ({
     primary: 'bg-[#0F60FF] hover:bg-[#0C53DF] text-white shadow-sm rounded-[6px]',
     secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-[6px]',
     outline: 'border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-[6px]',
+    danger: 'bg-red-500 hover:bg-red-600 text-white shadow-sm rounded-[6px]',
   }
 
   const sizes = {

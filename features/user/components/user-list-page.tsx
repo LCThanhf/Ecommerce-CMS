@@ -15,6 +15,7 @@ import {
 import { AdminPagination } from '@/features/admin/components/ui/admin-pagination'
 import { AdminButton } from '@/features/admin/components/ui/admin-button'
 import { AdminInput } from '@/features/admin/components/ui/admin-input'
+import { AdminConfirmModal } from '@/features/admin/components/ui/admin-confirm-modal'
 import { UserCreateModal } from './user-create-modal'
 import { UserEditModal } from './user-edit-modal'
 import { AdminUser, addAdminUser, deleteAdminUser, updateAdminUser } from '../store/admin-user.slice'
@@ -29,6 +30,7 @@ export const UserListPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [selectedUserForEdit, setSelectedUserForEdit] = useState<AdminUser | null>(null)
+  const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -53,9 +55,10 @@ export const UserListPage: React.FC = () => {
     dispatch(updateAdminUser(updatedUser))
   }
 
-  const handleDeleteUser = (id: number) => {
-    if (confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
-      dispatch(deleteAdminUser(id))
+  const handleDeleteUserConfirm = () => {
+    if (userToDeleteId !== null) {
+      dispatch(deleteAdminUser(userToDeleteId))
+      setUserToDeleteId(null)
     }
   }
 
@@ -156,7 +159,7 @@ export const UserListPage: React.FC = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDeleteUser(user.id)}
+                        onClick={() => setUserToDeleteId(user.id)}
                         className="hover:opacity-75 transition p-1 cursor-pointer"
                         title="Xóa người dùng"
                       >
@@ -204,6 +207,16 @@ export const UserListPage: React.FC = () => {
         onClose={() => setSelectedUserForEdit(null)}
         user={selectedUserForEdit}
         onUpdateUser={handleUpdateUser}
+      />
+
+      {/* Custom Destructive Confirm Modal */}
+      <AdminConfirmModal
+        isOpen={userToDeleteId !== null}
+        onClose={() => setUserToDeleteId(null)}
+        onConfirm={handleDeleteUserConfirm}
+        title="Xóa người dùng"
+        message="Bạn có chắc chắn muốn xóa người dùng này? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
       />
     </div>
   )

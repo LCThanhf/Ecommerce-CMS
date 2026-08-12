@@ -15,6 +15,7 @@ import {
 import { AdminPagination } from '../ui/admin-pagination'
 import { AdminButton } from '../ui/admin-button'
 import { AdminInput } from '../ui/admin-input'
+import { AdminConfirmModal } from '../ui/admin-confirm-modal'
 import { ProductCreateModal } from './product-create-modal'
 import { ProductEditModal } from './product-edit-modal'
 import { Product, addProduct, deleteProduct, updateProduct } from '@/features/product/store/product.slice'
@@ -44,6 +45,7 @@ export const ProductListPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [selectedProductForEdit, setSelectedProductForEdit] = useState<Product | null>(null)
+  const [productToDeleteId, setProductToDeleteId] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -75,10 +77,11 @@ export const ProductListPage: React.FC = () => {
     )
   }
 
-  const handleDeleteProduct = (id: number) => {
-    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-      dispatch(deleteProduct(id))
-      setLocalProducts((prev) => prev.filter((p) => p.id !== id))
+  const handleDeleteProductConfirm = () => {
+    if (productToDeleteId !== null) {
+      dispatch(deleteProduct(productToDeleteId))
+      setLocalProducts((prev) => prev.filter((p) => p.id !== productToDeleteId))
+      setProductToDeleteId(null)
     }
   }
 
@@ -181,7 +184,7 @@ export const ProductListPage: React.FC = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={() => setProductToDeleteId(product.id)}
                         className="hover:opacity-75 transition p-1 cursor-pointer"
                         title="Xóa sản phẩm"
                       >
@@ -229,6 +232,16 @@ export const ProductListPage: React.FC = () => {
         onClose={() => setSelectedProductForEdit(null)}
         product={selectedProductForEdit}
         onUpdateProduct={handleUpdateProduct}
+      />
+
+      {/* Custom Destructive Confirm Modal */}
+      <AdminConfirmModal
+        isOpen={productToDeleteId !== null}
+        onClose={() => setProductToDeleteId(null)}
+        onConfirm={handleDeleteProductConfirm}
+        title="Xóa sản phẩm"
+        message="Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
       />
     </div>
   )
