@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/store/store'
@@ -18,6 +18,12 @@ const formatDisplayDate = (isoDate: string): string => {
 
 const ProfileSection = () => {
   const hasAuthHydrated = useSelector((state: RootState) => state.auth.hasHydrated)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const { t } = useTranslation()
   const [dob, setDob] = useState('2018-01-01')
   const [gender, setGender] = useState('Male')
@@ -28,7 +34,7 @@ const ProfileSection = () => {
     '15, Duy Tan, Dich Vong Hau, Cau Giay, Ha Noi',
   )
 
-  if (!hasAuthHydrated) {
+  if (!isMounted || !hasAuthHydrated) {
     return (
       <div className="flex h-full items-center justify-center">
         <p className="text-xl text-neutral-500">Đang tải hồ sơ...</p>

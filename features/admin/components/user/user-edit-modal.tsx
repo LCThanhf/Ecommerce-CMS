@@ -6,7 +6,7 @@ import { AdminModal } from '@/features/admin/components/ui/admin-modal'
 import { AdminInput } from '@/features/admin/components/ui/admin-input'
 import { AdminLabel } from '@/features/admin/components/ui/admin-label'
 import { AdminButton } from '@/features/admin/components/ui/admin-button'
-import { AdminUser } from '../store/admin-user.slice'
+import { AdminUser } from '@/features/admin/store/admin-user.slice'
 import calendarIcon from '@/app/assets/calendar.svg'
 
 interface UserEditModalProps {

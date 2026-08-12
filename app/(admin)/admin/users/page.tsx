@@ -1,7 +1,7 @@
 'use client'
 
 import { AdminDashboardLayout } from '@/features/admin/components/admin-dashboard-layout'
-import { UserListPage } from '@/features/user/components/user-list-page'
+import { UserListPage } from '@/features/admin/components/user/user-list-page'
 
 export default function AdminUsersPage() {
   return (

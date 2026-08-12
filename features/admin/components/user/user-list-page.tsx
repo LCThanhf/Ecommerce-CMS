@@ -11,14 +11,14 @@ import {
   AdminTableBody,
   AdminTableRow,
   AdminTableCell,
-} from '@/features/admin/components/ui/admin-table'
-import { AdminPagination } from '@/features/admin/components/ui/admin-pagination'
-import { AdminButton } from '@/features/admin/components/ui/admin-button'
-import { AdminInput } from '@/features/admin/components/ui/admin-input'
-import { AdminConfirmModal } from '@/features/admin/components/ui/admin-confirm-modal'
+} from '../ui/admin-table'
+import { AdminPagination } from '../ui/admin-pagination'
+import { AdminButton } from '../ui/admin-button'
+import { AdminInput } from '../ui/admin-input'
+import { AdminConfirmModal } from '../ui/admin-confirm-modal'
 import { UserCreateModal } from './user-create-modal'
 import { UserEditModal } from './user-edit-modal'
-import { AdminUser, addAdminUser, deleteAdminUser, updateAdminUser } from '../store/admin-user.slice'
+import { AdminUser, addAdminUser, deleteAdminUser, updateAdminUser } from '@/features/admin/store/admin-user.slice'
 import type { RootState } from '@/store/store'
 import editIcon from '@/app/assets/edit.svg'
 import trashIcon from '@/app/assets/trash.svg'

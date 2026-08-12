@@ -7,7 +7,7 @@ import toastReducer from '@/features/toast/store/toast.slice'
 import productsReducer from '@/features/product/store/product.slice'
 import languageReducer from '@/features/language/store/language.slice'
 import shopReducer from '@/features/shop/store/shop.slice'
-import adminUsersReducer from '@/features/user/store/admin-user.slice'
+import adminUsersReducer from '@/features/admin/store/admin-user.slice'
 
 export const rootReducer = combineReducers({
   search: searchReducer,
