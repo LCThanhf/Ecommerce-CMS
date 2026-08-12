@@ -16,7 +16,8 @@ import { AdminPagination } from '@/features/admin/components/ui/admin-pagination
 import { AdminButton } from '@/features/admin/components/ui/admin-button'
 import { AdminInput } from '@/features/admin/components/ui/admin-input'
 import { UserCreateModal } from './user-create-modal'
-import { AdminUser, addAdminUser, deleteAdminUser } from '../store/admin-user.slice'
+import { UserEditModal } from './user-edit-modal'
+import { AdminUser, addAdminUser, deleteAdminUser, updateAdminUser } from '../store/admin-user.slice'
 import type { RootState } from '@/store/store'
 import editIcon from '@/app/assets/edit.svg'
 import trashIcon from '@/app/assets/trash.svg'
@@ -26,7 +27,8 @@ export const UserListPage: React.FC = () => {
   const users = useSelector((state: RootState) => state.adminUsers.items)
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [selectedUserForEdit, setSelectedUserForEdit] = useState<AdminUser | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -45,6 +47,10 @@ export const UserListPage: React.FC = () => {
 
   const handleAddUser = (newUser: AdminUser) => {
     dispatch(addAdminUser(newUser))
+  }
+
+  const handleUpdateUser = (updatedUser: AdminUser) => {
+    dispatch(updateAdminUser(updatedUser))
   }
 
   const handleDeleteUser = (id: number) => {
@@ -72,7 +78,7 @@ export const UserListPage: React.FC = () => {
         {/* Create Button */}
         <AdminButton
           type="button"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsCreateOpen(true)}
           className="h-8 w-full sm:w-auto bg-[#0F60FF] hover:bg-[#0C53DF] text-white px-3.5 text-xs font-medium inline-flex items-center justify-center gap-1.5 shadow-2xs"
         >
           <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
@@ -138,6 +144,7 @@ export const UserListPage: React.FC = () => {
                     <div className="flex items-center gap-2.5">
                       <button
                         type="button"
+                        onClick={() => setSelectedUserForEdit(user)}
                         className="hover:opacity-75 transition p-1 cursor-pointer"
                         title="Sửa người dùng"
                       >
@@ -186,9 +193,17 @@ export const UserListPage: React.FC = () => {
 
       {/* User Create Modal */}
       <UserCreateModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
         onAddUser={handleAddUser}
+      />
+
+      {/* User Edit Modal */}
+      <UserEditModal
+        isOpen={!!selectedUserForEdit}
+        onClose={() => setSelectedUserForEdit(null)}
+        user={selectedUserForEdit}
+        onUpdateUser={handleUpdateUser}
       />
     </div>
   )

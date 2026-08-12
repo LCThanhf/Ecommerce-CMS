@@ -22,11 +22,16 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       if (e.key === 'Escape') onClose()
     }
     if (isOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
       document.body.style.overflow = 'hidden'
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`
+      }
       window.addEventListener('keydown', handleKeyDown)
     }
     return () => {
       document.body.style.overflow = ''
+      document.body.style.paddingRight = ''
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [isOpen, onClose])

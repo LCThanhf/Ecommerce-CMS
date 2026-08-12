@@ -44,7 +44,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           isCollapsed ? 'justify-center' : 'justify-between'
         }`}
       >
-        {!isCollapsed && <HicasLogo imageClassName="h-7 w-auto" />}
+        {!isCollapsed && <HicasLogo imageClassName="h-7 w-auto animate-in fade-in duration-200" />}
         <button
           type="button"
           onClick={onToggleCollapse}
@@ -66,11 +66,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       <div className="flex-1 py-6 px-3 space-y-6">
         {/* Section Heading */}
         <div>
-          {!isCollapsed && (
-            <h2 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 mb-2.5 select-none">
-              {pathname?.startsWith('/admin/users') ? 'Quản lý người dùng' : 'Quản lý sản phẩm'}
-            </h2>
-          )}
+          <h2 className={`text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 select-none transition-all duration-300 whitespace-nowrap overflow-hidden ${
+            isCollapsed ? 'h-0 opacity-0 mb-0' : 'h-4 opacity-100 mb-2.5'
+          }`}>
+            {pathname?.startsWith('/admin/users') ? 'Quản lý người dùng' : 'Quản lý sản phẩm'}
+          </h2>
 
           {/* Menu Items */}
           <nav className="space-y-1">
@@ -82,15 +82,19 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition select-none ${
+                  className={`flex items-center rounded-lg text-sm font-medium transition-all duration-300 select-none ${
                     isActive
                       ? 'bg-[#F3F4F8] text-slate-900 font-semibold'
                       : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-                  } ${isCollapsed ? 'justify-center px-0' : ''}`}
+                  } ${isCollapsed ? 'justify-center px-2 py-2.5 gap-0' : 'px-3.5 py-2.5 gap-3'}`}
                   title={isCollapsed ? item.label : undefined}
                 >
-                  <Icon className={`h-4.5 w-4.5 shrink-0 ${isActive ? 'text-slate-900' : 'text-slate-400'}`} />
-                  {!isCollapsed && <span>{item.label}</span>}
+                  <Icon className={`h-4.5 w-4.5 shrink-0 transition-colors duration-300 ${isActive ? 'text-slate-900' : 'text-slate-400'}`} />
+                  <span className={`transition-all duration-300 whitespace-nowrap overflow-hidden ${
+                    isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
+                  }`}>
+                    {item.label}
+                  </span>
                 </Link>
               )
             })}
