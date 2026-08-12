@@ -26,7 +26,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       icon: Box,
     },
     {
-      label: 'Users',
+      label: 'Người dùng',
       href: '/admin/users',
       icon: Users,
     },
@@ -84,7 +84,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   href={item.href}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition select-none ${
                     isActive
-                      ? 'bg-[#F1F5F9] text-slate-900 font-semibold'
+                      ? 'bg-[#F3F4F8] text-slate-900 font-semibold'
                       : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
                   } ${isCollapsed ? 'justify-center px-0' : ''}`}
                   title={isCollapsed ? item.label : undefined}
