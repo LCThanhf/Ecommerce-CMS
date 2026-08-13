@@ -1,12 +1,17 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import { Box, Users } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useDispatch } from 'react-redux'
+import { Box, Users, LogOut } from 'lucide-react'
 import { HicasLogo } from './hicas-logo'
 import indentIcon from '@/app/assets/indent-decrease.svg'
+import { logoutUser } from '@/features/auth/store/auth.slice'
+import { resetProducts } from '@/features/product/store/product.slice'
+import { clearSession } from '@/features/auth/store/auth.storage'
+import { AdminConfirmModal } from './ui/admin-confirm-modal'
 
 interface AdminSidebarProps {
   isCollapsed: boolean
@@ -18,6 +23,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   onToggleCollapse,
 }) => {
   const pathname = usePathname()
+  const router = useRouter()
+  const dispatch = useDispatch()
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
 
   const navItems = [
     {
@@ -32,9 +40,16 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     },
   ]
 
+  const handleLogoutConfirm = () => {
+    dispatch(resetProducts())
+    dispatch(logoutUser())
+    clearSession()
+    router.push('/admin/login')
+  }
+
   return (
     <aside
-      className={`relative z-20 flex flex-col bg-white border-r border-slate-100 min-h-screen transition-all duration-300 ${
+      className={`relative z-20 flex flex-col bg-white border-r border-slate-100 h-screen sticky top-0 transition-all duration-300 ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
     >
@@ -101,6 +116,36 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           </nav>
         </div>
       </div>
+
+      {/* Sidebar Footer: Logout Button */}
+      <div className="p-3 border-t border-slate-50">
+        <button
+          type="button"
+          onClick={() => setIsLogoutConfirmOpen(true)}
+          className={`flex items-center rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-all duration-300 select-none w-full cursor-pointer ${
+            isCollapsed ? 'justify-center px-2 py-2.5 gap-0' : 'px-3.5 py-2.5 gap-3'
+          }`}
+          title={isCollapsed ? 'Đăng xuất' : undefined}
+        >
+          <LogOut className="h-4.5 w-4.5 shrink-0 text-red-500" />
+          <span className={`transition-all duration-300 whitespace-nowrap overflow-hidden ${
+            isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
+          }`}>
+            Đăng xuất
+          </span>
+        </button>
+      </div>
+
+      {/* Custom Logout Confirmation Modal */}
+      <AdminConfirmModal
+        isOpen={isLogoutConfirmOpen}
+        onClose={() => setIsLogoutConfirmOpen(false)}
+        onConfirm={handleLogoutConfirm}
+        title="Đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản lý?"
+        confirmText="Đăng xuất"
+        isDestructive={false}
+      />
     </aside>
   )
 }
