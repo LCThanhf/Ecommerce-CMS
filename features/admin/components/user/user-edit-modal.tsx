@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { AdminModal } from '@/features/admin/components/ui/admin-modal'
 import { AdminInput } from '@/features/admin/components/ui/admin-input'
 import { AdminLabel } from '@/features/admin/components/ui/admin-label'
 import { AdminButton } from '@/features/admin/components/ui/admin-button'
+import { AdminImageUpload } from '@/features/admin/components/ui/admin-image-upload'
 import { AdminUser } from '@/features/admin/store/admin-user.slice'
 import calendarIcon from '@/app/assets/calendar.svg'
 
@@ -28,6 +29,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
   const [phone, setPhone] = useState('')
   const [avatar, setAvatar] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const dateInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (user) {
@@ -63,7 +65,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
       return
     }
     if (!avatar.trim()) {
-      setErrorMessage('Vui lòng nhập link ảnh avatar.')
+      setErrorMessage('Vui lòng tải lên ảnh avatar.')
       return
     }
 
@@ -155,11 +157,38 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
               placeholder="YYYY/MM/DD"
               className="pr-10"
             />
-            <Image
-              src={calendarIcon}
-              alt="Calendar"
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 object-contain pointer-events-none"
+            <input
+              ref={dateInputRef}
+              type="date"
+              className="absolute pointer-events-none opacity-0 w-0 h-0 bottom-0 left-0"
+              onChange={(e) => {
+                if (e.target.value) {
+                  const formatted = e.target.value.replace(/-/g, '/')
+                  setDob(formatted)
+                }
+              }}
             />
+            <button
+              type="button"
+              onClick={() => {
+                const el = dateInputRef.current as (HTMLInputElement & { showPicker?: () => void }) | null
+                if (el) {
+                  if (typeof el.showPicker === 'function') {
+                    el.showPicker()
+                  } else {
+                    el.click()
+                  }
+                }
+              }}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition cursor-pointer"
+              title="Mở lịch chọn ngày sinh"
+            >
+              <Image
+                src={calendarIcon}
+                alt="Calendar"
+                className="h-4 w-4 object-contain"
+              />
+            </button>
           </div>
         </div>
 
@@ -170,9 +199,11 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
           </AdminLabel>
           <AdminInput
             id="edit-user-phone"
+            type="tel"
+            inputMode="numeric"
             required
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
             placeholder="Nhập số điện thoại"
           />
         </div>
@@ -182,12 +213,11 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
           <AdminLabel htmlFor="edit-user-avatar">
             Avatar <span className="text-[#0F60FF]">*</span>
           </AdminLabel>
-          <AdminInput
+          <AdminImageUpload
             id="edit-user-avatar"
             required
             value={avatar}
-            onChange={(e) => setAvatar(e.target.value)}
-            placeholder="Nhập link ảnh avatar"
+            onChange={(val) => setAvatar(val)}
           />
         </div>
 
@@ -199,3 +229,4 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     </AdminModal>
   )
 }
+

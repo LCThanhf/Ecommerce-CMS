@@ -6,6 +6,7 @@ import { AdminInput } from '../ui/admin-input'
 import { AdminLabel } from '../ui/admin-label'
 import { AdminTextarea } from '../ui/admin-textarea'
 import { AdminButton } from '../ui/admin-button'
+import { AdminImageUpload } from '../ui/admin-image-upload'
 import { Product } from '@/features/product/store/product.slice'
 
 interface ProductCreateModalProps {
@@ -35,9 +36,19 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
       return
     }
 
-    const priceNum = Number(price.replace(/[^0-9]/g, '')) || 0
-    if (!priceNum) {
+    const priceNum = Number(price)
+    if (!price || isNaN(priceNum) || priceNum <= 0) {
       setErrorMessage('Vui lòng nhập giá sản phẩm hợp lệ.')
+      return
+    }
+
+    if (!description.trim()) {
+      setErrorMessage('Vui lòng nhập mô tả sản phẩm.')
+      return
+    }
+
+    if (!image.trim()) {
+      setErrorMessage('Vui lòng tải lên ảnh sản phẩm.')
       return
     }
 
@@ -47,8 +58,8 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
       priceValue: priceNum,
       price: `$${priceNum.toLocaleString('en-US')}`,
       quantity: Number(quantity) || 1,
-      description: description.trim() || 'Lorem ipsum dolor sit amet',
-      image: image.trim() || '',
+      description: description.trim(),
+      image: image.trim(),
       rating: 5,
     }
 
@@ -76,7 +87,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
       <AdminButton
         type="button"
         variant="primary"
-        onClick={(e) => {
+        onClick={() => {
           const formElement = document.getElementById('create-product-form') as HTMLFormElement
           if (formElement) formElement.requestSubmit()
         }}
@@ -116,6 +127,8 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
           </AdminLabel>
           <AdminInput
             id="product-price"
+            type="number"
+            min="0"
             required
             value={price}
             onChange={(e) => setPrice(e.target.value)}
@@ -131,6 +144,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
           <AdminInput
             id="product-quantity"
             type="number"
+            min="0"
             required
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
@@ -140,9 +154,12 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
 
         {/* Mô tả */}
         <div>
-          <AdminLabel htmlFor="product-description">Mô tả</AdminLabel>
+          <AdminLabel htmlFor="product-description">
+            Mô tả <span className="text-[#0F60FF]">*</span>
+          </AdminLabel>
           <AdminTextarea
             id="product-description"
+            required
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Nhập mô tả"
@@ -155,12 +172,11 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
           <AdminLabel htmlFor="product-image">
             Ảnh sản phẩm <span className="text-[#0F60FF]">*</span>
           </AdminLabel>
-          <AdminInput
+          <AdminImageUpload
             id="product-image"
             required
             value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="Nhập link ảnh sản phẩm"
+            onChange={(val) => setImage(val)}
           />
         </div>
 
@@ -172,3 +188,4 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
     </AdminModal>
   )
 }
+
