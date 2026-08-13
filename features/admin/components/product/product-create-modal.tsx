@@ -56,7 +56,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
       id: Date.now(),
       name: name.trim(),
       priceValue: priceNum,
-      price: `$${priceNum.toLocaleString('en-US')}`,
+      price: `${priceNum.toLocaleString('vi-VN')} VNĐ`,
       quantity: Number(quantity) || 1,
       description: description.trim(),
       image: image.trim(),
