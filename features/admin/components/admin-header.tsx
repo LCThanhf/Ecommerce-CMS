@@ -1,15 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
+import { ZoomIn } from "lucide-react";
 import avatarImg from "@/app/assets/avatar.png";
 import bellIcon from "@/app/assets/bell.svg";
+import { AdminImageZoomModal } from "./ui/admin-image-zoom-modal";
 
 interface AdminHeaderProps {
   title?: React.ReactNode;
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
+
   return (
     <header className="h-16 flex items-center justify-between px-8 bg-transparent">
       {/* Page Title on the Left */}
@@ -41,19 +45,35 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
           </span>
         </button>
 
-        {/* User Avatar */}
-        <div className="relative cursor-pointer">
-          <div className="h-9 w-9 rounded-full overflow-hidden border border-slate-200 shadow-xs">
+        {/* User Avatar - Clickable to zoom */}
+        <div
+          onClick={() => setIsZoomOpen(true)}
+          className="relative cursor-pointer group"
+          title="Nhấp để phóng to avatar"
+        >
+          <div className="h-9 w-9 rounded-full overflow-hidden border border-slate-200 shadow-xs relative">
             <Image
               src={avatarImg}
               alt="Admin Avatar"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
             />
+            <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <ZoomIn className="w-3.5 h-3.5 text-white" />
+            </div>
           </div>
           {/* Online status indicator */}
-          <span className="absolute bottom-0 right-[1px] h-3 w-3 rounded-full bg-[#28C76F] border-[2px] border-white shadow-2xs" />
+          <span className="absolute bottom-0 right-[1px] h-3 w-3 rounded-full bg-[#28C76F] border-[2px] border-white shadow-2xs z-10" />
         </div>
       </div>
+
+      {/* Avatar Zoom Modal */}
+      <AdminImageZoomModal
+        isOpen={isZoomOpen}
+        onClose={() => setIsZoomOpen(false)}
+        src={avatarImg.src}
+        title="Admin Avatar"
+      />
     </header>
   );
 };
+

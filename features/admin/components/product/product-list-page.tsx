@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Search, Plus } from 'lucide-react'
+import { Search, Plus, ZoomIn } from 'lucide-react'
 import { useDispatch } from 'react-redux'
 import {
   AdminTable,
@@ -16,6 +16,7 @@ import { AdminPagination } from '../ui/admin-pagination'
 import { AdminButton } from '../ui/admin-button'
 import { AdminInput } from '../ui/admin-input'
 import { AdminConfirmModal } from '../ui/admin-confirm-modal'
+import { AdminImageZoomModal } from '../ui/admin-image-zoom-modal'
 import { ProductCreateModal } from './product-create-modal'
 import { ProductEditModal } from './product-edit-modal'
 import { Product, addProduct, deleteProduct, updateProduct } from '@/features/product/store/product.slice'
@@ -66,6 +67,7 @@ export const ProductListPage: React.FC = () => {
   const [productToDeleteId, setProductToDeleteId] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [zoomedImage, setZoomedImage] = useState<{ src: string; title: string } | null>(null)
 
   useEffect(() => {
     setIsMounted(true)
@@ -197,17 +199,28 @@ export const ProductListPage: React.FC = () => {
                     </div>
                   </AdminTableCell>
 
-                  {/* Image Preview */}
+                  {/* Image Preview - Clickable to zoom */}
                   <AdminTableCell>
-                    <div className="h-10 w-10 rounded-[4px] bg-slate-100 overflow-hidden flex items-center justify-center text-white border border-slate-100 shadow-2xs">
+                    <div
+                      onClick={() => product.image && setZoomedImage({ src: product.image, title: product.name })}
+                      className={`h-10 w-10 rounded-[4px] bg-slate-100 overflow-hidden flex items-center justify-center text-white border border-slate-100 shadow-2xs relative ${
+                        product.image ? 'cursor-pointer group hover:border-slate-300' : ''
+                      }`}
+                      title={product.image ? 'Nhấp để phóng to ảnh' : ''}
+                    >
                       {product.image ? (
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          width={40}
-                          height={40}
-                          className="h-full w-full object-cover"
-                        />
+                        <>
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-200"
+                          />
+                          <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ZoomIn className="w-3.5 h-3.5 text-white" />
+                          </div>
+                        </>
                       ) : (
                         <span className="text-[10px] font-bold text-slate-400">IMG</span>
                       )}
@@ -290,6 +303,15 @@ export const ProductListPage: React.FC = () => {
         message="Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác."
         confirmText="Xóa"
       />
+
+      {/* Image Zoom Modal */}
+      <AdminImageZoomModal
+        isOpen={!!zoomedImage}
+        onClose={() => setZoomedImage(null)}
+        src={zoomedImage?.src || null}
+        title={zoomedImage?.title}
+      />
     </div>
   )
 }
+

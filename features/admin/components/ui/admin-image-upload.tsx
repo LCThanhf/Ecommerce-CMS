@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useRef } from 'react'
-import { Upload, X } from 'lucide-react'
+import React, { useRef, useState } from 'react'
+import { Upload, X, ZoomIn } from 'lucide-react'
 import { AdminButton } from './admin-button'
+import { AdminImageZoomModal } from './admin-image-zoom-modal'
 
 export interface AdminImageUploadProps {
   id?: string
@@ -24,6 +25,7 @@ export const AdminImageUpload: React.FC<AdminImageUploadProps> = ({
   error,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isZoomOpen, setIsZoomOpen] = useState(false)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -67,18 +69,26 @@ export const AdminImageUpload: React.FC<AdminImageUploadProps> = ({
 
       {value ? (
         <div className="relative flex items-center gap-4 p-3 border border-slate-200 rounded-[6px] bg-slate-50">
-          <div className="relative w-16 h-16 rounded-md overflow-hidden bg-white border border-slate-200 flex-shrink-0 flex items-center justify-center">
+          {/* Clickable Image Thumbnail with Zoom hover effect */}
+          <div
+            onClick={() => setIsZoomOpen(true)}
+            className="relative w-16 h-16 rounded-md overflow-hidden bg-white border border-slate-200 flex-shrink-0 flex items-center justify-center cursor-pointer group shadow-2xs"
+            title="Nhấp để phóng to ảnh"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={value}
               alt="Preview"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
             />
+            <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <ZoomIn className="w-4 h-4 text-white" />
+            </div>
           </div>
 
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-slate-700 truncate">Đã tải ảnh lên</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Nhấp nút bên dưới để thay đổi ảnh khác</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">Nhấp vào ảnh để phóng to hoặc bấm Thay đổi</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -134,6 +144,15 @@ export const AdminImageUpload: React.FC<AdminImageUploadProps> = ({
           </p>
         </div>
       )}
+
+      {/* Enlarged Image Zoom Modal */}
+      <AdminImageZoomModal
+        isOpen={isZoomOpen}
+        onClose={() => setIsZoomOpen(false)}
+        src={value || null}
+        title="Ảnh sản phẩm / người dùng"
+      />
     </div>
   )
 }
+

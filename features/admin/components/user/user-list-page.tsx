@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { Search, Plus } from 'lucide-react'
+import { Search, Plus, ZoomIn } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   AdminTable,
@@ -16,6 +16,7 @@ import { AdminPagination } from '../ui/admin-pagination'
 import { AdminButton } from '../ui/admin-button'
 import { AdminInput } from '../ui/admin-input'
 import { AdminConfirmModal } from '../ui/admin-confirm-modal'
+import { AdminImageZoomModal } from '../ui/admin-image-zoom-modal'
 import { UserCreateModal } from './user-create-modal'
 import { UserEditModal } from './user-edit-modal'
 import { AdminUser, addAdminUser, deleteAdminUser, updateAdminUser } from '@/features/admin/store/admin-user.slice'
@@ -33,6 +34,7 @@ export const UserListPage: React.FC = () => {
   const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [zoomedImage, setZoomedImage] = useState<{ src: string; title: string } | null>(null)
 
   // Filter users by search query
   const filteredUsers = users.filter((user) =>
@@ -105,17 +107,28 @@ export const UserListPage: React.FC = () => {
             {paginatedUsers.length > 0 ? (
               paginatedUsers.map((user) => (
                 <AdminTableRow key={user.id}>
-                  {/* Avatar */}
+                  {/* Avatar - Clickable to zoom */}
                   <AdminTableCell>
-                    <div className="h-10 w-10 rounded-[4px] bg-slate-100 overflow-hidden flex items-center justify-center text-white border border-slate-100 shadow-2xs">
+                    <div
+                      onClick={() => user.avatar && setZoomedImage({ src: user.avatar, title: user.name })}
+                      className={`h-10 w-10 rounded-[4px] bg-slate-100 overflow-hidden flex items-center justify-center text-white border border-slate-100 shadow-2xs relative ${
+                        user.avatar ? 'cursor-pointer group hover:border-slate-300' : ''
+                      }`}
+                      title={user.avatar ? 'Nhấp để phóng to avatar' : ''}
+                    >
                       {user.avatar ? (
-                        <Image
-                          src={user.avatar}
-                          alt={user.name}
-                          width={40}
-                          height={40}
-                          className="h-full w-full object-cover"
-                        />
+                        <>
+                          <Image
+                            src={user.avatar}
+                            alt={user.name}
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-200"
+                          />
+                          <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ZoomIn className="w-3.5 h-3.5 text-white" />
+                          </div>
+                        </>
                       ) : (
                         <span className="text-[10px] font-bold text-slate-400">USR</span>
                       )}
@@ -218,6 +231,15 @@ export const UserListPage: React.FC = () => {
         message="Bạn có chắc chắn muốn xóa người dùng này? Hành động này không thể hoàn tác."
         confirmText="Xóa"
       />
+
+      {/* Image Zoom Modal */}
+      <AdminImageZoomModal
+        isOpen={!!zoomedImage}
+        onClose={() => setZoomedImage(null)}
+        src={zoomedImage?.src || null}
+        title={zoomedImage?.title}
+      />
     </div>
   )
 }
+
