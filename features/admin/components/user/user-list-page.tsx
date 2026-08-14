@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { Search, Plus, ZoomIn } from 'lucide-react'
+import { Search, Plus, ZoomIn, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   AdminTable,
@@ -24,6 +24,9 @@ import type { RootState } from '@/store/store'
 import editIcon from '@/app/assets/edit.svg'
 import trashIcon from '@/app/assets/trash.svg'
 
+type UserSortField = 'name' | 'email' | 'dob' | null
+type UserSortOrder = 'asc' | 'desc' | null
+
 export const UserListPage: React.FC = () => {
   const dispatch = useDispatch()
   const users = useSelector((state: RootState) => state.adminUsers.items)
@@ -36,15 +39,66 @@ export const UserListPage: React.FC = () => {
   const [pageSize, setPageSize] = useState(10)
   const [zoomedImage, setZoomedImage] = useState<{ src: string; title: string } | null>(null)
 
+  // Column Header Sorting State
+  const [sortField, setSortField] = useState<UserSortField>(null)
+  const [sortOrder, setSortOrder] = useState<UserSortOrder>(null)
+
+  const handleSort = (field: 'name' | 'email' | 'dob') => {
+    setCurrentPage(1)
+    if (sortField !== field) {
+      setSortField(field)
+      setSortOrder('asc')
+    } else if (sortOrder === 'asc') {
+      setSortOrder('desc')
+    } else {
+      setSortField(null)
+      setSortOrder(null)
+    }
+  }
+
+  const renderSortIcon = (field: 'name' | 'email' | 'dob') => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="h-3 w-3 text-slate-300 group-hover:text-slate-500 transition" />
+    }
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="h-3 w-3 text-[#0F60FF] font-bold" />
+    ) : (
+      <ArrowDown className="h-3 w-3 text-[#0F60FF] font-bold" />
+    )
+  }
+
   // Filter users by search query
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  // Sort users based on active header sort filter
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    if (!sortField || !sortOrder) return 0
+
+    if (sortField === 'name') {
+      const cmp = a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' })
+      return sortOrder === 'asc' ? cmp : -cmp
+    }
+
+    if (sortField === 'email') {
+      const cmp = a.email.localeCompare(b.email, 'en', { sensitivity: 'base' })
+      return sortOrder === 'asc' ? cmp : -cmp
+    }
+
+    if (sortField === 'dob') {
+      const cmp = (a.dob || '').localeCompare(b.dob || '')
+      return sortOrder === 'asc' ? cmp : -cmp
+    }
+
+    return 0
+  })
+
   // Pagination logic
-  const totalItems = filteredUsers.length
-  const totalPages = Math.ceil(filteredUsers.length / pageSize) || 1
-  const paginatedUsers = filteredUsers.slice(
+  const totalItems = sortedUsers.length
+  const totalPages = Math.ceil(sortedUsers.length / pageSize) || 1
+  const paginatedUsers = sortedUsers.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   )
@@ -67,13 +121,16 @@ export const UserListPage: React.FC = () => {
   return (
     <div className="w-full space-y-6">
       {/* Control Bar: Search & Action Button */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-3 mb-6">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-3 mb-4">
         {/* Search Input Box */}
         <div className="relative w-full sm:w-72">
           <AdminInput
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setCurrentPage(1)
+            }}
             placeholder="Tìm kiếm"
             className="h-8 pl-3.5 pr-9 bg-white shadow-2xs text-xs font-medium border-slate-200"
           />
@@ -96,9 +153,49 @@ export const UserListPage: React.FC = () => {
         <AdminTable>
           <AdminTableHeader>
             <AdminTableHead className="w-[12%]">AVATAR</AdminTableHead>
-            <AdminTableHead className="w-[20%]">TÊN NGƯỜI DÙNG</AdminTableHead>
-            <AdminTableHead className="w-[28%]">EMAIL</AdminTableHead>
-            <AdminTableHead className="w-[15%]">NGÀY SINH</AdminTableHead>
+
+            {/* Tên người dùng */}
+            <AdminTableHead className="w-[20%]">
+              <button
+                type="button"
+                onClick={() => handleSort('name')}
+                className={`group inline-flex items-center gap-1.5 hover:text-slate-800 transition cursor-pointer select-none ${
+                  sortField === 'name' ? 'text-[#0F60FF] font-bold' : ''
+                }`}
+              >
+                <span>TÊN NGƯỜI DÙNG</span>
+                {renderSortIcon('name')}
+              </button>
+            </AdminTableHead>
+
+            {/* Email */}
+            <AdminTableHead className="w-[28%]">
+              <button
+                type="button"
+                onClick={() => handleSort('email')}
+                className={`group inline-flex items-center gap-1.5 hover:text-slate-800 transition cursor-pointer select-none ${
+                  sortField === 'email' ? 'text-[#0F60FF] font-bold' : ''
+                }`}
+              >
+                <span>EMAIL</span>
+                {renderSortIcon('email')}
+              </button>
+            </AdminTableHead>
+
+            {/* Ngày sinh */}
+            <AdminTableHead className="w-[15%]">
+              <button
+                type="button"
+                onClick={() => handleSort('dob')}
+                className={`group inline-flex items-center gap-1.5 hover:text-slate-800 transition cursor-pointer select-none ${
+                  sortField === 'dob' ? 'text-[#0F60FF] font-bold' : ''
+                }`}
+              >
+                <span>NGÀY SINH</span>
+                {renderSortIcon('dob')}
+              </button>
+            </AdminTableHead>
+
             <AdminTableHead className="w-[15%]">SỐ ĐIỆN THOẠI</AdminTableHead>
             <AdminTableHead className="w-[10%]">HÀNH ĐỘNG</AdminTableHead>
           </AdminTableHeader>

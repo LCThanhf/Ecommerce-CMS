@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Search, Plus, ZoomIn } from 'lucide-react'
+import { Search, Plus, ZoomIn, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react'
 import { useDispatch } from 'react-redux'
 import {
   AdminTable,
@@ -39,6 +39,9 @@ const INITIAL_PRODUCTS: Product[] = [
   { id: 10, name: 'Sản phẩm 10', price: '20.000.000 VNĐ', priceValue: 20000000, quantity: 532, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=100&auto=format&fit=crop&q=80' },
 ]
 
+type SortField = 'name' | 'price' | 'quantity' | null
+type SortOrder = 'asc' | 'desc' | null
+
 export const ProductListPage: React.FC = () => {
   const dispatch = useDispatch()
   const [isMounted, setIsMounted] = useState(false)
@@ -69,6 +72,10 @@ export const ProductListPage: React.FC = () => {
   const [pageSize, setPageSize] = useState(10)
   const [zoomedImage, setZoomedImage] = useState<{ src: string; title: string } | null>(null)
 
+  // Column Header Sorting State
+  const [sortField, setSortField] = useState<SortField>(null)
+  const [sortOrder, setSortOrder] = useState<SortOrder>(null)
+
   useEffect(() => {
     setIsMounted(true)
     if (typeof window !== 'undefined') {
@@ -84,6 +91,43 @@ export const ProductListPage: React.FC = () => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(ADMIN_PRODUCTS_STORAGE_KEY, JSON.stringify(newProducts))
     }
+  }
+
+  // Handle header column click for sorting/filtering
+  const handleSort = (field: 'name' | 'price' | 'quantity') => {
+    setCurrentPage(1)
+    if (sortField !== field) {
+      setSortField(field)
+      setSortOrder('asc')
+    } else if (sortOrder === 'asc') {
+      setSortOrder('desc')
+    } else {
+      setSortField(null)
+      setSortOrder(null)
+    }
+  }
+
+  // Helper to extract numeric price for sorting
+  const getPriceNumber = (p: Product) => {
+    if (typeof p.priceValue === 'number' && !isNaN(p.priceValue)) {
+      return p.priceValue
+    }
+    if (typeof p.price === 'string') {
+      const num = parseInt(p.price.replace(/\D/g, ''), 10)
+      if (!isNaN(num)) return num
+    }
+    return 0
+  }
+
+  const renderSortIcon = (field: 'name' | 'price' | 'quantity') => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="h-3 w-3 text-slate-300 group-hover:text-slate-500 transition" />
+    }
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="h-3 w-3 text-[#0F60FF] font-bold" />
+    ) : (
+      <ArrowDown className="h-3 w-3 text-[#0F60FF] font-bold" />
+    )
   }
 
   if (!isMounted) {
@@ -105,10 +149,34 @@ export const ProductListPage: React.FC = () => {
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  // Sort products based on active header sort filter
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (!sortField || !sortOrder) return 0
+
+    if (sortField === 'name') {
+      const cmp = a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' })
+      return sortOrder === 'asc' ? cmp : -cmp
+    }
+
+    if (sortField === 'price') {
+      const valA = getPriceNumber(a)
+      const valB = getPriceNumber(b)
+      return sortOrder === 'asc' ? valA - valB : valB - valA
+    }
+
+    if (sortField === 'quantity') {
+      const valA = a.quantity ?? 0
+      const valB = b.quantity ?? 0
+      return sortOrder === 'asc' ? valA - valB : valB - valA
+    }
+
+    return 0
+  })
+
   // Pagination logic
-  const totalItems = filteredProducts.length
-  const totalPages = Math.ceil(filteredProducts.length / pageSize) || 1
-  const paginatedProducts = filteredProducts.slice(
+  const totalItems = sortedProducts.length
+  const totalPages = Math.ceil(sortedProducts.length / pageSize) || 1
+  const paginatedProducts = sortedProducts.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   )
@@ -137,13 +205,16 @@ export const ProductListPage: React.FC = () => {
   return (
     <div className="w-full space-y-6">
       {/* Control Bar: Search & Action Button */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-3 mb-6">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-3 mb-4">
         {/* Search Input Box */}
         <div className="relative w-full sm:w-72">
           <AdminInput
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setCurrentPage(1)
+            }}
             placeholder="Tìm kiếm"
             className="h-8 pl-3.5 pr-9 bg-white shadow-2xs text-xs font-medium border-slate-200"
           />
@@ -165,9 +236,48 @@ export const ProductListPage: React.FC = () => {
       <div className="bg-white rounded-xl shadow-2xs border border-slate-100 overflow-hidden">
         <AdminTable>
           <AdminTableHeader>
-            <AdminTableHead className="w-[20%]">TÊN SẢN PHẨM</AdminTableHead>
-            <AdminTableHead className="w-[12%]">GIÁ</AdminTableHead>
-            <AdminTableHead className="w-[12%]">SỐ LƯỢNG</AdminTableHead>
+            {/* Tên sản phẩm */}
+            <AdminTableHead className="w-[20%]">
+              <button
+                type="button"
+                onClick={() => handleSort('name')}
+                className={`group inline-flex items-center gap-1.5 hover:text-slate-800 transition cursor-pointer select-none ${
+                  sortField === 'name' ? 'text-[#0F60FF] font-bold' : ''
+                }`}
+              >
+                <span>TÊN SẢN PHẨM</span>
+                {renderSortIcon('name')}
+              </button>
+            </AdminTableHead>
+
+            {/* Giá */}
+            <AdminTableHead className="w-[12%]">
+              <button
+                type="button"
+                onClick={() => handleSort('price')}
+                className={`group inline-flex items-center gap-1.5 hover:text-slate-800 transition cursor-pointer select-none ${
+                  sortField === 'price' ? 'text-[#0F60FF] font-bold' : ''
+                }`}
+              >
+                <span>GIÁ</span>
+                {renderSortIcon('price')}
+              </button>
+            </AdminTableHead>
+
+            {/* Số lượng */}
+            <AdminTableHead className="w-[12%]">
+              <button
+                type="button"
+                onClick={() => handleSort('quantity')}
+                className={`group inline-flex items-center gap-1.5 hover:text-slate-800 transition cursor-pointer select-none ${
+                  sortField === 'quantity' ? 'text-[#0F60FF] font-bold' : ''
+                }`}
+              >
+                <span>SỐ LƯỢNG</span>
+                {renderSortIcon('quantity')}
+              </button>
+            </AdminTableHead>
+
             <AdminTableHead className="w-[30%]">MÔ TẢ</AdminTableHead>
             <AdminTableHead className="w-[12%]">ẢNH</AdminTableHead>
             <AdminTableHead className="w-[14%]">HÀNH ĐỘNG</AdminTableHead>
