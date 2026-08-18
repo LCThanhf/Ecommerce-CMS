@@ -5,6 +5,7 @@ export type CartItem = {
   priceValue: number
   priceFormatted: string
   qty: number
+  image?: string
 }
 
 export interface CartState {

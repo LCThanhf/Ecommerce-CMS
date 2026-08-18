@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeItem as removeItemAction, updateQty as updateQtyAction } from '@/features/cart/store/cart.slice'
 import type { RootState, AppDispatch } from '@/store/store'
-import galaxyA31 from '@/app/assets/samsung-galaxy-a31.png'
 import { useTranslation } from '@/hooks/use-translation'
 
 const formatVND = (value: number): string => {
@@ -78,13 +77,20 @@ const CartSection = () => {
             <button
               type="button"
               onClick={() => router.push(`/shop/product/${item.id}`)}
-              className="h-40 w-36 self-center sm:self-auto sm:h-64 sm:w-56 shrink-0 cursor-pointer"
+              className="relative h-40 w-36 self-center sm:self-auto sm:h-64 sm:w-56 shrink-0 cursor-pointer"
             >
-              <Image
-                src={galaxyA31}
-                alt={item.name}
-                className="h-full w-full object-contain"
-              />
+              {item.image ? (
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-contain p-2"
+                />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center bg-white border border-slate-100 rounded-sm">
+                  <span className="text-slate-400 text-xs font-medium text-center">Chưa có ảnh</span>
+                </div>
+              )}
             </button>
 
             {/* Details */}

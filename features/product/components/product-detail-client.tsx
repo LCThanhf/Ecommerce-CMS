@@ -93,6 +93,7 @@ const ProductDetailClient = ({ id }: { id: string }) => {
       priceValue,
       priceFormatted,
       qty: 1,
+      image: product.image,
     }))
   }
 
@@ -270,7 +271,7 @@ const ProductDetailClient = ({ id }: { id: string }) => {
                     onClick={() => {
                       const alreadyInCart = cartItems.some((i) => i.id === productId)
                       if (!alreadyInCart) {
-                        dispatch(addItemSilent({ id: productId, name: productName, description, priceValue, priceFormatted, qty: 1 }))
+                        dispatch(addItemSilent({ id: productId, name: productName, description, priceValue, priceFormatted, qty: 1, image: product.image }))
                       }
                       router.push('/shop?view=cart')
                     }}
