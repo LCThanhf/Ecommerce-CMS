@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { getUsers, saveUser } from '@/features/auth/store/auth.storage'
 import { FieldRow } from './field-row'
+import { api } from '@/services/api'
 
 const PASSWORD_PATTERN = '(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}'
 
@@ -16,7 +17,7 @@ export const SignUpForm = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
-  const handleSignUp = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
@@ -34,14 +35,16 @@ export const SignUpForm = () => {
       return
     }
 
-    const existing = getUsers().find((u) => u.username === username.trim())
-    if (existing) {
-      setErrorMessage('Tên đăng nhập đã được sử dụng.')
-      return
+    try {
+      await api.post('/auth/register', {
+        username: username.trim(),
+        email: email.trim(),
+        password: password,
+      });
+      router.push('/login')
+    } catch (error) {
+      setErrorMessage('Đăng ký thất bại, email đã tồn tại.')
     }
-
-    saveUser({ username: username.trim(), email: email.trim(), password })
-    router.push('/login')
   }
 
   return (

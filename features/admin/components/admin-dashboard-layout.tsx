@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { AdminSidebar } from './admin-sidebar'
 import { AdminHeader } from './admin-header'
 
@@ -13,7 +14,32 @@ export const AdminDashboardLayout: React.FC<AdminDashboardLayoutProps> = ({
   title,
   children,
 }) => {
+  const router = useRouter()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+
+  useEffect(() => {
+    const sessionStr = localStorage.getItem('admin_session')
+    if (!sessionStr) {
+      router.replace('/admin/login')
+      return
+    }
+
+    try {
+      const session = JSON.parse(sessionStr)
+      if (session.role !== 'Admin') {
+        router.replace('/admin/login')
+      } else {
+        setIsAuthorized(true)
+      }
+    } catch (e) {
+      router.replace('/admin/login')
+    }
+  }, [router])
+
+  if (!isAuthorized) {
+    return null // or a loading spinner
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-[#F8FAFC]">

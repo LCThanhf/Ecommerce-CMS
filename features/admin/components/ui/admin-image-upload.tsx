@@ -13,6 +13,7 @@ export interface AdminImageUploadProps {
   required?: boolean
   className?: string
   error?: string
+  compact?: boolean
 }
 
 export const AdminImageUpload: React.FC<AdminImageUploadProps> = ({
@@ -23,6 +24,7 @@ export const AdminImageUpload: React.FC<AdminImageUploadProps> = ({
   required = false,
   className = '',
   error,
+  compact = false,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isZoomOpen, setIsZoomOpen] = useState(false)
@@ -86,23 +88,27 @@ export const AdminImageUpload: React.FC<AdminImageUploadProps> = ({
             </div>
           </div>
 
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-slate-700 truncate">Đã tải ảnh lên</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Nhấp vào ảnh để phóng to hoặc bấm Thay đổi</p>
-          </div>
+          {!compact && (
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-slate-700 truncate">Đã tải ảnh lên</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Nhấp vào ảnh để phóng to hoặc bấm Thay đổi</p>
+            </div>
+          )}
 
-          <div className="flex items-center gap-2">
-            <AdminButton
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleTriggerUpload}
-              disabled={disabled}
-              className="text-xs h-8 px-3"
-            >
-              <Upload className="w-3.5 h-3.5 mr-1.5" />
-              Thay đổi
-            </AdminButton>
+          <div className={`flex items-center gap-1 sm:gap-2 ${compact ? 'flex-1 justify-end' : ''}`}>
+            {!compact && (
+              <AdminButton
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleTriggerUpload}
+                disabled={disabled}
+                className="text-xs h-8 px-2 sm:px-3 whitespace-nowrap"
+              >
+                <Upload className="w-3.5 h-3.5 mr-1 sm:mr-1.5" />
+                Thay đổi
+              </AdminButton>
+            )}
             <button
               type="button"
               onClick={handleRemove}
@@ -133,15 +139,17 @@ export const AdminImageUpload: React.FC<AdminImageUploadProps> = ({
                 handleTriggerUpload()
               }}
               disabled={disabled}
-              className="px-4 py-2 text-xs font-medium bg-white border-slate-200 hover:bg-slate-50 text-slate-700 shadow-xs"
+              className="px-2 sm:px-4 py-2 text-xs font-medium bg-white border-slate-200 hover:bg-slate-50 text-slate-700 shadow-xs whitespace-nowrap"
             >
-              <Upload className="w-3.5 h-3.5 mr-1.5 text-[#0F60FF]" />
-              Tải ảnh lên
+              <Upload className="w-3.5 h-3.5 mr-1 sm:mr-1.5 text-[#0F60FF]" />
+              {compact ? 'Tải ảnh' : 'Tải ảnh lên'}
             </AdminButton>
           </div>
-          <p className="text-[11px] text-slate-400 mt-2 text-center">
-            Nhấp vào nút để chọn và tải ảnh từ máy tính (PNG, JPG, WEBP)
-          </p>
+          {!compact && (
+            <p className="text-[11px] text-slate-400 mt-2 text-center">
+              Nhấp vào nút để chọn và tải ảnh từ máy tính (PNG, JPG, WEBP)
+            </p>
+          )}
         </div>
       )}
 

@@ -34,7 +34,7 @@ describe('auth.storage', () => {
 
   describe('session', () => {
     it('should save session to localStorage if rememberLogin is true', () => {
-      const user = { username: 'test', email: 'test@example.com' }
+      const user = { username: 'test', email: 'test@example.com', role: 'User' }
       saveSession(user, true)
       
       expect(localStorage.getItem('ms-session')).toBeTruthy()
@@ -43,7 +43,7 @@ describe('auth.storage', () => {
     })
 
     it('should save session to sessionStorage if rememberLogin is false', () => {
-      const user = { username: 'test', email: 'test@example.com' }
+      const user = { username: 'test', email: 'test@example.com', role: 'User' }
       saveSession(user, false)
       
       expect(localStorage.getItem('ms-session')).toBeNull()
@@ -52,7 +52,7 @@ describe('auth.storage', () => {
     })
 
     it('should clear session from both storages', () => {
-      const user = { username: 'test', email: 'test@example.com' }
+      const user = { username: 'test', email: 'test@example.com', role: 'User' }
       saveSession(user, true)
       saveSession(user, false) // Note: saveSession handles clearing the other storage internally, but let's test clearSession directly
       

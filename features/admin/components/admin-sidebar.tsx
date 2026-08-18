@@ -44,6 +44,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     dispatch(resetProducts())
     dispatch(logoutUser())
     clearSession()
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('admin_token')
+      localStorage.removeItem('admin_session')
+    }
     router.push('/admin/login')
   }
 

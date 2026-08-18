@@ -1,17 +1,17 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { fetchPosts } from './product.api'
-import { ajax } from 'rxjs/ajax'
+import { fetchProductsAPI } from './product.api'
+import { api } from '@/services/api'
 import { of, throwError, firstValueFrom } from 'rxjs'
 
-vi.mock('rxjs/ajax', () => ({
-  ajax: {
-    getJSON: vi.fn(),
+vi.mock('@/services/api', () => ({
+  api: {
+    get: vi.fn(),
   },
 }))
 
-const MOCK_POSTS = [
-  { id: 1, title: 'Post 1', body: 'Body 1', userId: 1 },
-  { id: 2, title: 'Post 2', body: 'Body 2', userId: 1 },
+const MOCK_PRODUCTIONS = [
+  { id: 1, name: 'Product 1', price: 100, stockQuantity: 10, description: 'Desc 1', imageUrl: 'img1.jpg', rating: 4 },
+  { id: 2, name: 'Product 2', price: 200, stockQuantity: 20, description: 'Desc 2', imageUrl: 'img2.jpg', rating: 5 },
 ]
 
 describe('product.api', () => {
@@ -20,23 +20,23 @@ describe('product.api', () => {
   })
 
   it('should call the correct API endpoint', async () => {
-    vi.mocked(ajax.getJSON).mockReturnValue(of(MOCK_POSTS))
+    vi.mocked(api.get).mockResolvedValue(MOCK_PRODUCTIONS)
 
-    await firstValueFrom(fetchPosts())
-    expect(ajax.getJSON).toHaveBeenCalledWith('https://jsonplaceholder.typicode.com/posts')
+    await firstValueFrom(fetchProductsAPI())
+    expect(api.get).toHaveBeenCalledWith('/productions')
   })
 
-  it('should return the list of posts on success', async () => {
-    vi.mocked(ajax.getJSON).mockReturnValue(of(MOCK_POSTS))
+  it('should return the list of products on success', async () => {
+    vi.mocked(api.get).mockResolvedValue(MOCK_PRODUCTIONS)
 
-    const posts = await firstValueFrom(fetchPosts())
-    expect(posts).toHaveLength(2)
-    expect(posts[0].id).toBe(1)
-    expect(posts[0].title).toBe('Post 1')
+    const products = await firstValueFrom(fetchProductsAPI())
+    expect(products).toHaveLength(2)
+    expect(products[0].id).toBe(1)
+    expect(products[0].name).toBe('Product 1')
   })
 
   it('should propagate errors when the API fails', async () => {
-    vi.mocked(ajax.getJSON).mockReturnValue(throwError(() => new Error('Failed to fetch')))
-    await expect(firstValueFrom(fetchPosts())).rejects.toThrow('Failed to fetch')
+    vi.mocked(api.get).mockRejectedValue(new Error('Failed to fetch'))
+    await expect(firstValueFrom(fetchProductsAPI())).rejects.toThrow('Failed to fetch')
   })
 })

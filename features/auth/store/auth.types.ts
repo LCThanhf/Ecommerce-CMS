@@ -1,6 +1,7 @@
 export interface AuthUser {
   username: string
   email: string
+  role: string
 }
 
 export interface AuthState {
@@ -17,4 +18,5 @@ export interface StoredUser {
 export interface SessionUser {
   username: string
   email: string
+  role: string
 }

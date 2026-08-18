@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Search, Plus, ZoomIn, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react'
-import { useDispatch } from 'react-redux'
+import { Search, Plus, ZoomIn, ArrowUpDown, ArrowUp, ArrowDown, X, Star } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   AdminTable,
   AdminTableHeader,
@@ -19,51 +19,20 @@ import { AdminConfirmModal } from '../ui/admin-confirm-modal'
 import { AdminImageZoomModal } from '../ui/admin-image-zoom-modal'
 import { ProductCreateModal } from './product-create-modal'
 import { ProductEditModal } from './product-edit-modal'
-import { Product, addProduct, deleteProduct, updateProduct } from '@/features/product/store/product.slice'
+import { Product, addProduct, deleteProduct, updateProduct, fetchProductsSuccess } from '@/features/product/store/product.slice'
+import type { RootState } from '@/store/store'
+import { api } from '@/services/api'
 import editIcon from '@/app/assets/edit.svg'
 import trashIcon from '@/app/assets/trash.svg'
 
-const ADMIN_PRODUCTS_STORAGE_KEY = 'admin_products'
-
-// Initial mock products matching the screenshot (formatted in VNĐ)
-const INITIAL_PRODUCTS: Product[] = [
-  { id: 1, name: 'Sản phẩm 1', price: '6.000.000 VNĐ', priceValue: 6000000, quantity: 1, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&auto=format&fit=crop&q=80' },
-  { id: 2, name: 'Sản phẩm 2', price: '5.000.000 VNĐ', priceValue: 5000000, quantity: 3, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&auto=format&fit=crop&q=80' },
-  { id: 3, name: 'Sản phẩm 3', price: '40.000.000 VNĐ', priceValue: 40000000, quantity: 6, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&auto=format&fit=crop&q=80' },
-  { id: 4, name: 'Sản phẩm 4', price: '12.000.000 VNĐ', priceValue: 12000000, quantity: 355, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=100&auto=format&fit=crop&q=80' },
-  { id: 5, name: 'Sản phẩm 5', price: '45.000.000 VNĐ', priceValue: 45000000, quantity: 42, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=100&auto=format&fit=crop&q=80' },
-  { id: 6, name: 'Sản phẩm 6', price: '15.000.000 VNĐ', priceValue: 15000000, quantity: 45, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=100&auto=format&fit=crop&q=80' },
-  { id: 7, name: 'Sản phẩm 7', price: '8.000.000 VNĐ', priceValue: 8000000, quantity: 144, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=100&auto=format&fit=crop&q=80' },
-  { id: 8, name: 'Sản phẩm 8', price: '80.000.000 VNĐ', priceValue: 80000000, quantity: 677, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=100&auto=format&fit=crop&q=80' },
-  { id: 9, name: 'Sản phẩm 9', price: '35.000.000 VNĐ', priceValue: 35000000, quantity: 533, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=100&auto=format&fit=crop&q=80' },
-  { id: 10, name: 'Sản phẩm 10', price: '20.000.000 VNĐ', priceValue: 20000000, quantity: 532, description: 'Lorem ipsum dolor sit amet', rating: 5, image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=100&auto=format&fit=crop&q=80' },
-]
-
-type SortField = 'name' | 'price' | 'quantity' | null
+type SortField = 'name' | 'price' | 'quantity' | 'rating' | null
 type SortOrder = 'asc' | 'desc' | null
 
 export const ProductListPage: React.FC = () => {
   const dispatch = useDispatch()
+  const products = useSelector((state: RootState) => state.products.items)
+
   const [isMounted, setIsMounted] = useState(false)
-
-  // Synchronously initialize state from localStorage to prevent half-second visual glitch/flash on F5 refresh
-  const [products, setProducts] = useState<Product[]>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(ADMIN_PRODUCTS_STORAGE_KEY)
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored)
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed
-          }
-        } catch {
-          // ignore parsing error
-        }
-      }
-    }
-    return INITIAL_PRODUCTS
-  })
-
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [selectedProductForEdit, setSelectedProductForEdit] = useState<Product | null>(null)
@@ -78,23 +47,32 @@ export const ProductListPage: React.FC = () => {
 
   useEffect(() => {
     setIsMounted(true)
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(ADMIN_PRODUCTS_STORAGE_KEY)
-      if (!stored) {
-        localStorage.setItem(ADMIN_PRODUCTS_STORAGE_KEY, JSON.stringify(INITIAL_PRODUCTS))
+    const loadProducts = async () => {
+      try {
+        const data = await api.get<any[]>('/productions')
+        const mappedProducts: Product[] = data.map(p => ({
+          id: p.id,
+          name: p.name,
+          priceValue: p.price,
+          price: `${p.price.toLocaleString('vi-VN')} VNĐ`,
+          quantity: p.stockQuantity,
+          description: p.description,
+          image: p.imageUrl,
+          subImage1: p.subImage1,
+          subImage2: p.subImage2,
+          subImage3: p.subImage3,
+          rating: p.rating
+        }))
+        dispatch(fetchProductsSuccess(mappedProducts))
+      } catch (error) {
+        console.error('Failed to load products', error)
       }
     }
-  }, [])
-
-  const saveProducts = (newProducts: Product[]) => {
-    setProducts(newProducts)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(ADMIN_PRODUCTS_STORAGE_KEY, JSON.stringify(newProducts))
-    }
-  }
+    loadProducts()
+  }, [dispatch])
 
   // Handle header column click for sorting/filtering
-  const handleSort = (field: 'name' | 'price' | 'quantity') => {
+  const handleSort = (field: 'name' | 'price' | 'quantity' | 'rating') => {
     setCurrentPage(1)
     if (sortField !== field) {
       setSortField(field)
@@ -119,7 +97,7 @@ export const ProductListPage: React.FC = () => {
     return 0
   }
 
-  const renderSortIcon = (field: 'name' | 'price' | 'quantity') => {
+  const renderSortIcon = (field: 'name' | 'price' | 'quantity' | 'rating') => {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 text-slate-300 group-hover:text-slate-500 transition" />
     }
@@ -146,7 +124,7 @@ export const ProductListPage: React.FC = () => {
 
   // Filter products by search query
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    (product.name || '').toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   // Sort products based on active header sort filter
@@ -154,7 +132,7 @@ export const ProductListPage: React.FC = () => {
     if (!sortField || !sortOrder) return 0
 
     if (sortField === 'name') {
-      const cmp = a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' })
+      const cmp = (a.name || '').localeCompare(b.name || '', 'vi', { sensitivity: 'base' })
       return sortOrder === 'asc' ? cmp : -cmp
     }
 
@@ -170,6 +148,12 @@ export const ProductListPage: React.FC = () => {
       return sortOrder === 'asc' ? valA - valB : valB - valA
     }
 
+    if (sortField === 'rating') {
+      const valA = a.rating ?? 0
+      const valB = b.rating ?? 0
+      return sortOrder === 'asc' ? valA - valB : valB - valA
+    }
+
     return 0
   })
 
@@ -181,24 +165,70 @@ export const ProductListPage: React.FC = () => {
     currentPage * pageSize
   )
 
-  const handleAddProduct = (newProduct: Product) => {
-    const updated = [newProduct, ...products]
-    saveProducts(updated)
-    dispatch(addProduct(newProduct))
+  const handleAddProduct = async (newProduct: Product) => {
+    try {
+      const payload = {
+        name: newProduct.name,
+        description: newProduct.description,
+        price: newProduct.priceValue,
+        stockQuantity: newProduct.quantity,
+        imageUrl: newProduct.image,
+        subImage1: newProduct.subImage1,
+        subImage2: newProduct.subImage2,
+        subImage3: newProduct.subImage3,
+        rating: newProduct.rating
+      }
+      const saved = await api.post<any>('/productions', payload)
+      
+      const createdProduct: Product = {
+        id: saved.id,
+        name: saved.name,
+        priceValue: saved.price,
+        price: `${saved.price.toLocaleString('vi-VN')} VNĐ`,
+        quantity: saved.stockQuantity,
+        description: saved.description,
+        image: saved.imageUrl,
+        subImage1: saved.subImage1,
+        subImage2: saved.subImage2,
+        subImage3: saved.subImage3,
+        rating: saved.rating
+      }
+      dispatch(addProduct(createdProduct))
+    } catch (error) {
+      console.error('Failed to add product', error)
+    }
   }
 
-  const handleUpdateProduct = (updatedProduct: Product) => {
-    const updated = products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
-    saveProducts(updated)
-    dispatch(updateProduct(updatedProduct))
+  const handleUpdateProduct = async (updatedProduct: Product) => {
+    try {
+      const payload = {
+        id: updatedProduct.id,
+        name: updatedProduct.name,
+        description: updatedProduct.description,
+        price: updatedProduct.priceValue,
+        stockQuantity: updatedProduct.quantity,
+        imageUrl: updatedProduct.image,
+        subImage1: updatedProduct.subImage1,
+        subImage2: updatedProduct.subImage2,
+        subImage3: updatedProduct.subImage3,
+        rating: updatedProduct.rating
+      }
+      await api.put(`/productions/${updatedProduct.id}`, payload)
+      dispatch(updateProduct(updatedProduct))
+    } catch (error) {
+      console.error('Failed to update product', error)
+    }
   }
 
-  const handleDeleteProductConfirm = () => {
+  const handleDeleteProductConfirm = async () => {
     if (productToDeleteId !== null) {
-      const updated = products.filter((p) => p.id !== productToDeleteId)
-      saveProducts(updated)
-      dispatch(deleteProduct(productToDeleteId))
-      setProductToDeleteId(null)
+      try {
+        await api.delete(`/productions/${productToDeleteId}`)
+        dispatch(deleteProduct(productToDeleteId))
+        setProductToDeleteId(null)
+      } catch (error) {
+        console.error('Failed to delete product', error)
+      }
     }
   }
 
@@ -233,11 +263,11 @@ export const ProductListPage: React.FC = () => {
       </div>
 
       {/* Product Data Table Container */}
-      <div className="bg-white rounded-xl shadow-2xs border border-slate-100 overflow-hidden">
-        <AdminTable>
+      <div className="bg-white rounded-xl shadow-2xs border border-slate-100 overflow-hidden overflow-x-auto">
+        <AdminTable className="min-w-[1000px]">
           <AdminTableHeader>
             {/* Tên sản phẩm */}
-            <AdminTableHead className="w-[20%]">
+            <AdminTableHead className="w-[18%]">
               <button
                 type="button"
                 onClick={() => handleSort('name')}
@@ -278,7 +308,21 @@ export const ProductListPage: React.FC = () => {
               </button>
             </AdminTableHead>
 
-            <AdminTableHead className="w-[30%]">MÔ TẢ</AdminTableHead>
+            {/* Đánh giá */}
+            <AdminTableHead className="w-[12%]">
+              <button
+                type="button"
+                onClick={() => handleSort('rating')}
+                className={`group inline-flex items-center gap-1.5 hover:text-slate-800 transition cursor-pointer select-none ${
+                  sortField === 'rating' ? 'text-[#0F60FF] font-bold' : ''
+                }`}
+              >
+                <span>ĐÁNH GIÁ</span>
+                {renderSortIcon('rating')}
+              </button>
+            </AdminTableHead>
+
+            <AdminTableHead className="w-[20%]">MÔ TẢ</AdminTableHead>
             <AdminTableHead className="w-[12%]">ẢNH</AdminTableHead>
             <AdminTableHead className="w-[14%]">HÀNH ĐỘNG</AdminTableHead>
           </AdminTableHeader>
@@ -300,6 +344,14 @@ export const ProductListPage: React.FC = () => {
                   {/* Quantity */}
                   <AdminTableCell className="text-slate-700">
                     {product.quantity ?? 1}
+                  </AdminTableCell>
+
+                  {/* Rating */}
+                  <AdminTableCell>
+                    <div className="flex items-center gap-1 text-yellow-400 font-medium">
+                      <Star className="w-4 h-4 fill-current" />
+                      <span className="text-slate-700">{product.rating}</span>
+                    </div>
                   </AdminTableCell>
 
                   {/* Description */}
@@ -370,7 +422,7 @@ export const ProductListPage: React.FC = () => {
               ))
             ) : (
               <AdminTableRow>
-                <AdminTableCell className="text-center py-8 text-slate-400" colSpan={6}>
+                <AdminTableCell className="text-center py-8 text-slate-400" colSpan={7}>
                   Không tìm thấy sản phẩm nào.
                 </AdminTableCell>
               </AdminTableRow>
@@ -424,4 +476,3 @@ export const ProductListPage: React.FC = () => {
     </div>
   )
 }
-

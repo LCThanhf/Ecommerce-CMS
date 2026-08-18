@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Search, Plus, ZoomIn, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -19,8 +19,9 @@ import { AdminConfirmModal } from '../ui/admin-confirm-modal'
 import { AdminImageZoomModal } from '../ui/admin-image-zoom-modal'
 import { UserCreateModal } from './user-create-modal'
 import { UserEditModal } from './user-edit-modal'
-import { AdminUser, addAdminUser, deleteAdminUser, updateAdminUser } from '@/features/admin/store/admin-user.slice'
+import { AdminUser, setAdminUsers, addAdminUser, deleteAdminUser, updateAdminUser } from '@/features/admin/store/admin-user.slice'
 import type { RootState } from '@/store/store'
+import { api } from '@/services/api'
 import editIcon from '@/app/assets/edit.svg'
 import trashIcon from '@/app/assets/trash.svg'
 
@@ -38,6 +39,19 @@ export const UserListPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [zoomedImage, setZoomedImage] = useState<{ src: string; title: string } | null>(null)
+
+  // Fetch from API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await api.get<AdminUser[]>('/accounts')
+        dispatch(setAdminUsers(data))
+      } catch (error) {
+        console.error('Failed to fetch users', error)
+      }
+    }
+    fetchUsers()
+  }, [dispatch])
 
   // Column Header Sorting State
   const [sortField, setSortField] = useState<UserSortField>(null)
@@ -69,8 +83,8 @@ export const UserListPage: React.FC = () => {
 
   // Filter users by search query
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    (user.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (user.email || '').toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   // Sort users based on active header sort filter
@@ -78,12 +92,12 @@ export const UserListPage: React.FC = () => {
     if (!sortField || !sortOrder) return 0
 
     if (sortField === 'name') {
-      const cmp = a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' })
+      const cmp = (a.name || '').localeCompare(b.name || '', 'vi', { sensitivity: 'base' })
       return sortOrder === 'asc' ? cmp : -cmp
     }
 
     if (sortField === 'email') {
-      const cmp = a.email.localeCompare(b.email, 'en', { sensitivity: 'base' })
+      const cmp = (a.email || '').localeCompare(b.email || '', 'en', { sensitivity: 'base' })
       return sortOrder === 'asc' ? cmp : -cmp
     }
 
@@ -103,18 +117,43 @@ export const UserListPage: React.FC = () => {
     currentPage * pageSize
   )
 
-  const handleAddUser = (newUser: AdminUser) => {
-    dispatch(addAdminUser(newUser))
+  const handleAddUser = async (newUser: AdminUser) => {
+    try {
+      const payload = {
+        ...newUser,
+        username: newUser.email,
+        passwordHash: 'Default@1234',
+        role: 'User'
+      }
+      const data = await api.post<AdminUser>('/accounts', payload)
+      dispatch(addAdminUser(data))
+    } catch (error) {
+      console.error('Failed to add user', error)
+    }
   }
 
-  const handleUpdateUser = (updatedUser: AdminUser) => {
-    dispatch(updateAdminUser(updatedUser))
+  const handleUpdateUser = async (updatedUser: AdminUser) => {
+    try {
+      const payload = {
+        ...updatedUser,
+        username: updatedUser.email
+      }
+      await api.put(`/accounts/${updatedUser.id}`, payload)
+      dispatch(updateAdminUser(updatedUser))
+    } catch (error) {
+      console.error('Failed to update user', error)
+    }
   }
 
-  const handleDeleteUserConfirm = () => {
+  const handleDeleteUserConfirm = async () => {
     if (userToDeleteId !== null) {
-      dispatch(deleteAdminUser(userToDeleteId))
-      setUserToDeleteId(null)
+      try {
+        await api.delete(`/accounts/${userToDeleteId}`)
+        dispatch(deleteAdminUser(userToDeleteId))
+        setUserToDeleteId(null)
+      } catch (error) {
+        console.error('Failed to delete user', error)
+      }
     }
   }
 
@@ -149,13 +188,13 @@ export const UserListPage: React.FC = () => {
       </div>
 
       {/* User Data Table Container */}
-      <div className="bg-white rounded-xl shadow-2xs border border-slate-100 overflow-hidden">
-        <AdminTable>
+      <div className="bg-white rounded-xl shadow-2xs border border-slate-100 overflow-hidden overflow-x-auto">
+        <AdminTable className="min-w-[1000px]">
           <AdminTableHeader>
-            <AdminTableHead className="w-[12%]">AVATAR</AdminTableHead>
+            <AdminTableHead className="w-[8%]">AVATAR</AdminTableHead>
 
             {/* Tên người dùng */}
-            <AdminTableHead className="w-[20%]">
+            <AdminTableHead className="w-[15%]">
               <button
                 type="button"
                 onClick={() => handleSort('name')}
@@ -163,13 +202,13 @@ export const UserListPage: React.FC = () => {
                   sortField === 'name' ? 'text-[#0F60FF] font-bold' : ''
                 }`}
               >
-                <span>TÊN NGƯỜI DÙNG</span>
+                <span>TÊN</span>
                 {renderSortIcon('name')}
               </button>
             </AdminTableHead>
 
             {/* Email */}
-            <AdminTableHead className="w-[28%]">
+            <AdminTableHead className="w-[20%]">
               <button
                 type="button"
                 onClick={() => handleSort('email')}
@@ -182,21 +221,10 @@ export const UserListPage: React.FC = () => {
               </button>
             </AdminTableHead>
 
-            {/* Ngày sinh */}
-            <AdminTableHead className="w-[15%]">
-              <button
-                type="button"
-                onClick={() => handleSort('dob')}
-                className={`group inline-flex items-center gap-1.5 hover:text-slate-800 transition cursor-pointer select-none ${
-                  sortField === 'dob' ? 'text-[#0F60FF] font-bold' : ''
-                }`}
-              >
-                <span>NGÀY SINH</span>
-                {renderSortIcon('dob')}
-              </button>
-            </AdminTableHead>
-
-            <AdminTableHead className="w-[15%]">SỐ ĐIỆN THOẠI</AdminTableHead>
+            <AdminTableHead className="w-[8%]">GIỚI TÍNH</AdminTableHead>
+            <AdminTableHead className="w-[12%]">ĐỊA CHỈ NHÀ</AdminTableHead>
+            <AdminTableHead className="w-[12%]">NƠI LÀM VIỆC</AdminTableHead>
+            <AdminTableHead className="w-[10%]">SỐ ĐIỆN THOẠI</AdminTableHead>
             <AdminTableHead className="w-[10%]">HÀNH ĐỘNG</AdminTableHead>
           </AdminTableHeader>
 
@@ -207,7 +235,7 @@ export const UserListPage: React.FC = () => {
                   {/* Avatar - Clickable to zoom */}
                   <AdminTableCell>
                     <div
-                      onClick={() => user.avatar && setZoomedImage({ src: user.avatar, title: user.name })}
+                      onClick={() => user.avatar && setZoomedImage({ src: user.avatar, title: user.name || 'User' })}
                       className={`h-10 w-10 rounded-[4px] bg-slate-100 overflow-hidden flex items-center justify-center text-white border border-slate-100 shadow-2xs relative ${
                         user.avatar ? 'cursor-pointer group hover:border-slate-300' : ''
                       }`}
@@ -217,7 +245,7 @@ export const UserListPage: React.FC = () => {
                         <>
                           <Image
                             src={user.avatar}
-                            alt={user.name}
+                            alt={user.name || 'User'}
                             width={40}
                             height={40}
                             className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-200"
@@ -242,9 +270,19 @@ export const UserListPage: React.FC = () => {
                     {user.email}
                   </AdminTableCell>
 
-                  {/* Date of Birth */}
+                  {/* Gender */}
                   <AdminTableCell className="text-slate-600 font-normal">
-                    {user.dob}
+                    {user.gender === 'Male' ? 'Nam' : user.gender === 'Female' ? 'Nữ' : user.gender === 'Other' ? 'Khác' : ''}
+                  </AdminTableCell>
+
+                  {/* Home Address */}
+                  <AdminTableCell className="text-slate-600 font-normal truncate max-w-[120px]" title={user.homeAddress}>
+                    {user.homeAddress}
+                  </AdminTableCell>
+
+                  {/* Work Address */}
+                  <AdminTableCell className="text-slate-600 font-normal truncate max-w-[120px]" title={user.workAddress}>
+                    {user.workAddress}
                   </AdminTableCell>
 
                   {/* Phone */}
@@ -285,7 +323,7 @@ export const UserListPage: React.FC = () => {
               ))
             ) : (
               <AdminTableRow>
-                <AdminTableCell className="text-center py-8 text-slate-400" colSpan={6}>
+                <AdminTableCell className="text-center py-8 text-slate-400" colSpan={8}>
                   Không tìm thấy người dùng nào.
                 </AdminTableCell>
               </AdminTableRow>
@@ -339,4 +377,3 @@ export const UserListPage: React.FC = () => {
     </div>
   )
 }
-

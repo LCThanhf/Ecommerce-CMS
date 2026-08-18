@@ -5,6 +5,7 @@ import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { HicasLogo } from './hicas-logo'
+import { api } from '@/services/api'
 import { AdminButton } from './ui/admin-button'
 import { AdminInput } from './ui/admin-input'
 import { AdminLabel } from './ui/admin-label'
@@ -19,22 +20,37 @@ export const AdminLoginForm: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setErrorMessage('')
     setIsLoading(true)
 
-    setTimeout(() => {
-      if (email.trim() && password) {
+    if (email.trim() && password) {
+      try {
+        const response = await api.post<{ token: string, user: any }>('/auth/login', {
+          email: email.trim(),
+          password: password,
+        });
+
+        if (response.user.role !== 'Admin') {
+          setErrorMessage('Tài khoản của bạn không có quyền truy cập trang quản trị!');
+          setIsLoading(false)
+          return;
+        }
+
         if (typeof window !== 'undefined') {
-          localStorage.setItem('admin_session', JSON.stringify({ email, role: 'admin' }))
+          localStorage.setItem('admin_token', response.token);
+          localStorage.setItem('admin_session', JSON.stringify({ email: response.user.email, role: 'Admin' }))
         }
         router.push('/admin/products')
-      } else {
-        setErrorMessage('Vui lòng nhập đầy đủ email và mật khẩu.')
+      } catch (error) {
+        setErrorMessage('Sai email hoặc mật khẩu.')
         setIsLoading(false)
       }
-    }, 400)
+    } else {
+      setErrorMessage('Vui lòng nhập đầy đủ email và mật khẩu.')
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -115,13 +131,6 @@ export const AdminLoginForm: React.FC = () => {
           {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
         </AdminButton>
 
-        {/* Signup Redirect Link - Tighter spacing mt-4.5 matching screenshot */}
-        <p className="mt-4.5 text-center text-xs text-slate-600">
-          Bạn chưa có tài khoản?{' '}
-          <Link href="/admin/signup" className="font-medium text-[#0F60FF] hover:underline">
-            Đăng ký
-          </Link>
-        </p>
       </form>
     </div>
   )

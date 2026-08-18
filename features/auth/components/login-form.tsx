@@ -7,6 +7,7 @@ import { resetProducts } from '@/features/product/store/product.slice'
 import { findUser, getSession, saveSession } from '@/features/auth/store/auth.storage'
 import type { AppDispatch } from '@/store/store'
 import { FieldRow } from './field-row'
+import { api } from '@/services/api'
 
 export const LoginForm = () => {
   const router = useRouter()
@@ -23,19 +24,29 @@ export const LoginForm = () => {
     }
   }, [router])
 
-  const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const user = findUser(username.trim(), password)
-    if (!user) {
-      setErrorMessage('Sai tên tài khoản hoặc mật khẩu.')
-      return
-    }
+    try {
+      const response = await api.post<{ token: string, user: any }>('/auth/login', {
+        email: username.trim(),
+        password: password,
+      });
 
-    dispatch(resetProducts())
-    dispatch(loginUser({ username: user.username, email: user.email }))
-    saveSession({ username: user.username, email: user.email }, rememberLogin)
-    router.push('/shop')
+      if (response.user.role === 'Admin') {
+        setErrorMessage('Đây là trang mua sắm. Vui lòng đăng nhập ở trang Quản trị.');
+        return;
+      }
+
+      localStorage.setItem('token', response.token);
+
+      dispatch(resetProducts())
+      dispatch(loginUser({ username: response.user.username, email: response.user.email, role: response.user.role }))
+      saveSession({ username: response.user.username, email: response.user.email, role: response.user.role }, rememberLogin)
+      router.push('/shop')
+    } catch (error) {
+      setErrorMessage('Sai email hoặc mật khẩu.')
+    }
   }
 
   return (
@@ -44,7 +55,7 @@ export const LoginForm = () => {
         type="text"
         value={username}
         onChange={setUsername}
-        placeholder="Tên đăng nhập"
+        placeholder="Email"
         leftIcon={<User className="block h-3 w-3" strokeWidth={2.25} />}
         required
         autoComplete="username"

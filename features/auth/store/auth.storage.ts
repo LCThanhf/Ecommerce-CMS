@@ -1,3 +1,5 @@
+import { SessionUser } from './auth.types'
+
 export interface StoredUser {
   username: string
   email: string
@@ -27,21 +29,21 @@ export const findUser = (username: string, password: string): StoredUser | undef
   return getUsers().find((u) => u.username === username && u.password === password)
 }
 
-export const getSession = (): { username: string; email: string } | null => {
+export const getSession = (): SessionUser | null => {
   if (typeof window === 'undefined') return null
   try {
     const persistentSession = localStorage.getItem(SESSION_KEY)
     if (persistentSession) {
-      return JSON.parse(persistentSession) as { username: string; email: string }
+      return JSON.parse(persistentSession) as SessionUser
     }
 
-    return JSON.parse(sessionStorage.getItem(TEMP_SESSION_KEY) ?? 'null') as { username: string; email: string } | null
+    return JSON.parse(sessionStorage.getItem(TEMP_SESSION_KEY) ?? 'null') as SessionUser | null
   } catch {
     return null
   }
 }
 
-export const saveSession = (user: { username: string; email: string }, rememberLogin: boolean): void => {
+export const saveSession = (user: SessionUser, rememberLogin: boolean): void => {
   if (rememberLogin) {
     localStorage.setItem(SESSION_KEY, JSON.stringify(user))
     sessionStorage.removeItem(TEMP_SESSION_KEY)

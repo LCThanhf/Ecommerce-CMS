@@ -4,9 +4,12 @@ export interface AdminUser {
   id: number
   name: string
   email: string
-  dob: string // YYYY/MM/DD
-  phone: string
-  avatar: string
+  dob?: string // YYYY/MM/DD
+  phone?: string
+  avatar?: string
+  gender?: string
+  homeAddress?: string
+  workAddress?: string
 }
 
 interface AdminUserState {
@@ -105,6 +108,9 @@ const adminUserSlice = createSlice({
     addAdminUser: (state, action: PayloadAction<AdminUser>) => {
       state.items.unshift(action.payload)
     },
+    setAdminUsers: (state, action: PayloadAction<AdminUser[]>) => {
+      state.items = action.payload
+    },
     deleteAdminUser: (state, action: PayloadAction<number>) => {
       state.items = state.items.filter((user) => user.id !== action.payload)
     },
@@ -117,5 +123,5 @@ const adminUserSlice = createSlice({
   },
 })
 
-export const { addAdminUser, deleteAdminUser, updateAdminUser } = adminUserSlice.actions
+export const { addAdminUser, setAdminUsers, deleteAdminUser, updateAdminUser } = adminUserSlice.actions
 export default adminUserSlice.reducer

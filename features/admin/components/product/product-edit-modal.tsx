@@ -27,6 +27,10 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
   const [quantity, setQuantity] = useState('')
   const [description, setDescription] = useState('')
   const [image, setImage] = useState('')
+  const [subImage1, setSubImage1] = useState('')
+  const [subImage2, setSubImage2] = useState('')
+  const [subImage3, setSubImage3] = useState('')
+  const [rating, setRating] = useState('5')
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
@@ -36,6 +40,10 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
       setQuantity(product.quantity ? product.quantity.toString() : '1')
       setDescription(product.description || '')
       setImage(product.image || '')
+      setSubImage1(product.subImage1 || '')
+      setSubImage2(product.subImage2 || '')
+      setSubImage3(product.subImage3 || '')
+      setRating(product.rating ? product.rating.toString() : '5')
       setErrorMessage('')
     }
   }, [product, isOpen])
@@ -67,6 +75,11 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
       return
     }
 
+    if (!subImage1.trim() || !subImage2.trim() || !subImage3.trim()) {
+      setErrorMessage('Vui lòng tải lên đủ 3 ảnh phụ.')
+      return
+    }
+
     const updatedProduct: Product = {
       ...product,
       name: name.trim(),
@@ -75,6 +88,10 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
       quantity: Number(quantity) || 1,
       description: description.trim(),
       image: image.trim(),
+      subImage1: subImage1.trim(),
+      subImage2: subImage2.trim(),
+      subImage3: subImage3.trim(),
+      rating: Number(rating) || 5,
     }
 
     onUpdateProduct(updatedProduct)
@@ -184,6 +201,58 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
             required
             value={image}
             onChange={(val) => setImage(val)}
+          />
+        </div>
+
+        {/* 3 Ảnh phụ */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <AdminLabel>Ảnh phụ 1 <span className="text-[#0F60FF]">*</span></AdminLabel>
+            <AdminImageUpload
+              id="edit-sub-image-1"
+              required
+              compact
+              value={subImage1}
+              onChange={(val) => setSubImage1(val)}
+            />
+          </div>
+          <div>
+            <AdminLabel>Ảnh phụ 2 <span className="text-[#0F60FF]">*</span></AdminLabel>
+            <AdminImageUpload
+              id="edit-sub-image-2"
+              required
+              compact
+              value={subImage2}
+              onChange={(val) => setSubImage2(val)}
+            />
+          </div>
+          <div>
+            <AdminLabel>Ảnh phụ 3 <span className="text-[#0F60FF]">*</span></AdminLabel>
+            <AdminImageUpload
+              id="edit-sub-image-3"
+              required
+              compact
+              value={subImage3}
+              onChange={(val) => setSubImage3(val)}
+            />
+          </div>
+        </div>
+
+        {/* Đánh giá */}
+        <div>
+          <AdminLabel htmlFor="edit-product-rating">
+            Đánh giá (Sao) <span className="text-[#0F60FF]">*</span>
+          </AdminLabel>
+          <AdminInput
+            id="edit-product-rating"
+            type="number"
+            min="1"
+            max="5"
+            step="0.1"
+            required
+            value={rating}
+            onChange={(e) => setRating(e.target.value)}
+            placeholder="Nhập số sao (ví dụ: 4.5)"
           />
         </div>
 

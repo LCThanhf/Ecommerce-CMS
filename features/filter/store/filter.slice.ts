@@ -14,7 +14,7 @@ interface FilterState {
 
 const DEFAULT_FILTER: FilterValues = {
   priceFrom: 0,
-  priceTo: 10_000_000,
+  priceTo: 50_000_000,
   ratingFrom: 0,
   ratingTo: 5,
 }

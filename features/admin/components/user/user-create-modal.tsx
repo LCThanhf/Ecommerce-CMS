@@ -26,6 +26,9 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
   const [dob, setDob] = useState('')
   const [phone, setPhone] = useState('')
   const [avatar, setAvatar] = useState('')
+  const [gender, setGender] = useState('')
+  const [homeAddress, setHomeAddress] = useState('')
+  const [workAddress, setWorkAddress] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const dateInputRef = useRef<HTMLInputElement>(null)
 
@@ -61,6 +64,9 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
       dob: dob.trim(),
       phone: phone.trim(),
       avatar: avatar.trim(),
+      gender: gender.trim(),
+      homeAddress: homeAddress.trim(),
+      workAddress: workAddress.trim(),
     }
 
     onAddUser(newUser)
@@ -71,6 +77,9 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
     setDob('')
     setPhone('')
     setAvatar('')
+    setGender('')
+    setHomeAddress('')
+    setWorkAddress('')
     onClose()
   }
 
@@ -197,6 +206,44 @@ export const UserCreateModal: React.FC<UserCreateModalProps> = ({
             value={phone}
             onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
             placeholder="Nhập số điện thoại"
+          />
+        </div>
+
+        {/* Giới tính */}
+        <div>
+          <AdminLabel htmlFor="user-gender">Giới tính</AdminLabel>
+          <select
+            id="user-gender"
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="w-full h-11 px-3 border border-slate-200 rounded-md outline-none focus:border-[#0F60FF] focus:ring-1 focus:ring-[#0F60FF] transition bg-white text-[15px]"
+          >
+            <option value="">Chọn giới tính</option>
+            <option value="Male">Nam</option>
+            <option value="Female">Nữ</option>
+            <option value="Other">Khác</option>
+          </select>
+        </div>
+
+        {/* Địa chỉ nhà */}
+        <div>
+          <AdminLabel htmlFor="user-home-address">Địa chỉ nhà</AdminLabel>
+          <AdminInput
+            id="user-home-address"
+            value={homeAddress}
+            onChange={(e) => setHomeAddress(e.target.value)}
+            placeholder="Nhập địa chỉ nhà"
+          />
+        </div>
+
+        {/* Nơi làm việc */}
+        <div>
+          <AdminLabel htmlFor="user-work-address">Nơi làm việc</AdminLabel>
+          <AdminInput
+            id="user-work-address"
+            value={workAddress}
+            onChange={(e) => setWorkAddress(e.target.value)}
+            placeholder="Nhập nơi làm việc"
           />
         </div>
 
