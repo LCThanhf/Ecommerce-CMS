@@ -10,6 +10,7 @@ export interface AdminUser {
   gender?: string
   homeAddress?: string
   workAddress?: string
+  username?: string
 }
 
 interface AdminUserState {

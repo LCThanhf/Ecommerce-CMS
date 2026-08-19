@@ -83,7 +83,7 @@ export const UserListPage: React.FC = () => {
 
   // Filter users by search query
   const filteredUsers = users.filter((user) =>
-    (user.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (user.username || user.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (user.email || '').toLowerCase().includes(searchQuery.toLowerCase())
   )
 
@@ -92,7 +92,7 @@ export const UserListPage: React.FC = () => {
     if (!sortField || !sortOrder) return 0
 
     if (sortField === 'name') {
-      const cmp = (a.name || '').localeCompare(b.name || '', 'vi', { sensitivity: 'base' })
+      const cmp = (a.username || a.name || '').localeCompare(b.username || b.name || '', 'vi', { sensitivity: 'base' })
       return sortOrder === 'asc' ? cmp : -cmp
     }
 
@@ -262,7 +262,7 @@ export const UserListPage: React.FC = () => {
 
                   {/* Name */}
                   <AdminTableCell className="font-bold text-[#1E293B] text-[13px]">
-                    {user.name}
+                    {user.username || user.name}
                   </AdminTableCell>
 
                   {/* Email */}

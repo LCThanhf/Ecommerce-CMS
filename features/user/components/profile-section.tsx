@@ -2,42 +2,120 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useSelector } from 'react-redux'
-import type { RootState } from '@/store/store'
+import { useSelector, useDispatch } from 'react-redux'
+import type { RootState, AppDispatch } from '@/store/store'
+import { loginUser } from '@/features/auth/store/auth.slice'
+import { saveSession } from '@/features/auth/store/auth.storage'
 import avatarIcon from '@/app/assets/avatar.png'
 import calendarIcon from '@/app/assets/calendar.png'
 import { useTranslation } from '@/hooks/use-translation'
+import { api } from '@/services/api'
 
-const GENDER_OPTIONS = ['Male', 'Female']
+const GENDER_OPTIONS = ['Male', 'Female', 'Other']
 
 const formatDisplayDate = (isoDate: string): string => {
   if (!isoDate) return ''
-  const [year, month, day] = isoDate.split('-')
+  const parts = isoDate.split('T')[0].split('-')
+  if (parts.length !== 3) return isoDate
+  const [year, month, day] = parts
   return `${month}/${day}/${year}`
 }
 
 const ProfileSection = () => {
   const hasAuthHydrated = useSelector((state: RootState) => state.auth.hasHydrated)
+  const user = useSelector((state: RootState) => state.auth.user)
+  const dispatch = useDispatch<AppDispatch>()
   const [isMounted, setIsMounted] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [fullAccountData, setFullAccountData] = useState<any>(null)
+
+  const { t } = useTranslation()
+  const [dob, setDob] = useState('')
+  const [gender, setGender] = useState('Male')
+  const [addressCompany, setAddressCompany] = useState('')
+  const [addressHome, setAddressHome] = useState('')
+  const [phone, setPhone] = useState('')
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  const { t } = useTranslation()
-  const [dob, setDob] = useState('2018-01-01')
-  const [gender, setGender] = useState('Male')
-  const [addressCompany, setAddressCompany] = useState(
-    '15, Duy Tan, Dich Vong Hau, Cau Giay, Ha Noi',
-  )
-  const [addressHome, setAddressHome] = useState(
-    '15, Duy Tan, Dich Vong Hau, Cau Giay, Ha Noi',
-  )
+  useEffect(() => {
+    if (isMounted && hasAuthHydrated && user?.id) {
+      // Fetch full user details from API
+      const fetchProfile = async () => {
+        try {
+          const data = await api.get<any>(`/accounts/${user.id}`)
+          setFullAccountData(data)
+          if (data.dob) setDob(data.dob.split('T')[0])
+          if (data.gender) setGender(data.gender)
+          if (data.workAddress) setAddressCompany(data.workAddress)
+          if (data.homeAddress) setAddressHome(data.homeAddress)
+          if (data.phone) setPhone(data.phone)
+        } catch (error) {
+          console.error('Failed to fetch profile', error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+      fetchProfile()
+    } else if (hasAuthHydrated) {
+      setIsLoading(false)
+    }
+  }, [isMounted, hasAuthHydrated, user])
 
-  if (!isMounted || !hasAuthHydrated) {
+  const handleSave = async () => {
+    if (!user?.id) return
+    setIsSaving(true)
+    setSuccessMessage('')
+    try {
+      const payload = {
+        ...fullAccountData,
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        dob: dob || null,
+        gender: gender || null,
+        workAddress: addressCompany || null,
+        homeAddress: addressHome || null,
+        phone: phone || null
+      }
+      await api.put(`/accounts/${user.id}`, payload)
+      setSuccessMessage('Cập nhật thông tin thành công!')
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(''), 3000)
+    } catch (error) {
+      console.error('Failed to save profile', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (!isMounted || !hasAuthHydrated || isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
         <p className="text-xl text-neutral-500">Đang tải hồ sơ...</p>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-xl text-neutral-500">Vui lòng đăng nhập để xem hồ sơ.</p>
+      </div>
+    )
+  }
+
+  if (!user.id) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+        <p className="text-xl text-neutral-500">Phiên đăng nhập cũ không có đủ thông tin.</p>
+        <p className="text-lg text-neutral-500">Vui lòng đăng xuất và đăng nhập lại để xem và cập nhật hồ sơ.</p>
       </div>
     )
   }
@@ -54,9 +132,9 @@ const ProfileSection = () => {
           />
         </div>
         <div className="text-center sm:text-left">
-          <h2 className="text-2xl sm:text-4xl font-bold text-neutral-900 md:text-5xl">MR. USER</h2>
+          <h2 className="text-2xl sm:text-4xl font-bold text-neutral-900 md:text-5xl uppercase">{user.username}</h2>
           <p className="mt-4 sm:mt-10 text-lg sm:text-2xl text-neutral-800 md:text-3xl">
-            Email: user@gmail.com
+            Email: {user.email}
           </p>
         </div>
       </div>
@@ -148,10 +226,46 @@ const ProfileSection = () => {
               type="text"
               value={addressHome}
               onChange={(e) => setAddressHome(e.target.value)}
-              className="absolute inset-0 w-full bg-transparent text-base text-neutral-800 outline-none md:text-lg"
+              className="absolute inset-0 w-full bg-transparent text-base text-neutral-800 outline-none md:text-lg placeholder:text-neutral-400"
+              placeholder="Nhập địa chỉ nhà..."
               aria-label="Address Home"
             />
           </span>
+        </div>
+
+        {/* Phone */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
+            Số điện thoại
+          </span>
+          <span className="relative inline-block border-b border-neutral-800 pb-1 w-full sm:w-auto">
+            <span aria-hidden className="invisible whitespace-pre text-base md:text-lg">{phone || ' '}</span>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="absolute inset-0 w-full bg-transparent text-base text-neutral-800 outline-none md:text-lg placeholder:text-neutral-400"
+              placeholder="Nhập số điện thoại..."
+              aria-label="Phone Number"
+            />
+          </span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full sm:w-auto px-8 py-3 bg-[#0F60FF] hover:bg-[#0C53DF] text-white font-medium rounded-md transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSaving ? 'Đang lưu...' : 'Lưu thông tin'}
+          </button>
+          
+          {successMessage && (
+            <span className="text-green-600 font-medium">
+              {successMessage}
+            </span>
+          )}
         </div>
       </div>
     </div>

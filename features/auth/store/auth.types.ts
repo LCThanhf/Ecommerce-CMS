@@ -1,4 +1,5 @@
 export interface AuthUser {
+  id: number
   username: string
   email: string
   role: string
@@ -16,6 +17,7 @@ export interface StoredUser {
 }
 
 export interface SessionUser {
+  id: number
   username: string
   email: string
   role: string

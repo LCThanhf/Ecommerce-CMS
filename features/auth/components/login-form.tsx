@@ -41,8 +41,8 @@ export const LoginForm = () => {
       localStorage.setItem('token', response.token);
 
       dispatch(resetProducts())
-      dispatch(loginUser({ username: response.user.username, email: response.user.email, role: response.user.role }))
-      saveSession({ username: response.user.username, email: response.user.email, role: response.user.role }, rememberLogin)
+      dispatch(loginUser({ id: response.user.id, username: response.user.username, email: response.user.email, role: response.user.role }))
+      saveSession({ id: response.user.id, username: response.user.username, email: response.user.email, role: response.user.role }, rememberLogin)
       router.push('/shop')
     } catch (error) {
       setErrorMessage('Sai email hoặc mật khẩu.')

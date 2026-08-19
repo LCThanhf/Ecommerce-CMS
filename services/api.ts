@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5057/api'
+const BASE_URL = 'https://localhost:7289/api'
 
 // Helper function to get headers with Authorization token
 const getHeaders = () => {
