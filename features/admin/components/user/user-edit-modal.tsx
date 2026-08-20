@@ -23,7 +23,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
   user,
   onUpdateUser,
 }) => {
-  const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [dob, setDob] = useState('')
   const [phone, setPhone] = useState('')
@@ -36,7 +36,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
 
   useEffect(() => {
     if (user) {
-      setName(user.name || '')
+      setUsername(user.username || user.name || '')
       setEmail(user.email || '')
       setDob(user.dob || '')
       setPhone(user.phone || '')
@@ -54,7 +54,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
 
     if (!user) return
 
-    if (!name.trim()) {
+    if (!username.trim()) {
       setErrorMessage('Vui lòng nhập tên người dùng.')
       return
     }
@@ -77,7 +77,8 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
 
     const updatedUser: AdminUser = {
       ...user,
-      name: name.trim(),
+      username: username.trim(),
+      name: username.trim(), // Keep name synced just in case
       email: email.trim(),
       dob: dob.trim(),
       phone: phone.trim(),
@@ -131,9 +132,9 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
           <AdminInput
             id="edit-user-name"
             required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nhập tên người dùng"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Nhập tên người dùng (username)"
           />
         </div>
 
@@ -226,7 +227,6 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
             onChange={(e) => setGender(e.target.value)}
             className="w-full h-11 px-3 border border-slate-200 rounded-md outline-none focus:border-[#0F60FF] focus:ring-1 focus:ring-[#0F60FF] transition bg-white text-[15px]"
           >
-            <option value="">Chọn giới tính</option>
             <option value="Male">Nam</option>
             <option value="Female">Nữ</option>
             <option value="Other">Khác</option>

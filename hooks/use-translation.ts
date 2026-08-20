@@ -21,6 +21,7 @@ const dictionary: Record<Language, Record<string, string>> = {
     sex: 'Sex:',
     male: 'Male',
     female: 'Female',
+    other: 'Other',
     'address-company': 'Address Company:',
     'address-home': 'Address Home:',
     // Product details
@@ -57,6 +58,7 @@ const dictionary: Record<Language, Record<string, string>> = {
     sex: 'Giới tính:',
     male: 'Nam',
     female: 'Nữ',
+    other: 'Khác',
     'address-company': 'Địa chỉ công ty:',
     'address-home': 'Địa chỉ nhà riêng:',
     // Product details

@@ -136,7 +136,7 @@ export const UserListPage: React.FC = () => {
     try {
       const payload = {
         ...updatedUser,
-        username: updatedUser.email
+        username: updatedUser.username || updatedUser.email
       }
       await api.put(`/accounts/${updatedUser.id}`, payload)
       dispatch(updateAdminUser(updatedUser))

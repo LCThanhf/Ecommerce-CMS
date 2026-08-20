@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import type { RootState, AppDispatch } from '@/store/store'
@@ -37,6 +37,8 @@ const ProfileSection = () => {
   const [addressCompany, setAddressCompany] = useState('')
   const [addressHome, setAddressHome] = useState('')
   const [phone, setPhone] = useState('')
+  const [avatar, setAvatar] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setIsMounted(true)
@@ -54,6 +56,7 @@ const ProfileSection = () => {
           if (data.workAddress) setAddressCompany(data.workAddress)
           if (data.homeAddress) setAddressHome(data.homeAddress)
           if (data.phone) setPhone(data.phone)
+          if (data.avatar) setAvatar(data.avatar)
         } catch (error) {
           console.error('Failed to fetch profile', error)
         } finally {
@@ -81,7 +84,8 @@ const ProfileSection = () => {
         gender: gender || null,
         workAddress: addressCompany || null,
         homeAddress: addressHome || null,
-        phone: phone || null
+        phone: phone || null,
+        avatar: avatar || null
       }
       await api.put(`/accounts/${user.id}`, payload)
       setSuccessMessage('Cập nhật thông tin thành công!')
@@ -124,13 +128,42 @@ const ProfileSection = () => {
     <div className="h-full overflow-y-auto px-4 sm:px-12 pt-6 sm:pt-14 pb-7 md:px-20 md:pt-16">
       {/* Avatar + name + email */}
       <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-10 md:gap-14">
-        <div className="h-24 w-24 sm:h-36 sm:w-36 shrink-0 overflow-hidden rounded-full border border-neutral-200 md:h-44 md:w-44">
-          <Image
-            src={avatarIcon}
-            alt="User avatar"
-            className="h-full w-full object-cover"
-          />
+        <div 
+          className="relative h-24 w-24 sm:h-36 sm:w-36 shrink-0 overflow-hidden rounded-full border border-neutral-200 md:h-44 md:w-44 cursor-pointer group"
+          onClick={() => fileInputRef.current?.click()}
+          title="Thay đổi ảnh đại diện"
+        >
+          {avatar ? (
+            <img src={avatar} alt="User avatar" className="h-full w-full object-cover" />
+          ) : (
+            <Image
+              src={avatarIcon}
+              alt="User avatar"
+              className="h-full w-full object-cover"
+            />
+          )}
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs sm:text-sm font-medium">
+            Thay đổi
+          </div>
         </div>
+        <input 
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) {
+              const reader = new FileReader()
+              reader.onloadend = () => {
+                if (typeof reader.result === 'string') {
+                  setAvatar(reader.result)
+                }
+              }
+              reader.readAsDataURL(file)
+            }
+          }}
+        />
         <div className="text-center sm:text-left">
           <h2 className="text-2xl sm:text-4xl font-bold text-neutral-900 md:text-5xl uppercase">{user.username}</h2>
           <p className="mt-4 sm:mt-10 text-lg sm:text-2xl text-neutral-800 md:text-3xl">
@@ -182,7 +215,7 @@ const ProfileSection = () => {
             >
               {GENDER_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
-                  {opt === 'Male' ? t('male') : t('female')}
+                  {opt === 'Male' ? t('male') : opt === 'Female' ? t('female') : t('other')}
                 </option>
               ))}
             </select>
