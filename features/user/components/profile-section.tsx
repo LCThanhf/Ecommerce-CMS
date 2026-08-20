@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import type { RootState, AppDispatch } from '@/store/store'
-import { loginUser } from '@/features/auth/store/auth.slice'
+import { loginUser, updateUserAvatar } from '@/features/auth/store/auth.slice'
 import { saveSession } from '@/features/auth/store/auth.storage'
 import avatarIcon from '@/app/assets/avatar.png'
 import calendarIcon from '@/app/assets/calendar.png'
@@ -56,7 +56,10 @@ const ProfileSection = () => {
           if (data.workAddress) setAddressCompany(data.workAddress)
           if (data.homeAddress) setAddressHome(data.homeAddress)
           if (data.phone) setPhone(data.phone)
-          if (data.avatar) setAvatar(data.avatar)
+          if (data.avatar) {
+            setAvatar(data.avatar)
+            dispatch(updateUserAvatar(data.avatar))
+          }
         } catch (error) {
           console.error('Failed to fetch profile', error)
         } finally {
@@ -88,6 +91,7 @@ const ProfileSection = () => {
         avatar: avatar || null
       }
       await api.put(`/accounts/${user.id}`, payload)
+      dispatch(updateUserAvatar(avatar || ''))
       setSuccessMessage('Cập nhật thông tin thành công!')
       
       // Clear success message after 3 seconds
@@ -130,8 +134,17 @@ const ProfileSection = () => {
       <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-10 md:gap-14">
         <div 
           className="relative h-24 w-24 sm:h-36 sm:w-36 shrink-0 overflow-hidden rounded-full border border-neutral-200 md:h-44 md:w-44 cursor-pointer group"
-          onClick={() => fileInputRef.current?.click()}
-          title="Thay đổi ảnh đại diện"
+          onClick={() => {
+            if (avatar) {
+              setAvatar('')
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+              }
+            } else {
+              fileInputRef.current?.click()
+            }
+          }}
+          title={avatar ? "Gỡ ảnh đại diện" : "Thay đổi ảnh đại diện"}
         >
           {avatar ? (
             <img src={avatar} alt="User avatar" className="h-full w-full object-cover" />
@@ -143,7 +156,7 @@ const ProfileSection = () => {
             />
           )}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs sm:text-sm font-medium">
-            Thay đổi
+            {avatar ? 'Gỡ' : 'Thay đổi'}
           </div>
         </div>
         <input 

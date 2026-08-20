@@ -5,6 +5,7 @@ export interface AuthUser {
   username: string
   email: string
   role: string
+  avatar?: string
 }
 
 interface AuthState {
@@ -27,11 +28,16 @@ const authSlice = createSlice({
     logoutUser(state) {
       state.user = null
     },
+    updateUserAvatar(state, action: PayloadAction<string>) {
+      if (state.user) {
+        state.user.avatar = action.payload
+      }
+    },
     markAuthHydrated(state) {
       state.hasHydrated = true
     },
   },
 })
 
-export const { loginUser, logoutUser, markAuthHydrated } = authSlice.actions
+export const { loginUser, logoutUser, updateUserAvatar, markAuthHydrated } = authSlice.actions
 export default authSlice.reducer

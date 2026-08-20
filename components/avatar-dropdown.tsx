@@ -2,14 +2,14 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import { LogOut, User } from 'lucide-react'
 import avatarIcon from '@/app/assets/avatar.png'
 import { logoutUser } from '@/features/auth/store/auth.slice'
 import { resetProducts } from '@/features/product/store/product.slice'
 import { clearSession } from '@/features/auth/store/auth.storage'
-import type { AppDispatch } from '@/store/store'
+import type { AppDispatch, RootState } from '@/store/store'
 import { useTranslation } from '@/hooks/use-translation'
 
 type AvatarDropdownProps = {
@@ -19,6 +19,7 @@ type AvatarDropdownProps = {
 const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector((state: RootState) => state.auth.user)
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -60,7 +61,7 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
         aria-expanded={open}
         aria-haspopup="true"
       >
-        <Image src={avatarIcon} alt="Profile" className="h-full w-full rounded-full object-cover" />
+        <img src={user?.avatar || avatarIcon.src} alt="Profile" className="h-full w-full rounded-full object-cover" />
       </button>
 
       {open && (

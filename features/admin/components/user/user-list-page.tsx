@@ -20,6 +20,7 @@ import { AdminImageZoomModal } from '../ui/admin-image-zoom-modal'
 import { UserCreateModal } from './user-create-modal'
 import { UserEditModal } from './user-edit-modal'
 import { AdminUser, setAdminUsers, addAdminUser, deleteAdminUser, updateAdminUser } from '@/features/admin/store/admin-user.slice'
+import { updateUserAvatar } from '@/features/auth/store/auth.slice'
 import type { RootState } from '@/store/store'
 import { api } from '@/services/api'
 import editIcon from '@/app/assets/edit.svg'
@@ -30,6 +31,7 @@ type UserSortOrder = 'asc' | 'desc' | null
 
 export const UserListPage: React.FC = () => {
   const dispatch = useDispatch()
+  const currentUserId = useSelector((state: RootState) => state.auth.user?.id)
   const users = useSelector((state: RootState) => state.adminUsers.items)
 
   const [searchQuery, setSearchQuery] = useState('')
@@ -140,6 +142,9 @@ export const UserListPage: React.FC = () => {
       }
       await api.put(`/accounts/${updatedUser.id}`, payload)
       dispatch(updateAdminUser(updatedUser))
+      if (updatedUser.id === currentUserId && updatedUser.avatar) {
+        dispatch(updateUserAvatar(updatedUser.avatar))
+      }
     } catch (error) {
       console.error('Failed to update user', error)
     }

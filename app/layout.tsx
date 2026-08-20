@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Roboto } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ReduxProvider } from '@/store/provider'
+import { UserSessionExpiredModal } from '@/components/user-session-expired-modal'
 import './globals.css'
 
 const roboto = Roboto({
@@ -33,6 +34,7 @@ const RootLayout = ({
       <body className={`${roboto.className} font-sans antialiased`} suppressHydrationWarning>
         <ReduxProvider>
           {children}
+          <UserSessionExpiredModal />
         </ReduxProvider>
         <Analytics />
       </body>

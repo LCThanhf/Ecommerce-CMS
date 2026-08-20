@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import Image from "next/image";
 import { ZoomIn } from "lucide-react";
 import avatarImg from "@/app/assets/avatar.png";
 import bellIcon from "@/app/assets/bell.svg";
 import { AdminImageZoomModal } from "./ui/admin-image-zoom-modal";
+import type { RootState } from "@/store/store";
+import { api } from "@/services/api";
 
 interface AdminHeaderProps {
   title?: React.ReactNode;
@@ -13,6 +16,33 @@ interface AdminHeaderProps {
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
   const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [adminEmail, setAdminEmail] = useState("");
+  const [localAvatar, setLocalAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    const sessionStr = localStorage.getItem("admin_session");
+    if (sessionStr) {
+      try {
+        const email = JSON.parse(sessionStr).email;
+        setAdminEmail(email);
+        // Fetch accounts to find this admin's avatar across all pages
+        api.get<any[]>("/accounts").then((accounts) => {
+          const admin = accounts.find((a) => a.email === email);
+          if (admin?.avatar) {
+            setLocalAvatar(admin.avatar);
+          }
+        }).catch(console.error);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, []);
+
+  const adminUser = useSelector((state: RootState) => 
+    state.adminUsers.items.find(u => u.email === adminEmail)
+  );
+  
+  const avatarToDisplay = adminUser?.avatar || localAvatar || avatarImg.src;
 
   return (
     <header className="h-16 flex items-center justify-between px-8 bg-transparent">
@@ -52,8 +82,8 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
           title="Nhấp để phóng to avatar"
         >
           <div className="h-9 w-9 rounded-full overflow-hidden border border-slate-200 shadow-xs relative">
-            <Image
-              src={avatarImg}
+            <img
+              src={avatarToDisplay}
               alt="Admin Avatar"
               className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
             />
@@ -70,7 +100,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
       <AdminImageZoomModal
         isOpen={isZoomOpen}
         onClose={() => setIsZoomOpen(false)}
-        src={avatarImg.src}
+        src={avatarToDisplay}
         title="Admin Avatar"
       />
     </header>

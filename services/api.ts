@@ -20,13 +20,8 @@ const getHeaders = () => {
 const checkResponse = (response: Response) => {
   if (response.status === 401) {
     if (typeof window !== 'undefined') {
-      if (window.location.pathname.startsWith('/admin')) {
-        localStorage.removeItem('admin_session');
-        localStorage.removeItem('admin_token');
-        window.location.href = '/admin/login';
-      } else {
-        localStorage.removeItem('token');
-      }
+      const isAdmin = window.location.pathname.startsWith('/admin');
+      window.dispatchEvent(new CustomEvent('session-expired', { detail: { isAdmin } }));
     }
     throw new Error('Unauthorized');
   }

@@ -13,6 +13,7 @@ interface AdminConfirmModalProps {
   confirmText?: string
   cancelText?: string
   isDestructive?: boolean
+  hideCancel?: boolean
 }
 
 export const AdminConfirmModal: React.FC<AdminConfirmModalProps> = ({
@@ -24,17 +25,20 @@ export const AdminConfirmModal: React.FC<AdminConfirmModalProps> = ({
   confirmText = 'Xác nhận',
   cancelText = 'Hủy',
   isDestructive = true,
+  hideCancel = false,
 }) => {
   const modalFooter = (
     <>
-      <AdminButton
-        type="button"
-        variant="outline"
-        onClick={onClose}
-        className="px-6 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-medium"
-      >
-        {cancelText}
-      </AdminButton>
+      {!hideCancel && (
+        <AdminButton
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="px-6 border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-medium"
+        >
+          {cancelText}
+        </AdminButton>
+      )}
       <AdminButton
         type="button"
         variant={isDestructive ? 'danger' : 'primary'}
