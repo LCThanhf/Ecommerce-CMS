@@ -92,7 +92,7 @@ const ProfileSection = () => {
       }
       await api.put(`/accounts/${user.id}`, payload)
       dispatch(updateUserAvatar(avatar || ''))
-      setSuccessMessage('Cập nhật thông tin thành công!')
+      setSuccessMessage(t('save-success'))
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccessMessage(''), 3000)
@@ -144,7 +144,7 @@ const ProfileSection = () => {
               fileInputRef.current?.click()
             }
           }}
-          title={avatar ? "Gỡ ảnh đại diện" : "Thay đổi ảnh đại diện"}
+          title={avatar ? t('avatar-remove') : t('avatar-change')}
         >
           {avatar ? (
             <img src={avatar} alt="User avatar" className="h-full w-full object-cover" />
@@ -156,7 +156,7 @@ const ProfileSection = () => {
             />
           )}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs sm:text-sm font-medium">
-            {avatar ? 'Gỡ' : 'Thay đổi'}
+            {avatar ? t('avatar-remove-short') : t('avatar-change-short')}
           </div>
         </div>
         <input 
@@ -273,7 +273,6 @@ const ProfileSection = () => {
               value={addressHome}
               onChange={(e) => setAddressHome(e.target.value)}
               className="absolute inset-0 w-full bg-transparent text-base text-neutral-800 outline-none md:text-lg placeholder:text-neutral-400"
-              placeholder="Nhập địa chỉ nhà..."
               aria-label="Address Home"
             />
           </span>
@@ -282,7 +281,7 @@ const ProfileSection = () => {
         {/* Phone */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
           <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
-            Số điện thoại
+            {t('phone')}
           </span>
           <span className="relative inline-block border-b border-neutral-800 pb-1 w-full sm:w-auto">
             <span aria-hidden className="invisible whitespace-pre text-base md:text-lg">{phone || ' '}</span>
@@ -291,7 +290,6 @@ const ProfileSection = () => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="absolute inset-0 w-full bg-transparent text-base text-neutral-800 outline-none md:text-lg placeholder:text-neutral-400"
-              placeholder="Nhập số điện thoại..."
               aria-label="Phone Number"
             />
           </span>
@@ -304,7 +302,7 @@ const ProfileSection = () => {
             disabled={isSaving}
             className="w-full sm:w-auto px-8 py-3 bg-[#0F60FF] hover:bg-[#0C53DF] text-white font-medium rounded-md transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSaving ? 'Đang lưu...' : 'Lưu thông tin'}
+            {isSaving ? t('saving') : t('save-info')}
           </button>
           
           {successMessage && (

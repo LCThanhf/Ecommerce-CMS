@@ -24,6 +24,14 @@ const dictionary: Record<Language, Record<string, string>> = {
     other: 'Other',
     'address-company': 'Address Company:',
     'address-home': 'Address Home:',
+    phone: 'Phone number',
+    'save-info': 'Save information',
+    saving: 'Saving...',
+    'save-success': 'Information saved successfully!',
+    'avatar-remove': 'Remove image',
+    'avatar-change': 'Change image',
+    'avatar-remove-short': 'Remove',
+    'avatar-change-short': 'Change',
     // Product details
     product: 'Product',
     // Filter details
@@ -61,6 +69,14 @@ const dictionary: Record<Language, Record<string, string>> = {
     other: 'Khác',
     'address-company': 'Địa chỉ công ty:',
     'address-home': 'Địa chỉ nhà riêng:',
+    phone: 'Số điện thoại',
+    'save-info': 'Lưu thông tin',
+    saving: 'Đang lưu...',
+    'save-success': 'Cập nhật thông tin thành công!',
+    'avatar-remove': 'Gỡ ảnh đại diện',
+    'avatar-change': 'Thay đổi ảnh đại diện',
+    'avatar-remove-short': 'Gỡ',
+    'avatar-change-short': 'Thay đổi',
     // Product details
     product: 'Sản phẩm',
     // Filter details
