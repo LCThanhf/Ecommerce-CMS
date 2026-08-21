@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { useState, useEffect } from 'react'
 import type { RootState } from '@/store/store'
 
 export type Language = 'en' | 'vi'
@@ -98,13 +99,17 @@ const dictionary: Record<Language, Record<string, string>> = {
 
 export const useTranslation = () => {
   const lang = useSelector((state: RootState) => state.language.language)
-  const hasHydrated = useSelector((state: RootState) => state.language.hasHydrated)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const t = (key: string) => {
     // Default to 'en' before hydration to match Next.js server-side rendered HTML
-    const activeLang = hasHydrated ? lang : 'en'
+    const activeLang = mounted ? lang : 'en'
     return dictionary[activeLang]?.[key] || key
   }
 
-  return { t, lang, hasHydrated }
+  return { t, lang, hasHydrated: mounted }
 }

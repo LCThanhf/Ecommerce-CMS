@@ -1,14 +1,14 @@
 'use client'
 
 import { Globe } from 'lucide-react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setLanguage } from '@/features/language/store/language.slice'
-import type { RootState, AppDispatch } from '@/store/store'
+import type { AppDispatch } from '@/store/store'
+import { useTranslation } from '@/hooks/use-translation'
 
 export const TranslateButton = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const lang = useSelector((state: RootState) => state.language.language)
-  const hasHydrated = useSelector((state: RootState) => state.language.hasHydrated)
+  const { lang, hasHydrated } = useTranslation()
 
   const toggleLanguage = () => {
     dispatch(setLanguage(lang === 'en' ? 'vi' : 'en'))
