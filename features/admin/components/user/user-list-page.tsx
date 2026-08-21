@@ -49,7 +49,9 @@ export const UserListPage: React.FC = () => {
         const data = await api.get<AdminUser[]>('/accounts')
         dispatch(setAdminUsers(data))
       } catch (error) {
-        console.error('Failed to fetch users', error)
+        if (error !== 'Unauthorized') {
+          console.error('Failed to fetch users', error)
+        }
       }
     }
     fetchUsers()
@@ -130,7 +132,9 @@ export const UserListPage: React.FC = () => {
       const data = await api.post<AdminUser>('/accounts', payload)
       dispatch(addAdminUser(data))
     } catch (error) {
-      console.error('Failed to add user', error)
+      if (error !== 'Unauthorized') {
+        console.error('Failed to add user', error)
+      }
     }
   }
 
@@ -146,7 +150,9 @@ export const UserListPage: React.FC = () => {
         dispatch(updateUserAvatar(updatedUser.avatar))
       }
     } catch (error) {
-      console.error('Failed to update user', error)
+      if (error !== 'Unauthorized') {
+        console.error('Failed to update user', error)
+      }
     }
   }
 
@@ -157,7 +163,9 @@ export const UserListPage: React.FC = () => {
         dispatch(deleteAdminUser(userToDeleteId))
         setUserToDeleteId(null)
       } catch (error) {
-        console.error('Failed to delete user', error)
+        if (error !== 'Unauthorized') {
+          console.error('Failed to delete user', error)
+        }
       }
     }
   }

@@ -28,7 +28,9 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
           if (admin?.avatar) {
             setLocalAvatar(admin.avatar);
           }
-        }).catch(console.error);
+        }).catch(e => {
+          if (e !== 'Unauthorized') console.error(e);
+        });
       } catch (e) {
         // ignore
       }

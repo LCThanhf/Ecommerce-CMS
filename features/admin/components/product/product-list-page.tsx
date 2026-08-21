@@ -65,7 +65,9 @@ export const ProductListPage: React.FC = () => {
         }))
         dispatch(fetchProductsSuccess(mappedProducts))
       } catch (error) {
-        console.error('Failed to load products', error)
+        if (error !== 'Unauthorized') {
+          console.error('Failed to load products', error)
+        }
       }
     }
     loadProducts()
@@ -195,7 +197,9 @@ export const ProductListPage: React.FC = () => {
       }
       dispatch(addProduct(createdProduct))
     } catch (error) {
-      console.error('Failed to add product', error)
+      if (error !== 'Unauthorized') {
+        console.error('Failed to add product', error)
+      }
     }
   }
 
@@ -216,7 +220,9 @@ export const ProductListPage: React.FC = () => {
       await api.put(`/productions/${updatedProduct.id}`, payload)
       dispatch(updateProduct(updatedProduct))
     } catch (error) {
-      console.error('Failed to update product', error)
+      if (error !== 'Unauthorized') {
+        console.error('Failed to update product', error)
+      }
     }
   }
 
@@ -227,7 +233,9 @@ export const ProductListPage: React.FC = () => {
         dispatch(deleteProduct(productToDeleteId))
         setProductToDeleteId(null)
       } catch (error) {
-        console.error('Failed to delete product', error)
+        if (error !== 'Unauthorized') {
+          console.error('Failed to delete product', error)
+        }
       }
     }
   }
