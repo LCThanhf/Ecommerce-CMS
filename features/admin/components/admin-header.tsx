@@ -3,10 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Image from "next/image";
-import { ZoomIn } from "lucide-react";
 import avatarImg from "@/app/assets/avatar.png";
 import bellIcon from "@/app/assets/bell.svg";
-import { AdminImageZoomModal } from "./ui/admin-image-zoom-modal";
 import type { RootState } from "@/store/store";
 import { api } from "@/services/api";
 
@@ -15,7 +13,6 @@ interface AdminHeaderProps {
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
-  const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [adminEmail, setAdminEmail] = useState("");
   const [localAvatar, setLocalAvatar] = useState<string | null>(null);
 
@@ -75,34 +72,19 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
           </span>
         </button>
 
-        {/* User Avatar - Clickable to zoom */}
-        <div
-          onClick={() => setIsZoomOpen(true)}
-          className="relative cursor-pointer group"
-          title="Nhấp để phóng to avatar"
-        >
+        {/* User Avatar */}
+        <div className="relative">
           <div className="h-9 w-9 rounded-full overflow-hidden border border-slate-200 shadow-xs relative">
             <img
               src={avatarToDisplay}
               alt="Admin Avatar"
-              className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
+              className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <ZoomIn className="w-3.5 h-3.5 text-white" />
-            </div>
           </div>
           {/* Online status indicator */}
           <span className="absolute bottom-0 right-[1px] h-3 w-3 rounded-full bg-[#28C76F] border-[2px] border-white shadow-2xs z-10" />
         </div>
       </div>
-
-      {/* Avatar Zoom Modal */}
-      <AdminImageZoomModal
-        isOpen={isZoomOpen}
-        onClose={() => setIsZoomOpen(false)}
-        src={avatarToDisplay}
-        title="Admin Avatar"
-      />
     </header>
   );
 };

@@ -32,7 +32,7 @@ export const ProductRow = ({ product, onOpenDetails }: { product: Product; onOpe
         <h3 className="text-lg leading-none font-semibold text-neutral-900 md:text-2xl">{product.name}</h3>
         <p className="mt-2 text-2xl leading-none font-extrabold text-neutral-900 md:mt-4 md:text-4xl">{product.price}</p>
         <div className="mt-2 flex items-center gap-1 text-amber-400">
-          {Array.from({ length: product.rating }).map((_, index) => (
+          {Array.from({ length: Math.floor(product.rating || 0) + ((product.rating || 0) % 1 > 0.5 ? 1 : 0) }).map((_, index) => (
             <RatingStar key={index} className="h-10 w-10 shrink-0 md:h-14 md:w-14" />
           ))}
         </div>

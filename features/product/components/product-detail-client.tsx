@@ -260,12 +260,11 @@ const ProductDetailClient = ({ id }: { id: string }) => {
                 <p className="mt-10 text-2xl font-extrabold leading-none text-neutral-900 md:text-3xl">
                   {priceFormatted}
                 </p>
-                <div className="mt-4 flex items-center gap-1">
-                  {Array.from({ length: Math.floor(rating) }).map((_, i) => (
-                    <RatingStar key={i} className="h-12 w-12 shrink-0" />
-                  ))}
+                <div className="mt-8 flex items-end gap-2">
+                  <span className="text-3xl leading-none font-extrabold text-neutral-900">{rating}</span>
+                  <RatingStar className="h-10 w-10 shrink-0 text-amber-400" />
                 </div>
-                <div className="mt-7 flex flex-wrap gap-6">
+                <div className="mt-12 flex flex-wrap gap-6">
                   <button
                     type="button"
                     onClick={() => {

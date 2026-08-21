@@ -23,7 +23,8 @@ const checkResponse = (response: Response) => {
       const isAdmin = window.location.pathname.startsWith('/admin');
       window.dispatchEvent(new CustomEvent('session-expired', { detail: { isAdmin } }));
     }
-    throw new Error('Unauthorized');
+    // Ném một chuỗi thay vì một đối tượng Error để Next.js không hiện màn hình đỏ (error overlay)
+    throw 'Unauthorized';
   }
   if (!response.ok) {
     throw new Error('Bad response');
