@@ -31,7 +31,33 @@ const AuthHydrator = () => {
   useEffect(() => {
     const session = getSession()
     if (session) {
-      dispatch(loginUser(session))
+      const token = localStorage.getItem('token')
+      let isExpired = false
+      if (token) {
+        try {
+          const payloadBase64 = token.split('.')[1]
+          if (payloadBase64) {
+            // Support base64url format
+            const decodedJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'))
+            const payload = JSON.parse(decodedJson)
+            if (payload.exp && payload.exp * 1000 < Date.now()) {
+              isExpired = true
+            }
+          }
+        } catch (e) {
+          isExpired = true
+        }
+      } else {
+        isExpired = true
+      }
+      
+      if (isExpired) {
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('session-expired', { detail: { isAdmin: false } }))
+        }, 100)
+      } else {
+        dispatch(loginUser(session))
+      }
     }
     dispatch(markAuthHydrated())
   }, [dispatch])

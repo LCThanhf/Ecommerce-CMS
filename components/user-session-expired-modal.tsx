@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useRouter } from 'next/navigation'
+import { clearSession } from '@/features/auth/store/auth.storage'
 
 export const UserSessionExpiredModal = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -29,6 +30,7 @@ export const UserSessionExpiredModal = () => {
   const handleConfirm = () => {
     setIsOpen(false)
     localStorage.removeItem('token')
+    clearSession()
     window.location.href = '/login'
   }
 
@@ -38,11 +40,11 @@ export const UserSessionExpiredModal = () => {
         <AlertDialogHeader>
           <AlertDialogTitle>Phiên đăng nhập đã hết hạn</AlertDialogTitle>
           <AlertDialogDescription>
-            Phiên đăng nhập của bạn đã hết hạn để đảm bảo an toàn. Vui lòng xác nhận để quay về trang đăng nhập.
+            Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại để tiếp tục thao tác.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={handleConfirm}>Xác nhận</AlertDialogAction>
+          <AlertDialogAction onClick={handleConfirm}>Đăng nhập lại</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
