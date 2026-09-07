@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
-import { Box, Users, LogOut } from 'lucide-react'
+import { Box, Users, LogOut, ClipboardList } from 'lucide-react'
 import { HicasLogo } from './hicas-logo'
 import indentIcon from '@/app/assets/indent-decrease.svg'
 import { logoutUser } from '@/features/auth/store/auth.slice'
@@ -37,6 +37,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       label: 'Người dùng',
       href: '/admin/users',
       icon: Users,
+    },
+    {
+      label: 'Đơn hàng',
+      href: '/admin/orders',
+      icon: ClipboardList,
     },
   ]
 

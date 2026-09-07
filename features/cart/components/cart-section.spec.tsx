@@ -27,6 +27,7 @@ const ITEM_A: CartItem = {
   priceValue: 5_000_000,
   priceFormatted: '5\u00a0000\u00a0000\u00a0VN\u0110',
   qty: 2,
+  image: '/test.png',
 }
 
 const ITEM_B: CartItem = {
@@ -141,4 +142,12 @@ describe('CartSection', () => {
       expect(mockPush).toHaveBeenCalledWith('/shop/product/1')
     })
   })
+
+  describe('checkout button', () => {
+    it('should display the place order button when items exist', () => {
+      renderCart([ITEM_A])
+      expect(screen.getByText('Place Order')).toBeInTheDocument()
+    })
+  })
 })
+

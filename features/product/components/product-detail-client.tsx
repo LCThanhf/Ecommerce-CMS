@@ -2,7 +2,7 @@
 
 import Image, { type StaticImageData } from 'next/image'
 import Link from 'next/link'
-import { Menu } from 'lucide-react'
+import { Menu, ClipboardList } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
@@ -20,12 +20,13 @@ import RatingStar from './rating-star'
 import TranslateButton from '@/components/translate-button'
 import { useTranslation } from '@/hooks/use-translation'
 
-type NavKey = 'shop' | 'cart' | 'profile'
+type NavKey = 'shop' | 'cart' | 'profile' | 'orders'
 
-const navItems: { key: NavKey; label: string; icon: StaticImageData }[] = [
+const navItems: { key: NavKey; label: string; icon: StaticImageData | React.ComponentType<{ className?: string }> }[] = [
   { key: 'shop', label: 'Shop', icon: shopIcon },
   { key: 'cart', label: 'Cart', icon: cartIcon },
   { key: 'profile', label: 'My Profile', icon: profileIcon },
+  { key: 'orders', label: 'Order History', icon: ClipboardList },
 ]
 
 const ProductDetailClient = ({ id }: { id: string }) => {
@@ -139,27 +140,35 @@ const ProductDetailClient = ({ id }: { id: string }) => {
           </div>
           <nav>
             {navItems.map((item) => {
-              const isActive = item.key === 'shop'
+              const isActive = false
               return (
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() => router.push('/shop')}
-                  className={`flex h-12 w-full items-center gap-2 px-3 text-left text-base transition md:px-3 md:text-lg ${
+                  onClick={() => {
+                    if (item.key === 'shop') {
+                      router.push('/shop')
+                    } else {
+                      router.push(`/shop?view=${item.key}`)
+                    }
+                  }}
+                  className={`flex h-12 w-full items-center gap-2 px-3 text-left text-base transition cursor-pointer md:px-3 md:text-lg ${
                     isActive
                       ? 'border-y border-[#00b7ee] bg-[#e8f7ff] text-[#02a8df]'
                       : 'text-neutral-900'
                   } ${isCollapsed ? 'justify-center px-0' : 'justify-center px-0 sm:justify-start sm:px-3'}`}
                 >
-                  <Image
-                    src={item.icon}
-                    alt={t(item.key)}
-                    className={`h-8 w-8 shrink-0 object-contain md:h-9 md:w-9 ${
-                      isActive
-                        ? 'filter-[invert(52%)_sepia(93%)_saturate(1695%)_hue-rotate(159deg)_brightness(95%)_contrast(98%)]'
-                        : ''
-                    }`}
-                  />
+                  {item.key === 'orders' ? (
+                    <ClipboardList
+                      className="h-7 w-7 mx-0.5 shrink-0 object-contain md:h-8 md:w-8 text-neutral-700"
+                    />
+                  ) : (
+                    <Image
+                      src={item.icon as StaticImageData}
+                      alt={t(item.key)}
+                      className="h-8 w-8 shrink-0 object-contain md:h-9 md:w-9"
+                    />
+                  )}
                   {!isCollapsed ? <span className="hidden sm:inline">{t(item.key)}</span> : null}
                 </button>
               )

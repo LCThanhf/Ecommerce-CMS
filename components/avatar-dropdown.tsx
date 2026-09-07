@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, ClipboardList } from 'lucide-react'
 import avatarIcon from '@/app/assets/avatar.png'
 import { logoutUser } from '@/features/auth/store/auth.slice'
 import { resetProducts } from '@/features/product/store/product.slice'
@@ -43,6 +43,11 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
     }
   }
 
+  const handleOrders = () => {
+    setOpen(false)
+    router.push('/shop?view=orders')
+  }
+
   const handleLogout = () => {
     setOpen(false)
     dispatch(resetProducts())
@@ -56,7 +61,7 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-300 bg-white p-0.5 text-slate-600 shadow-sm transition-all duration-200 hover:border-sky-400 md:h-15 md:w-15"
+        className="inline-flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border border-sky-300 bg-white p-0.5 text-slate-600 shadow-sm transition-all duration-200 hover:border-sky-400 md:h-15 md:w-15 cursor-pointer"
         aria-label="Account menu"
         aria-expanded={open}
         aria-haspopup="true"
@@ -65,11 +70,11 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-1 w-44 border border-neutral-300 bg-white shadow-md">
+        <div className="absolute right-0 top-full z-50 mt-1 w-48 border border-neutral-300 bg-white shadow-md">
           <button
             type="button"
             onClick={handleProfile}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-neutral-900 transition hover:bg-neutral-100 md:text-lg"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-neutral-900 transition hover:bg-neutral-100 md:text-lg cursor-pointer"
           >
             <User className="h-4 w-4 shrink-0 text-neutral-600 md:h-5 md:w-5" />
             {t('profile')}
@@ -77,8 +82,17 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
           <div className="border-t border-neutral-200" />
           <button
             type="button"
+            onClick={handleOrders}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-neutral-900 transition hover:bg-neutral-100 md:text-lg cursor-pointer"
+          >
+            <ClipboardList className="h-4 w-4 shrink-0 text-neutral-600 md:h-5 md:w-5" />
+            {t('orders')}
+          </button>
+          <div className="border-t border-neutral-200" />
+          <button
+            type="button"
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-red-600 transition hover:bg-neutral-100 md:text-lg"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-red-600 transition hover:bg-neutral-100 md:text-lg cursor-pointer"
           >
             <LogOut className="h-4 w-4 shrink-0 text-red-600 md:h-5 md:w-5" />
             {t('logout')}
