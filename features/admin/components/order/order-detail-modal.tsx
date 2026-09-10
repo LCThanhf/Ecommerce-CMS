@@ -96,31 +96,12 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     >
       <div className="space-y-4 text-xs">
         {/* Status management block */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white p-3.5 border border-slate-100 shadow-2xs">
+        <div className="flex items-center gap-3 rounded-lg bg-white p-3.5 border border-slate-100 shadow-2xs">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-700">Trạng thái hiện tại:</span>
             <AdminBadge variant={STATUS_BADGE_VARIANTS[order.status] || 'neutral'}>
               {STATUS_LABELS[order.status] || order.status}
             </AdminBadge>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500 font-medium">Thay đổi:</span>
-            <div className="w-40">
-              <AdminSelect
-                sizeVariant="sm"
-                value={order.status}
-                disabled={isUpdatingStatus}
-                onChange={(e) => onUpdateStatus(order.id, e.target.value as OrderStatus)}
-                aria-label="Cập nhật trạng thái đơn"
-              >
-                {ALL_STATUSES.map((st) => (
-                  <option key={st} value={st}>
-                    {STATUS_LABELS[st]}
-                  </option>
-                ))}
-              </AdminSelect>
-            </div>
           </div>
         </div>
 
@@ -131,7 +112,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               Thông tin nhận hàng
             </h4>
             <span className="text-slate-400 text-[11px]">
-              Ngày đặt: {formatDate(order.createdAt)}
+              {formatDate(order.createdAt)}
             </span>
           </div>
 

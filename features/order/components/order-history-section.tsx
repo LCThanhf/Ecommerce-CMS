@@ -158,12 +158,9 @@ const OrderHistorySection: React.FC = () => {
   return (
     <div className="flex min-h-full flex-col justify-between max-w-5xl mx-auto space-y-6 pb-6">
       <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-neutral-200 pb-4">
+        <div className="flex items-center justify-between border-b border-neutral-200 pb-4 pt-6">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-neutral-900">
-              {t('order-history')}
-            </h2>
-            <p className="text-sm text-neutral-500 mt-1">
+            <p className="text-base md:text-lg text-neutral-700">
               Tổng cộng {orders.length} đơn hàng đã đặt
             </p>
           </div>

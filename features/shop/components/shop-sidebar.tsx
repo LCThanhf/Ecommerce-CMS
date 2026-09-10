@@ -1,10 +1,11 @@
 import React from 'react'
 import Image, { type StaticImageData } from 'next/image'
-import { Menu, ClipboardList } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import shopIcon from '@/app/assets/shop.png'
 import cartIcon from '@/app/assets/cart.png'
 import profileIcon from '@/app/assets/profile.png'
+import orderHistoryIcon from '@/app/assets/order-history.png'
 import { useTranslation } from '@/hooks/use-translation'
 import type { RootState } from '@/store/store'
 import { toggleSidebar } from '@/features/shop/store/shop.slice'
@@ -21,7 +22,7 @@ const navItems: NavItem[] = [
   { key: 'shop', label: 'Shop', icon: shopIcon },
   { key: 'cart', label: 'Cart', icon: cartIcon },
   { key: 'profile', label: 'My Profile', icon: profileIcon },
-  { key: 'orders', label: 'Order History', icon: ClipboardList },
+  { key: 'orders', label: 'Order History', icon: orderHistoryIcon },
 ]
 
 interface ShopSidebarProps {
@@ -69,23 +70,15 @@ export const ShopSidebar = ({ activeView, onViewChange }: ShopSidebarProps) => {
                   : 'text-neutral-900'
               } ${isCollapsed ? 'justify-center px-0' : 'justify-center px-0 sm:justify-start sm:px-3'}`}
             >
-              {item.key === 'orders' ? (
-                <ClipboardList
-                  className={`h-7 w-7 mx-0.5 shrink-0 object-contain md:h-8 md:w-8 ${
-                    isActive ? 'text-[#02a8df]' : 'text-neutral-700'
-                  }`}
-                />
-              ) : (
-                <Image
-                  src={item.icon as StaticImageData}
-                  alt={t(item.key)}
-                  className={`h-8 w-8 shrink-0 object-contain md:h-9 md:w-9 ${
-                    isActive
-                      ? 'filter-[invert(52%)_sepia(93%)_saturate(1695%)_hue-rotate(159deg)_brightness(95%)_contrast(98%)]'
-                      : ''
-                  }`}
-                />
-              )}
+              <Image
+                src={item.icon as StaticImageData}
+                alt={t(item.key)}
+                className={`h-8 w-8 shrink-0 object-contain md:h-9 md:w-9 ${
+                  isActive
+                    ? 'filter-[invert(52%)_sepia(93%)_saturate(1695%)_hue-rotate(159deg)_brightness(95%)_contrast(98%)]'
+                    : ''
+                }`}
+              />
               {!isCollapsed ? <span className="hidden sm:inline">{t(item.key)}</span> : null}
             </button>
           )
