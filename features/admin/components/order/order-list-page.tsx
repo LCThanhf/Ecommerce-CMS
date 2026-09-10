@@ -90,8 +90,10 @@ export const OrderListPage: React.FC = () => {
     try {
       const data = await orderApi.getAllOrders()
       setOrders(Array.isArray(data) ? data : [])
-    } catch (err) {
-      console.error('Failed to load admin orders', err)
+    } catch (err: any) {
+      if (err !== 'Unauthorized' && err?.message !== 'Unauthorized') {
+        console.warn('Failed to load admin orders:', err)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -112,8 +114,10 @@ export const OrderListPage: React.FC = () => {
       if (selectedOrder && selectedOrder.id === orderId) {
         setSelectedOrder((prev) => (prev ? { ...prev, status: newStatus } : null))
       }
-    } catch (err) {
-      console.error('Failed to update order status', err)
+    } catch (err: any) {
+      if (err !== 'Unauthorized' && err?.message !== 'Unauthorized') {
+        console.warn('Failed to update order status:', err)
+      }
     } finally {
       setIsUpdatingStatus(false)
     }
@@ -388,19 +392,21 @@ export const OrderListPage: React.FC = () => {
 
                   {/* Trạng thái Dropdown */}
                   <AdminTableCell>
-                    <AdminSelect
-                      sizeVariant="sm"
-                      value={order.status}
-                      onChange={(e) => handleUpdateStatus(order.id, e.target.value as OrderStatus)}
-                      disabled={isUpdatingStatus}
-                      className="min-w-[135px] shadow-2xs text-[13px] whitespace-nowrap"
-                    >
-                      {ALL_STATUSES.map((status) => (
-                        <option key={status} value={status}>
-                          {STATUS_LABELS[status]}
-                        </option>
-                      ))}
-                    </AdminSelect>
+                    <div className="w-max">
+                      <AdminSelect
+                        sizeVariant="sm"
+                        value={order.status}
+                        onChange={(e) => handleUpdateStatus(order.id, e.target.value as OrderStatus)}
+                        disabled={isUpdatingStatus}
+                        className="min-w-[150px] shadow-2xs text-[13px] whitespace-nowrap"
+                      >
+                        {ALL_STATUSES.map((status) => (
+                          <option key={status} value={status}>
+                            {STATUS_LABELS[status]}
+                          </option>
+                        ))}
+                      </AdminSelect>
+                    </div>
                   </AdminTableCell>
 
                   {/* Thao tác (Xem chi tiết) */}
