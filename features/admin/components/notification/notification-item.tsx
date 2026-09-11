@@ -26,8 +26,12 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     }
   };
 
-  const timeAgo = notification.createdAt
-    ? formatDistanceToNow(new Date(notification.createdAt), {
+  const parsedDate = notification.createdAt 
+    ? new Date(notification.createdAt.endsWith('Z') ? notification.createdAt : `${notification.createdAt}Z`)
+    : null;
+
+  const timeAgo = parsedDate
+    ? formatDistanceToNow(parsedDate, {
         addSuffix: true,
         locale: vi,
       })
