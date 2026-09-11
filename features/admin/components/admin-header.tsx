@@ -7,6 +7,7 @@ import avatarImg from "@/app/assets/avatar.png";
 import bellIcon from "@/app/assets/bell.svg";
 import type { RootState } from "@/store/store";
 import { api } from "@/services/api";
+import { NotificationPopover } from "./notification/notification-popover";
 
 interface AdminHeaderProps {
   title?: React.ReactNode;
@@ -58,21 +59,8 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title }) => {
 
       {/* Right controls: Bell & Avatar */}
       <div className="flex items-center gap-5">
-        {/* Notification Bell with SVG Icon */}
-        <button
-          type="button"
-          className="relative text-slate-500 hover:text-slate-700 transition p-1.5 rounded-full hover:bg-slate-100/60 cursor-pointer"
-          aria-label="Thông báo"
-        >
-          <Image
-            src={bellIcon}
-            alt="Thông báo"
-            className="h-[22px] w-[22px] object-contain"
-          />
-          <span className="absolute top-0.5 right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-xs">
-            4
-          </span>
-        </button>
+        {/* Notification Bell */}
+        <NotificationPopover />
 
         {/* User Avatar */}
         <div className="relative">

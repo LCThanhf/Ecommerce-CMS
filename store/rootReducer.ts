@@ -8,6 +8,7 @@ import productsReducer from '@/features/product/store/product.slice'
 import languageReducer from '@/features/language/store/language.slice'
 import shopReducer from '@/features/shop/store/shop.slice'
 import adminUsersReducer from '@/features/admin/store/admin-user.slice'
+import notificationReducer from '@/features/admin/store/notification.slice'
 
 export const rootReducer = combineReducers({
   search: searchReducer,
@@ -19,6 +20,8 @@ export const rootReducer = combineReducers({
   language: languageReducer,
   shop: shopReducer,
   adminUsers: adminUsersReducer,
+  notifications: notificationReducer,
 })
 
 export type RootReducerState = ReturnType<typeof rootReducer>
+

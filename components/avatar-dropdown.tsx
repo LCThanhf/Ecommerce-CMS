@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
-import { LogOut, User, ClipboardList } from 'lucide-react'
+import { LogOut, User } from 'lucide-react'
 import avatarIcon from '@/app/assets/avatar.png'
 import { logoutUser } from '@/features/auth/store/auth.slice'
 import { resetProducts } from '@/features/product/store/product.slice'
@@ -43,11 +43,6 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
     }
   }
 
-  const handleOrders = () => {
-    setOpen(false)
-    router.push('/shop?view=orders')
-  }
-
   const handleLogout = () => {
     setOpen(false)
     dispatch(resetProducts())
@@ -80,15 +75,7 @@ const AvatarDropdown = ({ onProfileClick }: AvatarDropdownProps) => {
             {t('profile')}
           </button>
           <div className="border-t border-neutral-200" />
-          <button
-            type="button"
-            onClick={handleOrders}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left text-base text-neutral-900 transition hover:bg-neutral-100 md:text-lg cursor-pointer"
-          >
-            <ClipboardList className="h-4 w-4 shrink-0 text-neutral-600 md:h-5 md:w-5" />
-            {t('orders')}
-          </button>
-          <div className="border-t border-neutral-200" />
+
           <button
             type="button"
             onClick={handleLogout}
