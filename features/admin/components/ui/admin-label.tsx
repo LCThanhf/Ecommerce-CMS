@@ -1,6 +1,6 @@
 import React from 'react'
 
-export interface AdminLabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {}
+export type AdminLabelProps = React.LabelHTMLAttributes<HTMLLabelElement>
 
 export const AdminLabel: React.FC<AdminLabelProps> = ({ children, className = '', ...props }) => {
   return (

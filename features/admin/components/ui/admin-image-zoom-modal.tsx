@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import Image from 'next/image'
 import { X } from 'lucide-react'
 
 export interface AdminImageZoomModalProps {
@@ -63,10 +64,11 @@ export const AdminImageZoomModal: React.FC<AdminImageZoomModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative overflow-hidden rounded-xl shadow-2xl">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={src}
             alt={title || 'Enlarged view'}
+            width={1200}
+            height={1200}
             className="max-w-[85vw] max-h-[80vh] w-auto h-auto object-contain rounded-xl select-none block"
           />
         </div>
