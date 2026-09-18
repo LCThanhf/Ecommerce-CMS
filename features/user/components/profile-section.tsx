@@ -1,37 +1,129 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { useSelector } from 'react-redux'
-import type { RootState } from '@/store/store'
+import { useSelector, useDispatch } from 'react-redux'
+import type { RootState, AppDispatch } from '@/store/store'
+import { loginUser, updateUserAvatar } from '@/features/auth/store/auth.slice'
+import { saveSession } from '@/features/auth/store/auth.storage'
 import avatarIcon from '@/app/assets/avatar.png'
 import calendarIcon from '@/app/assets/calendar.png'
 import { useTranslation } from '@/hooks/use-translation'
+import { api } from '@/services/api'
 
-const GENDER_OPTIONS = ['Male', 'Female']
+const GENDER_OPTIONS = ['Male', 'Female', 'Other']
 
 const formatDisplayDate = (isoDate: string): string => {
   if (!isoDate) return ''
-  const [year, month, day] = isoDate.split('-')
+  const parts = isoDate.split('T')[0].split('-')
+  if (parts.length !== 3) return isoDate
+  const [year, month, day] = parts
   return `${month}/${day}/${year}`
 }
 
 const ProfileSection = () => {
   const hasAuthHydrated = useSelector((state: RootState) => state.auth.hasHydrated)
-  const { t } = useTranslation()
-  const [dob, setDob] = useState('2018-01-01')
-  const [gender, setGender] = useState('Male')
-  const [addressCompany, setAddressCompany] = useState(
-    '15, Duy Tan, Dich Vong Hau, Cau Giay, Ha Noi',
-  )
-  const [addressHome, setAddressHome] = useState(
-    '15, Duy Tan, Dich Vong Hau, Cau Giay, Ha Noi',
-  )
+  const user = useSelector((state: RootState) => state.auth.user)
+  const dispatch = useDispatch<AppDispatch>()
+  const [isMounted, setIsMounted] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
+  const [fullAccountData, setFullAccountData] = useState<any>(null)
 
-  if (!hasAuthHydrated) {
+  const { t } = useTranslation()
+  const [dob, setDob] = useState('')
+  const [gender, setGender] = useState('Male')
+  const [addressCompany, setAddressCompany] = useState('')
+  const [addressHome, setAddressHome] = useState('')
+  const [phone, setPhone] = useState('')
+  const [avatar, setAvatar] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (isMounted && hasAuthHydrated && user?.id) {
+      // Fetch full user details from API
+      const fetchProfile = async () => {
+        try {
+          const data = await api.get<any>(`/accounts/${user.id}`)
+          setFullAccountData(data)
+          if (data.dob) setDob(data.dob.split('T')[0])
+          if (data.gender) setGender(data.gender)
+          if (data.workAddress) setAddressCompany(data.workAddress)
+          if (data.homeAddress) setAddressHome(data.homeAddress)
+          if (data.phone) setPhone(data.phone)
+          if (data.avatar) {
+            setAvatar(data.avatar)
+            dispatch(updateUserAvatar(data.avatar))
+          }
+        } catch (error) {
+          console.error('Failed to fetch profile', error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+      fetchProfile()
+    } else if (hasAuthHydrated) {
+      setIsLoading(false)
+    }
+  }, [isMounted, hasAuthHydrated, user])
+
+  const handleSave = async () => {
+    if (!user?.id) return
+    setIsSaving(true)
+    setSuccessMessage('')
+    try {
+      const payload = {
+        ...fullAccountData,
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        dob: dob || null,
+        gender: gender || null,
+        workAddress: addressCompany || null,
+        homeAddress: addressHome || null,
+        phone: phone || null,
+        avatar: avatar || null
+      }
+      await api.put(`/accounts/${user.id}`, payload)
+      dispatch(updateUserAvatar(avatar || ''))
+      setSuccessMessage(t('save-success'))
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(''), 3000)
+    } catch (error) {
+      console.error('Failed to save profile', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (!isMounted || !hasAuthHydrated || isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
         <p className="text-xl text-neutral-500">Đang tải hồ sơ...</p>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-xl text-neutral-500">Vui lòng đăng nhập để xem hồ sơ.</p>
+      </div>
+    )
+  }
+
+  if (!user.id) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+        <p className="text-xl text-neutral-500">Phiên đăng nhập cũ không có đủ thông tin.</p>
+        <p className="text-lg text-neutral-500">Vui lòng đăng xuất và đăng nhập lại để xem và cập nhật hồ sơ.</p>
       </div>
     )
   }
@@ -40,17 +132,55 @@ const ProfileSection = () => {
     <div className="h-full overflow-y-auto px-4 sm:px-12 pt-6 sm:pt-14 pb-7 md:px-20 md:pt-16">
       {/* Avatar + name + email */}
       <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-10 md:gap-14">
-        <div className="h-24 w-24 sm:h-36 sm:w-36 shrink-0 overflow-hidden rounded-full border border-neutral-200 md:h-44 md:w-44">
-          <Image
-            src={avatarIcon}
-            alt="User avatar"
-            className="h-full w-full object-cover"
-          />
+        <div 
+          className="relative h-24 w-24 sm:h-36 sm:w-36 shrink-0 overflow-hidden rounded-full border border-neutral-200 md:h-44 md:w-44 cursor-pointer group"
+          onClick={() => {
+            if (avatar) {
+              setAvatar('')
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+              }
+            } else {
+              fileInputRef.current?.click()
+            }
+          }}
+          title={avatar ? t('avatar-remove') : t('avatar-change')}
+        >
+          {avatar ? (
+            <img src={avatar} alt="User avatar" className="h-full w-full object-cover" />
+          ) : (
+            <Image
+              src={avatarIcon}
+              alt="User avatar"
+              className="h-full w-full object-cover"
+            />
+          )}
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs sm:text-sm font-medium">
+            {avatar ? t('avatar-remove-short') : t('avatar-change-short')}
+          </div>
         </div>
+        <input 
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) {
+              const reader = new FileReader()
+              reader.onloadend = () => {
+                if (typeof reader.result === 'string') {
+                  setAvatar(reader.result)
+                }
+              }
+              reader.readAsDataURL(file)
+            }
+          }}
+        />
         <div className="text-center sm:text-left">
-          <h2 className="text-2xl sm:text-4xl font-bold text-neutral-900 md:text-5xl">MR. USER</h2>
+          <h2 className="text-2xl sm:text-4xl font-bold text-neutral-900 md:text-5xl uppercase">{user.username}</h2>
           <p className="mt-4 sm:mt-10 text-lg sm:text-2xl text-neutral-800 md:text-3xl">
-            Email: user@gmail.com
+            Email: {user.email}
           </p>
         </div>
       </div>
@@ -98,7 +228,7 @@ const ProfileSection = () => {
             >
               {GENDER_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
-                  {opt === 'Male' ? t('male') : t('female')}
+                  {opt === 'Male' ? t('male') : opt === 'Female' ? t('female') : t('other')}
                 </option>
               ))}
             </select>
@@ -142,10 +272,44 @@ const ProfileSection = () => {
               type="text"
               value={addressHome}
               onChange={(e) => setAddressHome(e.target.value)}
-              className="absolute inset-0 w-full bg-transparent text-base text-neutral-800 outline-none md:text-lg"
+              className="absolute inset-0 w-full bg-transparent text-base text-neutral-800 outline-none md:text-lg placeholder:text-neutral-400"
               aria-label="Address Home"
             />
           </span>
+        </div>
+
+        {/* Phone */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <span className="sm:w-40 sm:shrink-0 text-sm sm:text-base text-neutral-800 md:text-lg">
+            {t('phone')}
+          </span>
+          <span className="relative inline-block border-b border-neutral-800 pb-1 w-full sm:w-auto">
+            <span aria-hidden className="invisible whitespace-pre text-base md:text-lg">{phone || ' '}</span>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="absolute inset-0 w-full bg-transparent text-base text-neutral-800 outline-none md:text-lg placeholder:text-neutral-400"
+              aria-label="Phone Number"
+            />
+          </span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full sm:w-auto px-8 py-3 bg-[#0F60FF] hover:bg-[#0C53DF] text-white font-medium rounded-md transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSaving ? t('saving') : t('save-info')}
+          </button>
+          
+          {successMessage && (
+            <span className="text-green-600 font-medium">
+              {successMessage}
+            </span>
+          )}
         </div>
       </div>
     </div>

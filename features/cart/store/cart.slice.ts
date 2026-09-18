@@ -7,6 +7,7 @@ export type CartItem = {
   priceValue: number
   priceFormatted: string
   qty: number
+  image?: string
 }
 
 interface CartState {
@@ -58,10 +59,13 @@ const cartSlice = createSlice({
         }
       }
     },
+    clearCart(state) {
+      state.items = []
+    },
   },
 })
 
-export const { hydrateCart, markCartHydrated, addItem, addItemSilent, removeItem, updateQty } = cartSlice.actions
+export const { hydrateCart, markCartHydrated, addItem, addItemSilent, removeItem, updateQty, clearCart } = cartSlice.actions
 export default cartSlice.reducer
 
 export const selectCartCount = (state: { cart: CartState }): number =>

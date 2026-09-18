@@ -1,8 +1,6 @@
-import { ajax } from 'rxjs/ajax'
-import type { Observable } from 'rxjs'
-import type { Post } from './product.slice'
+import { api } from '@/services/api'
+import { from, Observable } from 'rxjs'
 
-export const fetchPosts = (): Observable<Post[]> => {
-  return ajax.getJSON<Post[]>('https://jsonplaceholder.typicode.com/posts')
+export const fetchProductsAPI = (): Observable<any[]> => {
+  return from(api.get<any[]>('/productions'))
 }
-

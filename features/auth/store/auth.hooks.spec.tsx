@@ -58,7 +58,7 @@ describe('useAuthGuard', () => {
 
   it('should return isReady: true and NOT redirect when a Redux user is present', () => {
     const { result } = renderUseAuthGuard({
-      auth: { user: { username: 'testuser', email: 'test@example.com' }, hasHydrated: true },
+      auth: { user: { id: 1, role: 'User', username: 'testuser', email: 'test@example.com' }, hasHydrated: true },
     })
 
     expect(result.current.isReady).toBe(true)
@@ -66,7 +66,7 @@ describe('useAuthGuard', () => {
   })
 
   it('should return isReady: true and NOT redirect when a session exists (remember me)', () => {
-    vi.mocked(getSession).mockReturnValue({ username: 'testuser', email: 'test@example.com' })
+    vi.mocked(getSession).mockReturnValue({ id: 1, role: 'User', username: 'testuser', email: 'test@example.com' })
 
     const { result } = renderUseAuthGuard({
       auth: { user: null, hasHydrated: true },

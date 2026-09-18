@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import cartReducer, { hydrateCart, markCartHydrated, addItem, addItemSilent, removeItem, updateQty, selectCartCount, selectCartItems } from './cart.slice'
+import cartReducer, { hydrateCart, markCartHydrated, addItem, addItemSilent, removeItem, updateQty, clearCart, selectCartCount, selectCartItems } from './cart.slice'
 import type { CartItem } from './cart.slice'
 
 describe('cartSlice', () => {
@@ -78,6 +78,15 @@ describe('cartSlice', () => {
     // Decrease to 0 should remove item
     const actual3 = cartReducer(actual2, updateQty({ id: 1, delta: -2 }))
     expect(actual3.items).toHaveLength(0)
+  })
+
+  it('should handle clearCart', () => {
+    const stateWithItems = {
+      items: [sampleItem, { ...sampleItem, id: 2 }],
+      hasHydrated: true,
+    }
+    const actual = cartReducer(stateWithItems, clearCart())
+    expect(actual.items).toHaveLength(0)
   })
 
   describe('selectors', () => {

@@ -1,25 +1,28 @@
+import React from 'react'
 import Image, { type StaticImageData } from 'next/image'
 import { Menu } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import shopIcon from '@/app/assets/shop.png'
 import cartIcon from '@/app/assets/cart.png'
 import profileIcon from '@/app/assets/profile.png'
+import orderHistoryIcon from '@/app/assets/order-history.png'
 import { useTranslation } from '@/hooks/use-translation'
 import type { RootState } from '@/store/store'
 import { toggleSidebar } from '@/features/shop/store/shop.slice'
 
-type ViewKey = 'shop' | 'cart' | 'profile'
+type ViewKey = 'shop' | 'cart' | 'profile' | 'orders'
 
 type NavItem = {
   key: ViewKey
   label: string
-  icon: StaticImageData
+  icon: StaticImageData | React.ComponentType<{ className?: string }>
 }
 
 const navItems: NavItem[] = [
   { key: 'shop', label: 'Shop', icon: shopIcon },
   { key: 'cart', label: 'Cart', icon: cartIcon },
   { key: 'profile', label: 'My Profile', icon: profileIcon },
+  { key: 'orders', label: 'Order History', icon: orderHistoryIcon },
 ]
 
 interface ShopSidebarProps {
@@ -43,7 +46,7 @@ export const ShopSidebar = ({ activeView, onViewChange }: ShopSidebarProps) => {
         <button
           type="button"
           onClick={() => dispatch(toggleSidebar())}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-sm text-neutral-600 md:h-9 md:w-9"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-sm text-neutral-600 md:h-9 md:w-9 cursor-pointer"
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <Menu className="h-5 w-5 md:h-6 md:w-6" />
@@ -61,14 +64,14 @@ export const ShopSidebar = ({ activeView, onViewChange }: ShopSidebarProps) => {
               onClick={() => {
                 onViewChange(item.key)
               }}
-              className={`flex h-12 w-full items-center gap-2 px-3 text-left text-base transition md:px-3 md:text-lg ${
+              className={`flex h-12 w-full items-center gap-2 px-3 text-left text-base transition cursor-pointer md:px-3 md:text-lg ${
                 isActive
                   ? 'border-y border-[#00b7ee] bg-[#e8f7ff] text-[#02a8df]'
                   : 'text-neutral-900'
               } ${isCollapsed ? 'justify-center px-0' : 'justify-center px-0 sm:justify-start sm:px-3'}`}
             >
               <Image
-                src={item.icon}
+                src={item.icon as StaticImageData}
                 alt={t(item.key)}
                 className={`h-8 w-8 shrink-0 object-contain md:h-9 md:w-9 ${
                   isActive

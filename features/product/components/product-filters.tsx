@@ -14,7 +14,7 @@ interface ProductFiltersProps {
   onFilterChange: (filter: FilterState) => void
 }
 
-const PRICE_OPTIONS = Array.from({ length: 11 }, (_, i) => i * 1_000_000)
+const PRICE_OPTIONS = Array.from({ length: 51 }, (_, i) => i * 1_000_000)
 const RATING_OPTIONS = [0, 1, 2, 3, 4, 5]
 
 const formatVND = (value: number): string => {

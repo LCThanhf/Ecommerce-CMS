@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import productReducer, { resetProducts, fetchProducts, fetchProductsSuccess, fetchProductsFailed, mapPostToProduct } from './product.slice'
+import productReducer, { resetProducts, fetchProducts, fetchProductsSuccess, fetchProductsFailed } from './product.slice'
 
 describe('productSlice', () => {
   const initialState = {
@@ -44,19 +44,6 @@ describe('productSlice', () => {
       expect(actual.loading).toBe(false)
       expect(actual.error).toBe(errorMsg)
       expect(actual.hasFetched).toBe(true)
-    })
-  })
-
-  describe('mapPostToProduct', () => {
-    it('should correctly map a Post to a Product', () => {
-      const post = { id: 11, title: 'Title', body: 'Body', userId: 1 }
-      const product = mapPostToProduct(post, 0)
-      
-      expect(product.id).toBe(11)
-      expect(product.name).toBe('Samsung Galaxy A31')
-      expect(product.priceValue).toBe(2000000) // ((11 % 10) + 1) * 1,000,000 = (1 + 1) * 1,000,000
-      expect(product.price).toBe('2\u00a0000\u00a0000\u00a0VNĐ')
-      expect(product.rating).toBe(2) // (11 % 5) + 1 = 1 + 1 = 2
     })
   })
 })

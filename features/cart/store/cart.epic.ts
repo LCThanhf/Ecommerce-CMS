@@ -2,12 +2,12 @@ import { type Epic, ofType } from 'redux-observable'
 import { debounceTime, delay, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators'
 import { EMPTY, concat, of } from 'rxjs'
 import type { Action } from '@reduxjs/toolkit'
-import { addItem, addItemSilent, removeItem, updateQty, type CartItem } from './cart.slice'
+import { addItem, addItemSilent, removeItem, updateQty, clearCart, type CartItem } from './cart.slice'
 import { showToast, hideToast } from '@/features/toast/store/toast.slice'
 
 export const cartPersistEpic: Epic<Action, Action, unknown> = (action$, state$) =>
   action$.pipe(
-    ofType(addItem.type, addItemSilent.type, removeItem.type, updateQty.type),
+    ofType(addItem.type, addItemSilent.type, removeItem.type, updateQty.type, clearCart.type),
     debounceTime(150),
     withLatestFrom(state$),
     tap(([, state]) => {

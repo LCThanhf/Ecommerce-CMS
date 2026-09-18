@@ -14,7 +14,7 @@ import { ShopHeader } from './shop-header'
 import { ShopSidebar } from './shop-sidebar'
 import { ShopContent } from './shop-content'
 
-type ViewKey = 'shop' | 'cart' | 'profile'
+type ViewKey = 'shop' | 'cart' | 'profile' | 'orders'
 
 export const ShopLayout = () => {
   useAuthGuard()
@@ -33,7 +33,9 @@ export const ShopLayout = () => {
 
   const activeViewParam = searchParams.get('view')
   const activeView: ViewKey =
-    activeViewParam === 'cart' || activeViewParam === 'profile' ? activeViewParam : 'shop'
+    activeViewParam === 'cart' || activeViewParam === 'profile' || activeViewParam === 'orders'
+      ? (activeViewParam as ViewKey)
+      : 'shop'
 
   const setView = (view: ViewKey) => {
     router.push(`/shop?view=${view}`)

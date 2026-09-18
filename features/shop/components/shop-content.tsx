@@ -4,8 +4,9 @@ import dynamic from 'next/dynamic'
 const ShopSection = dynamic(() => import('@/features/product/components/shop-section'))
 const CartSection = dynamic(() => import('@/features/cart/components/cart-section'))
 const ProfileSection = dynamic(() => import('@/features/user/components/profile-section'))
+const OrderHistorySection = dynamic(() => import('@/features/order/components/order-history-section'))
 
-type ViewKey = 'shop' | 'cart' | 'profile'
+type ViewKey = 'shop' | 'cart' | 'profile' | 'orders'
 
 type FilterState = {
   priceFrom: number
@@ -49,6 +50,20 @@ export const ShopContent = ({
         }
       >
         <ProfileSection />
+      </Suspense>
+    )
+  }
+
+  if (view === 'orders') {
+    return (
+      <Suspense
+        fallback={
+          <div className="flex min-h-115 items-center justify-center rounded-lg border border-neutral-300 bg-white/50 text-xl text-neutral-500">
+            Loading...
+          </div>
+        }
+      >
+        <OrderHistorySection />
       </Suspense>
     )
   }

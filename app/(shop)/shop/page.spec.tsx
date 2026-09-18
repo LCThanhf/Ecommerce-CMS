@@ -29,6 +29,9 @@ vi.mock('next/dynamic', () => ({
     if (loaderStr.includes('profile-section')) {
       return () => <div data-testid="profile-section">Profile Section Mock</div>
     }
+    if (loaderStr.includes('order-history-section')) {
+      return () => <div data-testid="orders-section">Orders Section Mock</div>
+    }
     return () => <div>Dynamic Mock</div>
   },
 }))
@@ -162,6 +165,13 @@ describe('ShopPage', () => {
     mockSearchParams = new URLSearchParams('view=profile')
     renderPage()
     expect(screen.getByTestId('profile-section')).toBeInTheDocument()
+    expect(screen.queryByTestId('shop-section')).not.toBeInTheDocument()
+  })
+
+  it('should render OrderHistorySection when view search param is "orders"', () => {
+    mockSearchParams = new URLSearchParams('view=orders')
+    renderPage()
+    expect(screen.getByTestId('orders-section')).toBeInTheDocument()
     expect(screen.queryByTestId('shop-section')).not.toBeInTheDocument()
   })
 
