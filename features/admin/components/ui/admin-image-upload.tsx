@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
+import Image from 'next/image'
 import { Upload, X, ZoomIn } from 'lucide-react'
 import { AdminButton } from './admin-button'
 import { AdminImageZoomModal } from './admin-image-zoom-modal'
@@ -77,11 +78,11 @@ export const AdminImageUpload: React.FC<AdminImageUploadProps> = ({
             className="relative w-16 h-16 rounded-md overflow-hidden bg-white border border-slate-200 flex-shrink-0 flex items-center justify-center cursor-pointer group shadow-2xs"
             title="Nhấp để phóng to ảnh"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={value}
               alt="Preview"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-200"
             />
             <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <ZoomIn className="w-4 h-4 text-white" />

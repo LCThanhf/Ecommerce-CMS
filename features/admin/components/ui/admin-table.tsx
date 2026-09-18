@@ -1,6 +1,6 @@
 import React from 'react'
 
-export interface AdminTableProps extends React.HTMLAttributes<HTMLTableElement> {}
+export type AdminTableProps = React.HTMLAttributes<HTMLTableElement>
 
 export const AdminTable: React.FC<AdminTableProps> = ({
   children,
@@ -16,7 +16,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
   )
 }
 
-export interface AdminTableHeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export type AdminTableHeaderProps = React.HTMLAttributes<HTMLTableSectionElement>
 
 export const AdminTableHeader: React.FC<AdminTableHeaderProps> = ({
   children,
@@ -30,7 +30,7 @@ export const AdminTableHeader: React.FC<AdminTableHeaderProps> = ({
   )
 }
 
-export interface AdminTableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {}
+export type AdminTableHeadProps = React.ThHTMLAttributes<HTMLTableCellElement>
 
 export const AdminTableHead: React.FC<AdminTableHeadProps> = ({
   children,
@@ -47,7 +47,7 @@ export const AdminTableHead: React.FC<AdminTableHeadProps> = ({
   )
 }
 
-export interface AdminTableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export type AdminTableBodyProps = React.HTMLAttributes<HTMLTableSectionElement>
 
 export const AdminTableBody: React.FC<AdminTableBodyProps> = ({
   children,
@@ -61,7 +61,7 @@ export const AdminTableBody: React.FC<AdminTableBodyProps> = ({
   )
 }
 
-export interface AdminTableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {}
+export type AdminTableRowProps = React.HTMLAttributes<HTMLTableRowElement>
 
 export const AdminTableRow: React.FC<AdminTableRowProps> = ({
   children,
@@ -75,7 +75,7 @@ export const AdminTableRow: React.FC<AdminTableRowProps> = ({
   )
 }
 
-export interface AdminTableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {}
+export type AdminTableCellProps = React.TdHTMLAttributes<HTMLTableCellElement>
 
 export const AdminTableCell: React.FC<AdminTableCellProps> = ({
   children,

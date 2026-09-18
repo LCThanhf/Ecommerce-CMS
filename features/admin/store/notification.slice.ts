@@ -34,8 +34,8 @@ export const fetchNotifications = createAsyncThunk(
     try {
       const response = await api.get<AdminNotification[]>('/admin/notifications');
       return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch notifications');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch notifications');
     }
   }
 );
@@ -46,8 +46,8 @@ export const markAsRead = createAsyncThunk(
     try {
       await api.put(`/admin/notifications/${id}/read`, {});
       return id;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to mark as read');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to mark as read');
     }
   }
 );
@@ -58,8 +58,8 @@ export const markAllAsRead = createAsyncThunk(
     try {
       await api.put(`/admin/notifications/read-all`, {});
       return true;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to mark all as read');
+    } catch (error: unknown) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to mark all as read');
     }
   }
 );

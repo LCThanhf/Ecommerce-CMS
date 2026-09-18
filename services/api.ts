@@ -39,7 +39,7 @@ export const api = {
     checkResponse(response);
     return response.json() as Promise<T>
   },
-  post: async <T>(url: string, data: any): Promise<T> => {
+  post: async <T>(url: string, data: unknown): Promise<T> => {
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'POST',
       headers: getHeaders(),
@@ -48,7 +48,7 @@ export const api = {
     checkResponse(response);
     return response.json() as Promise<T>
   },
-  put: async <T>(url: string, data: any): Promise<T> => {
+  put: async <T>(url: string, data: unknown): Promise<T> => {
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'PUT',
       headers: getHeaders(),
